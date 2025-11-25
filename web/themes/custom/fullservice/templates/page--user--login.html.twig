@@ -1,0 +1,30 @@
+{#
+  Custom template for /user/login only.
+  Does NOT interfere with other pages.
+#}
+
+<div class="login-page-wrapper">
+
+  {% if page.header %}
+    <header class="site-header">
+      {{ page.header }}
+    </header>
+  {% endif %}
+
+  {% if page.messages %}
+    <div class="messages">
+      {{ page.messages }}
+    </div>
+  {% endif %}
+
+  <main class="login-main">
+    {{ page.content }}
+  </main>
+
+  {% if page.footer %}
+    <footer class="site-footer">
+      {{ page.footer }}
+    </footer>
+  {% endif %}
+
+</div>
