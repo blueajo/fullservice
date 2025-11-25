@@ -4,6 +4,10 @@ description: "Custom theme for Fullservice Office."
 core_version_requirement: ^10
 base theme: stable9
 
+favicon:
+  path: favicon.svg
+  mime_type: image/svg+xml
+
 libraries:
   - fullservice/global-styling
   - fullservice/flickity

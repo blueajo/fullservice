@@ -34,8 +34,13 @@
   {% endif %}
 
   <p class="caption">
-    {{ label }}{% if node.field_medium.value %}, <span class="category">{{ node.field_medium.value }}, </span>{% endif %}
-    {% if node.field_year.value %}{{ node.field_year.value }}{% endif %}
+    {{- node.title.value -}}
+    {%- if node.field_medium.value -%}
+      , <span class="category">{{ node.field_medium.value }}</span>
+    {%- endif -%}
+    {%- if node.field_year.value -%}
+      , {{ node.field_year.value }}
+    {%- endif -%}
   </p>
 
 </div>
