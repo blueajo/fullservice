@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * Theme override for the html template.
+ */
+#}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+
+  <head>
+    {# Drupal placeholders for early-head assets #}
+    <head-placeholder token="{{ placeholder_token }}">
+    <css-placeholder token="{{ placeholder_token }}">
+    <js-placeholder token="{{ placeholder_token }}">
+
+    {# Standard metadata #}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {# Page title and module-provided head elements #}
+    {{ head }}
+
+    {# Optional dynamic meta description from slogan #}
+    {% if site_slogan %}
+      <meta name="description" content="{{ site_slogan|escape }}">
+    {% endif %}
+
+    {# Favicon #}
+    {#
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ directory }}/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ directory }}/favicon-16x16.png">
+    #}
+  </head>
+
+  <body{{ attributes.addClass('path-' ~ current_path|clean_class) }}>
+
+    {# Contextual links, toolbar, etc. #}
+    {{ page_top }}
+
+    <div id="page-wrapper">
+      {{ page }}
+    </div>
+
+    {{ page_bottom }}
+
+    {# Deferred JS #}
+    <js-bottom-placeholder token="{{ placeholder_token }}">
+
+  </body>
+</html>

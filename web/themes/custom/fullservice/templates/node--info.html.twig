@@ -1,0 +1,48 @@
+{%
+  set classes = [
+    'node',
+    'node--type-info',
+  ]
+%}
+
+<div{{ attributes.addClass(classes) }}>
+  
+  <div id="info-cursor">
+    <p>FULLSERVICE OFFICE © {{ "now"|date("Y") }}</p>
+  </div>
+  
+  {# Office description #}
+  {% if node.field_office_bio.value %}
+    <div id="office">
+      {{ node.field_office_bio.value|nl2br }}
+    </div>
+  {% endif %}
+
+  {# Contact links #}
+  <div id="links">
+    <p>
+      {% if node.field_office_email.value %}
+        Inquiries<br>
+        <a href="mailto:{{ node.field_office_email.value }}" class="dotArea">
+          {{ node.field_office_email.value }}
+        </a>
+        <br><br>
+      {% endif %}
+      
+      {# Social links from paragraphs #}
+      {% if node.field_social_link %}
+        {% for link_item in node.field_social_link %}
+          {% set link_para = link_item.entity %}
+          {% if link_para.field_url.0.uri %}
+            {{ link_para.field_link_title.value }}<br>
+            <a href="{{ link_para.field_url.0.uri }}" target="_blank" class="dotArea">
+              {{ link_para.field_url.0.title|default(link_para.field_link_title.value) }}
+            </a>
+            <br><br>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </p>
+  </div>
+
+</div>

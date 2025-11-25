@@ -1,0 +1,163 @@
+<?php
+
+/**
+ * @file
+ * Functions to support theming in the Fullservice Office theme.
+ */
+
+use Drupal\Core\Template\Attribute;
+
+/**
+ * Implements hook_preprocess_HOOK() for HTML document templates.
+ */
+function fullservice_preprocess_html(&$variables)
+{
+  // Add body classes
+  $variables['attributes']['class'][] = 'show-grid';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page templates.
+ */
+function fullservice_preprocess_page(&$variables)
+{
+  // Make site name available
+  $variables['site_name'] = \Drupal::config('system.site')->get('name');
+
+  // Load singleton nodes for front page
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  // Load Header node
+  $header_nodes = $node_storage->loadByProperties(values: [
+    'type' => 'header_fullservice',
+    'status' => 1,
+  ]);
+  $variables['header_node'] = $header_nodes ? reset($header_nodes) : NULL;
+
+  // Load Homepage Video Collection node
+  $video_nodes = $node_storage->loadByProperties([
+    'type' => 'homepage_video_collection',
+    'status' => 1,
+  ]);
+  $variables['video_collection'] = $video_nodes ? reset($video_nodes) : NULL;
+
+  // Load Info node
+  $info_nodes = $node_storage->loadByProperties([
+    'type' => 'info',
+    'status' => 1,
+  ]);
+  $variables['info_node'] = $info_nodes ? reset($info_nodes) : NULL;
+
+  // Load Pitches node
+  $pitches_nodes = $node_storage->loadByProperties([
+    'type' => 'pitches',
+    'status' => 1,
+  ]);
+  $variables['pitches_node'] = $pitches_nodes ? reset($pitches_nodes) : NULL;
+
+  // Load Service Providers node
+  $sp_nodes = $node_storage->loadByProperties([
+    'type' => 'service_providers',
+    'status' => 1,
+  ]);
+  $variables['service_providers_node'] = $sp_nodes ? reset($sp_nodes) : NULL;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for page templates.
+ */
+function fullservice_theme_suggestions_page_alter(array &$suggestions, array $variables)
+{
+  // Add content type suggestions
+  if ($node = \Drupal::routeMatch()->getParameter('node')) {
+    $content_type = $node->bundle();
+    $suggestions[] = 'page__' . $content_type;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for node templates.
+ */
+function fullservice_preprocess_node(&$variables)
+{
+  $node = $variables['node'];
+
+  // Add custom classes based on content type
+  $variables['attributes']['class'][] = 'node--type-' . $node->bundle();
+
+  // Add view mode class
+  $variables['attributes']['class'][] = 'node--view-mode-' . $variables['view_mode'];
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for field templates.
+ */
+function fullservice_preprocess_field(&$variables)
+{
+  $element = $variables['element'];
+
+  // Add field name as class
+  $variables['attributes']['class'][] = 'field--name-' . $element['#field_name'];
+  $variables['attributes']['class'][] = 'field--type-' . $element['#field_type'];
+}
+
+/**
+ * Implements hook_preprocess_views_view().
+ */
+function fullservice_preprocess_views_view(&$variables)
+{
+  $view = $variables['view'];
+
+  // Remove views-element-container and other wrapper classes
+  if (isset($variables['attributes']['class'])) {
+    $classes_to_remove = [
+      'views-element-container',
+    ];
+
+    $variables['attributes']['class'] = array_diff(
+      $variables['attributes']['class'],
+      $classes_to_remove
+    );
+  }
+
+  // Remove the DOM ID entirely
+  unset($variables['attributes']['id']);
+}
+
+/**
+ * Implements hook_preprocess_views_view_unformatted().
+ */
+function fullservice_preprocess_views_view_unformatted(&$variables)
+{
+  $view = $variables['view'];
+
+  // Remove wrapper classes from each row
+  if (isset($variables['rows'])) {
+    foreach ($variables['rows'] as $index => &$row) {
+      if (isset($row['attributes']) && is_object($row['attributes'])) {
+        $row['attributes']->removeClass('views-row');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function fullservice_preprocess_block(&$variables)
+{
+  // Remove container from Views blocks
+  if (
+    isset($variables['elements']['#base_plugin_id']) &&
+    $variables['elements']['#base_plugin_id'] == 'views_block'
+  ) {
+
+    // Remove the views-element-container wrapper
+    if (isset($variables['content'][0]['#theme_wrappers'])) {
+      $key = array_search('container', $variables['content'][0]['#theme_wrappers']);
+      if ($key !== FALSE) {
+        unset($variables['content'][0]['#theme_wrappers'][$key]);
+      }
+    }
+  }
+}

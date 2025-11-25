@@ -1,0 +1,60 @@
+{%
+  set classes = [
+    'node',
+    'node--type-service-providers',
+  ]
+%}
+
+<div{{ attributes.addClass(classes) }}>
+  
+  {# Loop through service providers #}
+  {% if node.field_service_provider %}
+    {% for provider_item in node.field_service_provider %}
+      {% set provider = provider_item.entity %}
+      
+      <div class="service-provider">
+        {# First paragraph: Name with link + birthplace + description #}
+        <p>
+          {% if provider.field_personal_link.0.uri %}
+            <a class="service-provider-link" 
+               href="{{ provider.field_personal_link.0.uri }}" 
+               target="_blank">
+              {{ provider.field_name.value }}
+            </a>
+          {% else %}
+            {{ provider.field_name.value }}
+          {% endif %}
+          
+          {% if provider.field_birthplace.value %}
+            {{ provider.field_birthplace.value }}
+          {% endif %}
+          
+          {% if provider.field_description.value %}
+            {{ provider.field_description.value|nl2br }}
+          {% endif %}
+        </p>
+      </div>
+      
+    {% endfor %}
+  {% endif %}
+  
+  {# Portraits rendered separately for hover effect #}
+  <div id="portraits">
+    {% if node.field_service_provider %}
+      {% for provider_item in node.field_service_provider %}
+        {% set provider = provider_item.entity %}
+        {% if provider.field_portrait.entity %}
+          {% set portrait_media = provider.field_portrait.entity %}
+          {% set portrait_image = portrait_media.field_media_image %}
+          {% if portrait_image.entity %}
+            <img id="portrait-{{ loop.index0 }}" 
+                 class="portrait" 
+                 src="{{ file_url(portrait_image.entity.uri.value) }}" 
+                 alt="{{ portrait_image.alt|default(provider.field_name.value) }}" />
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  </div>
+
+</div>

@@ -1,0 +1,5 @@
+name: Fullservice Forms
+type: module
+description: Custom form handlers for Fullservice Office
+core_version_requirement: ^10
+package: Custom

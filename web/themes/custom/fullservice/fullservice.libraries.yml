@@ -1,0 +1,21 @@
+# Flickity library
+flickity:
+  css:
+    theme:
+      css/flickity.css: {}
+  js:
+    js/flickity.js: {}
+
+# Global styling loaded on every page
+global-styling:
+  css:
+    theme:
+      css/fullservice.css: {}
+
+global-scripts:
+  js:
+    js/fullservice.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - fullservice/flickity

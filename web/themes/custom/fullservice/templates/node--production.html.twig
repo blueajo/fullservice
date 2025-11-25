@@ -1,0 +1,41 @@
+{%
+  set classes = [
+    'product',
+    'node',
+    'node--type-' ~ node.bundle()|clean_class,
+  ]
+%}
+
+{# Hide the title - it's used in caption instead #}
+{% set title_prefix = null %}
+{% set title_suffix = null %}
+
+<div{{ attributes.addClass(classes).setAttribute('id', 'p' ~ node.id()) }}>
+  
+  {# VIDEO takes precedence #}
+  {% if node.field_video|length %}
+    {% set media = node.field_video.0.entity %}
+    {% if media.field_media_video_file|length %}
+      {% set file = media.field_media_video_file.0.entity %}
+      <video loop muted playsinline
+             src="{{ file_url(file.uri.value) }}"
+             type="video/mp4"
+             preload="metadata"></video>
+    {% endif %}
+  
+  {# FALLBACK: IMAGE #}
+  {% elseif node.field_image|length %}
+    {% set media = node.field_image.0.entity %}
+    {% if media.field_media_image|length %}
+      {% set file = media.field_media_image.0.entity %}
+      <img src="{{ file_url(file.uri.value) }}"
+           alt="{{ media.field_media_image.alt|default(label) }}">
+    {% endif %}
+  {% endif %}
+
+  <p class="caption">
+    {{ label }}{% if node.field_medium.value %}, <span class="category">{{ node.field_medium.value }}, </span>{% endif %}
+    {% if node.field_year.value %}{{ node.field_year.value }}{% endif %}
+  </p>
+
+</div>

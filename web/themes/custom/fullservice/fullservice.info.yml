@@ -1,0 +1,18 @@
+name: Fullservice
+type: theme
+description: "Custom theme for Fullservice Office."
+core_version_requirement: ^10
+base theme: stable9
+
+libraries:
+  - fullservice/global-styling
+  - fullservice/flickity
+  - fullservice/global-scripts
+  
+# Disable specific CSS files from core/stable9
+stylesheets-remove:
+  - core/themes/stable9/css/system/components/ajax-progress.module.css
+  - core/themes/stable9/css/system/components/align.module.css
+  - core/themes/stable9/css/system/components/autocomplete-loading.module.css
+  - core/themes/stable9/css/system/components/fieldgroup.module.css
+  - core/themes/stable9/css/system/components/container-inline.module.css

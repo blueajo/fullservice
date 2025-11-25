@@ -1,0 +1,309 @@
+{#
+/**
+ * @file
+ * Theme override for the front page.
+ */
+#}
+
+{# Load singleton nodes - these will be set in preprocess #}
+{% set video_collection = video_collection ?? null %}
+{% set info_node = info_node ?? null %}
+{% set pitches_node = pitches_node ?? null %}
+{% set service_providers_node = service_providers_node ?? null %}
+
+<div id='container'>
+  
+  {# HEADER #}
+  <div id="header">
+      <p><span class="paren">(</span><a id="production-link" class="page-link" href="#production">Production</a><span id="production-text" class="nav-text">{% if header_node.field_production_blurb %} {{ header_node.field_production_blurb.value }}{% endif %}</span><span>, </span><span id="production-gap"></span>
+          <a id="service-providers-link" class="page-link" href="#service-providers">Service Providers</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span>, </span><span id="service-providers-gap"></span>
+          <a id="pitches-link" class="page-link" href="#pitches">Pitches</a><span id="pitches-text" class="nav-text">{% if header_node.field_pitches_blurb %} {{ header_node.field_pitches_blurb.value }}{% endif %}</span><span>, </span><span id="pitches-gap"></span>
+          <a id="info-link" class="page-link" href="#info">Info</a><span id="info-text" class="nav-text">{% if header_node.field_info_blurb %} {{ header_node.field_info_blurb.value }}{% endif %}</span><span id="info-gap"></span><span><span class="paren">)</span></span>
+      </p>
+  </div>
+
+  {# HOMEPAGE / INDEX #}
+  <div id="index-page" class="page inactive">
+    <div id="index-cursor">
+      {# Production videos #}
+      {% if video_collection.field_production_videos %}
+        {% for i in 0..7 %}
+          {% if video_collection.field_production_videos[i] %}
+            {% set media = video_collection.field_production_videos[i].entity %}
+            {% set video_file = media.field_media_video_file.entity %}
+            {% if video_file %}
+              <video id="production-{{ i }}-video" 
+                     class="production-video" 
+                     loop muted 
+                     src="{{ file_url(video_file.uri.value) }}" 
+                     type="video/mp4"></video>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      
+      {# Service provider videos #}
+      {% if video_collection.field_service_provider_videos %}
+        {% for i in 0..7 %}
+          {% if video_collection.field_service_provider_videos[i] %}
+            {% set media = video_collection.field_service_provider_videos[i].entity %}
+            {% set video_file = media.field_media_video_file.entity %}
+            {% if video_file %}
+              <video id="service-providers-{{ i }}-video" 
+                     class="service-providers-video" 
+                     loop muted 
+                     src="{{ file_url(video_file.uri.value) }}" 
+                     type="video/mp4"></video>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      
+      {# Pitches videos #}
+      {% if video_collection.field_pitches_videos %}
+        {% for i in 0..7 %}
+          {% if video_collection.field_pitches_videos[i] %}
+            {% set media = video_collection.field_pitches_videos[i].entity %}
+            {% set video_file = media.field_media_video_file.entity %}
+            {% if video_file %}
+              <video id="pitches-{{ i }}-video" 
+                     class="pitches-video" 
+                     loop muted 
+                     src="{{ file_url(video_file.uri.value) }}" 
+                     type="video/mp4"></video>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      
+      {# Info videos #}
+      {% if video_collection.field_info_videos %}
+        {% for i in 0..7 %}
+          {% if video_collection.field_info_videos[i] %}
+            {% set media = video_collection.field_info_videos[i].entity %}
+            {% set video_file = media.field_media_video_file.entity %}
+            {% if video_file %}
+              <video id="info-{{ i }}-video" 
+                     class="info-video" 
+                     loop muted 
+                     src="{{ file_url(video_file.uri.value) }}" 
+                     type="video/mp4"></video>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      
+    </div>
+    
+    {# Invisible clickable areas #}
+    <div id="service-providers-area" class="link-area"></div>
+    <div id="production-area" class="link-area"></div>
+    <div id="pitches-area" class="link-area"></div>
+    <div id="info-area" class="link-area"></div>
+    
+    {# Mobile video #}
+    <div id="mobile-area">
+      {% if video_collection.field_mobile_video.entity %}
+        {% set media = video_collection.field_mobile_video.entity %}
+        {% set mobile_video = media.field_media_video_file.entity %}
+        {% if mobile_video %}
+          <video id="mobile-video" 
+                 autoplay loop muted playsinline
+                 src="{{ file_url(mobile_video.uri.value) }}" 
+                 type="video/mp4" 
+                 preload="metadata"></video>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  {# PRODUCTION PAGE #}
+  <div id="production-page" class="page inactive">
+    <div id="left-arrow-area"></div>
+    <div id="right-arrow-area"></div>
+    <div id="center-area"></div>
+    
+    {{ drupal_view('production_gallery', 'block_1') }}
+  </div>
+
+  {# SERVICE PROVIDERS PAGE #}
+  <div id="service-providers-page" class="page inactive">
+    {% if service_providers_node %}
+      {% for provider_item in service_providers_node.field_service_provider %}
+        {% set provider = provider_item.entity %}
+        
+        <div class="service-provider">
+          {% if provider.field_description %}
+            {% for desc in provider.field_description %}
+              {% if loop.first %}
+                <p>
+                  {% if provider.field_personal_link.0.uri %}
+                    <a class="service-provider-link" 
+                       href="{{ provider.field_personal_link.0.uri }}" 
+                       target="_blank">
+                      {{ provider.field_name.value }}
+                    </a>
+                  {% else %}
+                    {{ provider.field_name.value }}
+                  {% endif %}
+                  
+                  {% if provider.field_birthplace.value %}
+                    (b. {{ provider.field_birthplace.value }})
+                  {% endif %}
+                  
+                  {{ desc.value }}
+                </p>
+              {% else %}
+                <p>{{ desc.value }}</p>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  {# PITCHES PAGE #}
+  <div id="pitches-page" class="page inactive">
+    {% if pitches_node %}
+      <div id="pitch-list">
+        {% for pitch in pitches_node.field_pitch %}
+          <div class="checkbox-container" data-pitch-index="{{ loop.index0 }}">
+            <span class="checkmark"></span>
+            <p class="checkbox-label">{{ pitch.value }}</p>
+          </div>
+        {% endfor %}
+      </div>
+      
+      {# Contact form #}
+      <div id="contact-form">
+        <label for="from">
+          <p>From:</p> 
+          <input type="email" 
+                 id="from" 
+                 name="from" 
+                 required 
+                 placeholder="{{ pitches_node.field_email_placeholder.value|default('type email here') }}"/>
+        </label>
+        
+        <label for="to">
+          <p>To: {{ info_node.field_office_email.value|default('info@fullserviceoffice.com') }}</p>
+        </label>
+        
+        <label for="subject" style="margin-bottom: calc(3rem - 2px);">
+          <p>Subject:</p> 
+          <input type="text" 
+                 id="subject" 
+                 name="subject" 
+                 required 
+                 placeholder="{{ pitches_node.field_subject_placeholder.value|default('We want to collaborate') }}"/>
+        </label>
+        
+        <div id="message" name="message" role="textarea" contenteditable>
+          {{ pitches_node.field_message_placeholder.value|nl2br|default('Hi Fullservice Office,<br><br>Omg, you guys are amazing. I absolutely love your work!<br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. It would be so much fun to collaborate with you on:')|raw }}
+        </div>
+        
+        <div id="pitches-to-send"></div>
+        <div class="spacer"></div>
+        <button id="send-form" type="button">Send</button>
+      </div>
+      <div id="form-alert">
+        <p></p>
+      </div>
+    {% endif %}
+  </div>
+
+  {# INFO PAGE #}
+  <div id="info-page" class="page inactive">
+    <div id="info-cursor">
+      <p>FULLSERVICE OFFICE © {{ "now"|date("Y") }}</p>
+    </div>
+    
+    {% if info_node %}
+      {# Office description - multiple paragraphs #}
+      {% if info_node.field_office_bio %}
+        <div id="office">
+          {% for bio_paragraph in info_node.field_office_bio %}
+            <p>{{ bio_paragraph.value }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# Contact links #}
+      <div id="links">
+        <p>
+          {% if info_node.field_office_email.value %}
+            Inquiries<br>
+            <a href="mailto:{{ info_node.field_office_email.value }}" class="dotArea">
+              {{ info_node.field_office_email.value }}
+            </a>
+            <br><br>
+          {% endif %}
+          
+          {# Social links #}
+          {% if info_node.field_social_link %}
+            {% for link_item in info_node.field_social_link %}
+              {% set link_para = link_item.entity %}
+              {% if link_para.field_url.0.uri %}
+                {{ link_para.field_link_title.value }}<br>
+                <a href="{{ link_para.field_url.0.uri }}" target="_blank" class="dotArea">
+                  {{ link_para.field_url.0.title|default(link_para.field_link_title.value) }}
+                </a>
+                <br><br>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if info_node.field_office_blurb.value %}
+            {{ info_node.field_office_blurb.value|nl2br }}
+            <br><br>
+          {% endif %}
+        </p>
+      </div>
+    {% endif %}
+  </div>
+
+  {# FOOTER #}
+  <div id="footer">
+    {# Footer content #}
+    <p>
+      <a id='index-link' class='page-link'>{{ site_name|default('FULLSERVICE OFFICE') }}</a>
+      <span id="index-text" class="nav-text"> is a design practice.</span>
+    </p>
+    
+    {# Video credits from homepage_video_collection node #}
+    {% if video_collection %}
+      <div id="video-credits">
+        <div>
+          <a id="credits-link">(+)</a>
+          <div id="credits">
+            
+            {# Video credits - multi-value plain text field #}
+            {% if video_collection.field_video_credits %}
+              {% for credit in video_collection.field_video_credits %}
+                <div class="dot-container">
+                  <span class="caption-dot"></span>
+                  <p class="caption">{{ credit.value }}</p>
+                </div>
+              {% endfor %}
+            {% endif %}
+            
+            {# Disclaimer #}
+            {% if video_collection.field_credits_disclaimer.value %}
+              <p class='caption' style="margin-top: 1rem;">
+                {{ video_collection.field_credits_disclaimer.value }}
+              </p>
+            {% endif %}
+            
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  {# MOBILE FOOTER #}
+  <div id="mobile-footer">
+    <p>FULLSERVICE OFFICE © {{ "now"|date("Y") }}</p>
+  </div>
+  
+</div>

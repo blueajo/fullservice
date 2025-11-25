@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.theme": "php",
+        "*.module": "php",
+        "*.install": "php",
+        "*.inc": "php"
+    },
+    "php.debug.port": 9003
+}

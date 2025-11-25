@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * Implements hook_mail().
+ */
+function fullservice_forms_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'contact_form':
+      $message['from'] = $params['from'];
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['message'];
+      
+      if (!empty($params['pitches'])) {
+        $message['body'][] = "• " . implode("\n• ", $params['pitches']);
+
+      }
+      break;
+  }
+}

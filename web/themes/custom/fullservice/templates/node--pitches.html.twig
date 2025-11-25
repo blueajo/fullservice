@@ -1,0 +1,56 @@
+{%
+  set classes = [
+    'node',
+    'node--type-pitches',
+  ]
+%}
+
+<div{{ attributes.addClass(classes) }}>
+  
+  <div id="pitch-list">
+    {% if node.field_pitch %}
+      {% for pitch in node.field_pitch %}
+        <div class="checkbox-container" data-pitch-index="{{ loop.index0 }}">
+          <span class="checkmark"></span>
+          <p class="checkbox-label">{{ pitch.value }}</p>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+  
+  {# Contact form #}
+  <div id="contact-form">
+    <label for="from">
+      <p>From:</p> 
+      <input type="email"
+             id="from"
+             name="from"
+             required
+             placeholder="type email here"/>
+    </label>
+    
+    <label for="to">
+      <p>To: info@fullserviceoffice.com</p>
+    </label>
+    
+    <label for="subject" style="margin-bottom: calc(3rem - 2px);">
+      <p>Subject:</p> 
+      <input type="text"
+             id="subject"
+             name="subject"
+             required
+             placeholder="We want to collaborate"/>
+    </label>
+    
+    <div id="message" name="message" role="textarea" contenteditable>
+      Hi Fullservice Office,<br><br>
+      Omg, you guys are amazing. I absolutely love your work!<br><br>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. It would be so much fun to collaborate with you on:
+    </div>
+    
+    <div id="pitches-to-send"></div>
+    <div class="spacer"></div>
+    <button id="send-form" type="button">Send</button>
+  </div>
+
+</div>

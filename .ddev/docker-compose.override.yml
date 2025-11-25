@@ -1,0 +1,15 @@
+version: '3.6'
+
+services:
+  mailhog:
+    container_name: ddev-${DDEV_SITENAME}-mailhog
+    image: mailhog/mailhog:latest
+    expose:
+      - "1025"
+      - "8025"
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    environment:
+      - MH_SMTP_BIND_ADDR=0.0.0.0:1025
+      - MH_UI_BIND_ADDR=0.0.0.0:8025
