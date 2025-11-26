@@ -321,6 +321,7 @@ function openPage(section) {
   }
   if (section == 'production' && !mobile) {
     ProductionCarousel.init();
+    setTimeout(setupProductionObserver, 500);
   }
 }
 
@@ -510,6 +511,10 @@ const ProductionCarousel = (() => {
     state.flkty = null;
   }
 
+  function getCurrentProduct() {
+    return state.currOpenProduct;
+  }
+
   // =======================
   // Product Controls
   // =======================
@@ -559,7 +564,7 @@ const ProductionCarousel = (() => {
     product.classList.remove("open");
 
     const productMedia = product.querySelector("img, video");
-    if (productMedia.tagName === 'VIDEO') productMedia.pause();
+    // if (productMedia.tagName === 'VIDEO') productMedia.pause();
     productMedia.style.width = "15vw";
 
     state.flkty.reposition();
@@ -743,7 +748,8 @@ const ProductionCarousel = (() => {
     openProduct,
     closeProduct,
     initialized,
-    deinitialize
+    deinitialize,
+    getCurrentProduct
   };
 })();
 
@@ -967,43 +973,49 @@ observer2.observe(document.getElementById('mobile-video'));
 // SCROLL - PRODUCTION - VIDEOS
 // ================
 
+function observeProducts(entries) {
+  entries.forEach(entry => {
+    const el = entry.target;
+    const video = el.querySelector('video');
+    if (ProductionCarousel.getCurrentProduct()) return;
+
+    if (entry.isIntersecting) {
+      if (mobile) el.classList.add('focus');
+      if (video) {
+        video.play();
+      }
+    } else {
+      if (mobile) el.classList.remove('focus');
+      if (video) { 
+        video.pause();
+      }
+    }
+  });
+}
+
 function setupProductionObserver() {
-  const products = document.querySelectorAll('.product');
+  let elementsToObserve = [];
+  let observerOptions = { threshold: 0 };
 
-  console.log('Setting up observer for', products.length, 'products'); // DEBUG
+  if (mobile) {
+    elementsToObserve = Array.from(production.querySelectorAll('.product'));
+    observerOptions.root = null;
+    observerOptions.rootMargin = '-49% 0px -49% 0px';
+    console.log('Setting up observer for', elementsToObserve.length, 'mobile products in carousel');
+  } else {
+    elementsToObserve = Array.from(production.querySelectorAll('div:has(video)'));
+    observerOptions.root = null; // viewport
+    observerOptions.rootMargin = '0px';
+    console.log('Setting up observer for', elementsToObserve.length, 'videos on desktop');
+  }
 
-  if (products.length === 0) {
-    console.warn('No products found!');
+  if (elementsToObserve.length === 0) {
+    console.warn('No elements to observe!');
     return;
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const product = entry.target;
-
-      if (entry.isIntersecting) {
-        product.classList.add('focus');
-        const video = product.querySelector('video');
-        if (video) {
-          console.log('Playing video in', product.id); // DEBUG
-          video.play();
-        }
-      } else {
-        product.classList.remove('focus');
-        const video = product.querySelector('video');
-        if (video) {
-          video.pause();
-        }
-      }
-    });
-  }, {
-    rootMargin: '-49% 0px -49% 0px',
-    threshold: 0
-  });
-
-  products.forEach(product => {
-    observer.observe(product);
-  });
+  const observer = new IntersectionObserver(observeProducts, observerOptions);
+  elementsToObserve.forEach(el => observer.observe(el));
 }
 
 // =====================================================================================================================================
@@ -1016,6 +1028,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     // Pause all videos
     document.querySelectorAll('video').forEach(v => {
+      if (v.paused) return;
       pausedVideos.push(v);
       v.pause();
     });
