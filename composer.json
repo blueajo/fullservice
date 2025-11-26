@@ -22,6 +22,7 @@
         "drupal/core-project-message": "^10.5",
         "drupal/core-recommended": "^10.5",
         "drupal/devel": "^5.4",
+        "drupal/entity_clone": "^2.1@beta",
         "drupal/file_mdm": "^2.0",
         "drupal/image_effects": "^3.4",
         "drupal/mailsystem": "^4.5",

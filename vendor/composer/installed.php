@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'drupal/recommended-project',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'd4403ecdf90d18e847acfd07d8b34baf3eb3d297',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -529,6 +529,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'drupal/entity_clone' => array(
+            'pretty_version' => '2.1.0-beta1',
+            'version' => '2.1.0.0-beta1',
+            'reference' => '2.1.0-beta1',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/entity_clone',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'drupal/entity_reference_revisions' => array(
             'pretty_version' => '1.12.0',
             'version' => '1.12.0.0',
@@ -593,9 +602,9 @@
             'dev_requirement' => false,
         ),
         'drupal/recommended-project' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'd4403ecdf90d18e847acfd07d8b34baf3eb3d297',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
