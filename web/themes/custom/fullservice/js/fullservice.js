@@ -757,17 +757,17 @@ const ProductionCarousel = (() => {
 // SERVICE PROVIDERS
 // =====================================================================================================================================
 
-const serviceProvider = document.querySelectorAll(".service-provider");
-const serviceProviderPortraits = document.querySelectorAll(".portrait");
+// const serviceProvider = document.querySelectorAll(".service-provider");
+// const serviceProviderPortraits = document.querySelectorAll(".portrait");
 
-for (let i = 0; i < serviceProvider.length; i++) {
-  serviceProvider[i].addEventListener('mouseenter', () => {
-    serviceProviderPortraits[i].classList.add('visible');
-  });
-  serviceProvider[i].addEventListener('mouseleave', () => {
-    serviceProviderPortraits[i].classList.remove('visible');
-  });
-}
+// for (let i = 0; i < serviceProvider.length; i++) {
+//   serviceProvider[i].addEventListener('mouseenter', () => {
+//     serviceProviderPortraits[i].classList.add('visible');
+//   });
+//   serviceProvider[i].addEventListener('mouseleave', () => {
+//     serviceProviderPortraits[i].classList.remove('visible');
+//   });
+// }
 
 // =====================================================================================================================================
 // PITCHES

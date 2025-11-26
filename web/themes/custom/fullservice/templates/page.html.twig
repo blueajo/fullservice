@@ -169,17 +169,13 @@
                     <a class="service-provider-link" 
                        href="{{ provider.field_personal_link.0.uri }}" 
                        target="_blank">
-                      {{ provider.field_name.value }}
+                      {{- provider.field_name.value -}}
                     </a>
                   {% else %}
-                    {{ provider.field_name.value }}
+                    {{- provider.field_name.value -}}
                   {% endif %}
-                  
-                  {% if provider.field_birthplace.value %}
-                    (b. {{ provider.field_birthplace.value }})
-                  {% endif %}
-                  
-                  {{ desc.value }}
+
+                  {{- desc.value -}}
                 </p>
               {% else %}
                 <p>{{ desc.value }}</p>

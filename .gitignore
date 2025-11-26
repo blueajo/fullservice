@@ -1,1 +1,51 @@
-# (paste the .gitignore contents from above here)
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Local development
+/.env
+/.env.local
+/.env.*.local
+
+# Database dumps and backups
+dump.sql
+*.sql
+*.sql.gz
+*.sql.bz2
+
+# DDEV
+/.ddev/.global-config.yaml
+/.ddev/.environment.local.php
+
+# IDEs and editors
+/.vscode/
+/.idea/
+/*.sublime-workspace
+*.swp
+*~ 
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+
+# Composer binaries (if present)
+composer.phar
+
+# Node / build outputs (if you ever add frontend build)
+node_modules/
+dist/
+build/
+
+# Drupal specific
+/web/sites/*/files/
+/web/sites/*/private/
+/web/sites/*/settings.local.php
+/web/sites/*/services.local.yml
+
+# Config sync dir (if you keep it out of repo) - change if your sync is tracked
+# /config/sync/
+
+# Optional: ignore vendor if you choose to switch to composer-only model later
+# /vendor/
+

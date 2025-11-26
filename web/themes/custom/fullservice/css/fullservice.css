@@ -41,13 +41,6 @@
                        'footer';
 }
 
-/* Show baseline grid */
-html.show-grid body {
-  background-image: linear-gradient(to bottom, red 0, transparent 1px);
-  background-repeat: repeat-y;
-  background-size: 100% 1rem;
-}
-
 ::selection {
   color: var(--bg-color);
   background: black; /* WebKit/Blink Browsers */
@@ -110,6 +103,7 @@ html.show-grid body {
 @media (hover: hover) {
   a:hover {
     text-decoration: underline;
+    text-decoration-skip-ink: none;
     text-decoration-thickness: .18rem;
     text-underline-offset: .3rem;
     cursor: var(--dot-big-cursor);
@@ -157,7 +151,7 @@ p, ul, ol, a, input, #message {
 
 p.caption {
   font-size: 1.4rem;
-  line-height: calc(var(--caption-baselines) * 1rem);
+  line-height: calc(var(--caption-baselines) * 1.15rem);
   padding-top: var(--caption-baseline-shift);
   margin-bottom: var(--caption-baseline-push);
 }
@@ -211,6 +205,7 @@ a {
 
 a:active, a.current-page, a.active-link, #footer a.current-page:hover {
   text-decoration: underline;
+  text-decoration-skip-ink: none;
   text-decoration-thickness: .18rem;
   text-underline-offset: .3rem;
   cursor: var(--dot-big-cursor);
@@ -218,6 +213,10 @@ a:active, a.current-page, a.active-link, #footer a.current-page:hover {
 
 #footer a.current-page {
   text-decoration: none;
+}
+
+#index-link.current-page {
+  pointer-events: none;
 }
 
 /* HEADER/FOOTER --------------------------------------------------------------------------------- */
@@ -420,14 +419,18 @@ span.gap {
   max-height: calc(100vh - 5rem);
   overflow-y: scroll;
   overflow-x: visible;
-  width: 34.5rem;
+  width: min-content;
   scrollbar-width: none;
   -ms-overflow-style: none;
-
 }
 
 #credits::-webkit-scrollbar {
-    display: none;
+  display: none;
+}
+
+#credits .dot-container {
+  min-width: max-content;
+  padding-right: .15rem;
 }
 
 #credits-link {
@@ -435,7 +438,6 @@ span.gap {
   bottom: 0;
   right: 0;
   opacity: 1;
-  width: min-content;
 }
 
 #video-credits:hover #credits {
@@ -516,7 +518,7 @@ span.gap {
     width: 15vw;
     height: auto;
     margin-top: var(--top-margin);
-    padding-left: 1rem;
+    padding-left: var(--rg-margin);
     pointer-events: all;
     cursor: var(--plus-cursor);
     z-index: 200 !important;
@@ -721,6 +723,31 @@ p.checkbox-label {
   border-bottom: 2px solid black;
 }
 
+@keyframes autofill {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  /* This creates a large, inset shadow to cover the browser's default background */
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg-color) inset !important;
+  /* Delay the background-color transition by a very long time to prevent it from ever being seen */
+  /* transition: --var(--bg-color) 5000s ease-in-out 0s; */
+}
+
 input, #message {
   border-style: none;
   padding-top: var(--baseline-shift);
@@ -778,7 +805,7 @@ input {
 #info-page {
   grid-area: content;
   display: grid;
-  grid-template-columns: auto 70rem 10rem 30rem auto;
+  grid-template-columns: auto 60rem 20rem 30rem auto;
   grid-template-rows: min-content 1fr;
   grid-template-areas: '. of . li .'
                        '. . . . .';
@@ -796,7 +823,7 @@ input {
 }
 
 #office {
-  width: 70rem;
+  width: 60rem;
   grid-area: of;
   z-index: 1;
 }
@@ -843,6 +870,7 @@ input {
 
   #service-providers-page a {
     text-decoration: underline;
+    text-decoration-skip-ink: none;
     text-decoration-thickness: .18rem;
     text-underline-offset: .3rem;
   }
@@ -984,11 +1012,11 @@ input {
     margin-top: 1rem;
     padding-left: 2rem;
     padding-right: 2rem;
-    padding-bottom: 3rem;
+    padding-bottom: 3.5rem;
     position: sticky;
     top: 3.5rem;
     z-index: 1001;
-    height: 5rem;
+    height: min-content;
     background: linear-gradient(to bottom, 
                               #FAFFE4FF, 
                               #FAFFE4FF 73%, 
@@ -1098,25 +1126,22 @@ input {
   p.caption {
     margin-top: .4rem;
   }
+
+  #pitch-list .checkbox-label {
+    font-size: 1.4rem;
+    line-height: calc(var(--caption-baselines) * 1.15rem);
+  }
+
+  #pitch-list .checkmark {
+    margin-top: calc(var(--baseline-shift) + .2rem);
+    margin-left: 1px;
+    height: calc(1rem - 1px);
+    width: calc(1rem - 1px);
+  }
 }
 
 @media only screen and (max-device-width: 362px) {
   #index-page, #index-page.inactive { 
     height: calc(100vh - 12rem);
-  }
-}
-
-@media only screen and (max-device-width: 500px) {
-  :root {
-    /* Set baseline size */
-    font-size: calc(62.5% * (100vw / 500px)); /* 1rem = 10px */
-  }
-/* 
-  #pitch-list {
-    width: 30rem;
-  } */
-
-  .checkmark {
-    margin-top: .9rem;
   }
 }
