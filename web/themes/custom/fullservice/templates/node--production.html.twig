@@ -20,6 +20,14 @@
       <video loop muted playsinline
              src="{{ file_url(file.uri.value) }}"
              type="video/mp4"
+             {% if media.field_thumbnail|length %}
+               {% set thumb = media.field_thumbnail.0.entity %}
+               {% if thumb.field_media_image|length %}
+               {% set thumb_file = thumb.field_media_image.0.entity %}
+                 poster="{{ file_url(thumb_file.uri.value) }}"
+               {% endif %}
+             {% endif %}  
+             poster="{{ file_url(file.uri.value) }}"
              preload="metadata"></video>
     {% endif %}
   
@@ -34,13 +42,13 @@
   {% endif %}
 
   <p class="caption">
-    {{- node.title.value -}}
-    {%- if node.field_medium.value -%}
-      , <span class="category">{{ node.field_medium.value }}</span>
-    {%- endif -%}
-    {%- if node.field_year.value -%}
-      , {{ node.field_year.value }}
-    {%- endif -%}
+    {{- node.title.value -}},
+    {% if node.field_medium.value %}
+      <span class="category">{{ node.field_medium.value }},</span>
+    {% endif %}
+    {% if node.field_year.value %}
+      {{ node.field_year.value }}
+    {% endif %}
   </p>
 
 </div>

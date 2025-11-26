@@ -53,6 +53,13 @@
                      class="service-providers-video" 
                      loop muted 
                      src="{{ file_url(video_file.uri.value) }}" 
+                     {% if media.field_thumbnail|length %}
+                       {% set thumb = media.field_thumbnail.0.entity %}
+                       {% if thumb.field_media_image|length %}
+                       {% set thumb_file = thumb.field_media_image.0.entity %}
+                         poster="{{ file_url(thumb_file.uri.value) }}"
+                       {% endif %}
+                     {% endif %}  
                      type="video/mp4"></video>
             {% endif %}
           {% endif %}
@@ -70,6 +77,13 @@
                      class="pitches-video" 
                      loop muted 
                      src="{{ file_url(video_file.uri.value) }}" 
+                     {% if media.field_thumbnail|length %}
+                       {% set thumb = media.field_thumbnail.0.entity %}
+                       {% if thumb.field_media_image|length %}
+                       {% set thumb_file = thumb.field_media_image.0.entity %}
+                         poster="{{ file_url(thumb_file.uri.value) }}"
+                       {% endif %}
+                     {% endif %}  
                      type="video/mp4"></video>
             {% endif %}
           {% endif %}
@@ -87,6 +101,13 @@
                      class="info-video" 
                      loop muted 
                      src="{{ file_url(video_file.uri.value) }}" 
+                     {% if media.field_thumbnail|length %}
+                       {% set thumb = media.field_thumbnail.0.entity %}
+                       {% if thumb.field_media_image|length %}
+                       {% set thumb_file = thumb.field_media_image.0.entity %}
+                         poster="{{ file_url(thumb_file.uri.value) }}"
+                       {% endif %}
+                     {% endif %}  
                      type="video/mp4"></video>
             {% endif %}
           {% endif %}
@@ -110,6 +131,13 @@
           <video id="mobile-video" 
                  autoplay loop muted playsinline
                  src="{{ file_url(mobile_video.uri.value) }}" 
+                 {% if media.field_thumbnail|length %}
+                   {% set thumb = media.field_thumbnail.0.entity %}
+                   {% if thumb.field_media_image|length %}
+                   {% set thumb_file = thumb.field_media_image.0.entity %}
+                     poster="{{ file_url(thumb_file.uri.value) }}"
+                   {% endif %}
+                 {% endif %}  
                  type="video/mp4" 
                  preload="metadata"></video>
         {% endif %}
