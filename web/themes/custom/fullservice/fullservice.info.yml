@@ -12,6 +12,9 @@ libraries:
   - fullservice/global-styling
   - fullservice/flickity
   - fullservice/global-scripts
+
+regions:
+  production_gallery: Production Gallery
   
 # Disable specific CSS files from core/stable9
 stylesheets-remove:
