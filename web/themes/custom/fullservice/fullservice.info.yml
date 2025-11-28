@@ -12,6 +12,7 @@ libraries:
   - fullservice/global-styling
   - fullservice/flickity
   - fullservice/global-scripts
+  - fullservice/lazy-load
 
 regions:
   production_gallery: Production Gallery

@@ -24,7 +24,7 @@
 
   {# HOMEPAGE / INDEX #}
   <div id="index-page" class="page inactive">
-    <div id="index-cursor">
+    <div id='index-cursor'>
       {# Production videos #}
       {% if video_collection.field_production_videos %}
         {% for i in 0..7 %}
@@ -32,11 +32,40 @@
             {% set media = video_collection.field_production_videos[i].entity %}
             {% set video_file = media.field_media_video_file.entity %}
             {% if video_file %}
-              <video id="production-{{ i }}-video" 
-                     class="production-video" 
-                     loop muted 
-                     src="{{ file_url(video_file.uri.value) }}" 
-                     type="video/mp4"></video>
+              {# Get thumbnail - field_thumbnail references image_file media #}
+              {% set thumbnail_url = null %}
+              {% if media.field_thumbnail|length %}
+                {% set thumbnail_media = media.field_thumbnail.0.entity %}
+                {% if thumbnail_media and thumbnail_media.field_media_image|length %}
+                  {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
+                  {% if thumbnail_file %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+              
+              <div 
+                id="production-{{ i }}-video-container" 
+                class="lazy-video-container production-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Production video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="production-{{ i }}-video" 
+                  class="production-video"
+                  loop 
+                  muted 
+                  preload="none"
+                >
+                  <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+                </video>
+              </div>
             {% endif %}
           {% endif %}
         {% endfor %}
@@ -49,18 +78,40 @@
             {% set media = video_collection.field_service_provider_videos[i].entity %}
             {% set video_file = media.field_media_video_file.entity %}
             {% if video_file %}
-              <video id="service-providers-{{ i }}-video" 
-                     class="service-providers-video" 
-                     loop muted 
-                     src="{{ file_url(video_file.uri.value) }}" 
-                     {% if media.field_thumbnail|length %}
-                       {% set thumb = media.field_thumbnail.0.entity %}
-                       {% if thumb.field_media_image|length %}
-                       {% set thumb_file = thumb.field_media_image.0.entity %}
-                         poster="{{ file_url(thumb_file.uri.value) }}"
-                       {% endif %}
-                     {% endif %}  
-                     type="video/mp4"></video>
+              {# Get thumbnail #}
+              {% set thumbnail_url = null %}
+              {% if media.field_thumbnail|length %}
+                {% set thumbnail_media = media.field_thumbnail.0.entity %}
+                {% if thumbnail_media and thumbnail_media.field_media_image|length %}
+                  {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
+                  {% if thumbnail_file %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+              
+              <div 
+                id="service-providers-{{ i }}-video-container" 
+                class="lazy-video-container service-providers-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Service providers video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="service-providers-{{ i }}-video" 
+                  class="service-providers-video"
+                  loop 
+                  muted 
+                  preload="none"
+                >
+                  <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+                </video>
+              </div>
             {% endif %}
           {% endif %}
         {% endfor %}
@@ -73,18 +124,40 @@
             {% set media = video_collection.field_pitches_videos[i].entity %}
             {% set video_file = media.field_media_video_file.entity %}
             {% if video_file %}
-              <video id="pitches-{{ i }}-video" 
-                     class="pitches-video" 
-                     loop muted 
-                     src="{{ file_url(video_file.uri.value) }}" 
-                     {% if media.field_thumbnail|length %}
-                       {% set thumb = media.field_thumbnail.0.entity %}
-                       {% if thumb.field_media_image|length %}
-                       {% set thumb_file = thumb.field_media_image.0.entity %}
-                         poster="{{ file_url(thumb_file.uri.value) }}"
-                       {% endif %}
-                     {% endif %}  
-                     type="video/mp4"></video>
+              {# Get thumbnail #}
+              {% set thumbnail_url = null %}
+              {% if media.field_thumbnail|length %}
+                {% set thumbnail_media = media.field_thumbnail.0.entity %}
+                {% if thumbnail_media and thumbnail_media.field_media_image|length %}
+                  {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
+                  {% if thumbnail_file %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+              
+              <div 
+                id="pitches-{{ i }}-video-container" 
+                class="lazy-video-container pitches-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Pitches video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="pitches-{{ i }}-video" 
+                  class="pitches-video"
+                  loop 
+                  muted 
+                  preload="none"
+                >
+                  <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+                </video>
+              </div>
             {% endif %}
           {% endif %}
         {% endfor %}
@@ -97,25 +170,46 @@
             {% set media = video_collection.field_info_videos[i].entity %}
             {% set video_file = media.field_media_video_file.entity %}
             {% if video_file %}
-              <video id="info-{{ i }}-video" 
-                     class="info-video" 
-                     loop muted 
-                     src="{{ file_url(video_file.uri.value) }}" 
-                     {% if media.field_thumbnail|length %}
-                       {% set thumb = media.field_thumbnail.0.entity %}
-                       {% if thumb.field_media_image|length %}
-                       {% set thumb_file = thumb.field_media_image.0.entity %}
-                         poster="{{ file_url(thumb_file.uri.value) }}"
-                       {% endif %}
-                     {% endif %}  
-                     type="video/mp4"></video>
+              {# Get thumbnail #}
+              {% set thumbnail_url = null %}
+              {% if media.field_thumbnail|length %}
+                {% set thumbnail_media = media.field_thumbnail.0.entity %}
+                {% if thumbnail_media and thumbnail_media.field_media_image|length %}
+                  {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
+                  {% if thumbnail_file %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+              
+              <div 
+                id="info-{{ i }}-video-container" 
+                class="lazy-video-container info-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Info video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="info-{{ i }}-video" 
+                  class="info-video"
+                  loop 
+                  muted 
+                  preload="none"
+                >
+                  <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+                </video>
+              </div>
             {% endif %}
           {% endif %}
         {% endfor %}
       {% endif %}
-      
     </div>
-    
+
     {# Invisible clickable areas #}
     <div id="service-providers-area" class="link-area"></div>
     <div id="production-area" class="link-area"></div>
@@ -124,22 +218,42 @@
     
     {# Mobile video #}
     <div id="mobile-area">
+    
       {% if video_collection.field_mobile_video.entity %}
         {% set media = video_collection.field_mobile_video.entity %}
-        {% set mobile_video = media.field_media_video_file.entity %}
-        {% if mobile_video %}
-          <video id="mobile-video" 
-                 autoplay loop muted playsinline
-                 src="{{ file_url(mobile_video.uri.value) }}" 
-                 {% if media.field_thumbnail|length %}
-                   {% set thumb = media.field_thumbnail.0.entity %}
-                   {% if thumb.field_media_image|length %}
-                   {% set thumb_file = thumb.field_media_image.0.entity %}
-                     poster="{{ file_url(thumb_file.uri.value) }}"
-                   {% endif %}
-                 {% endif %}  
-                 type="video/mp4" 
-                 preload="metadata"></video>
+        {% set video_file = media.field_media_video_file.entity %}
+        {% if video_file %}
+          {# Get thumbnail #}
+          {% set thumbnail_url = null %}
+          {% if media.field_thumbnail|length %}
+            {% set thumbnail_media = media.field_thumbnail.0.entity %}
+            {% if thumbnail_media and thumbnail_media.field_media_image|length %}
+              {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
+              {% if thumbnail_file %}
+                {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
+              {% endif %}
+            {% endif %}
+          {% endif %}
+          <div 
+            id="mobile-video-container" 
+            class="lazy-video-container"
+          >
+            {% if thumbnail_url %}
+              <img 
+                src="{{ thumbnail_url }}" 
+                class="video-thumbnail"
+              >
+            {% endif %}
+            
+            <video 
+              id="mobile-video" 
+              loop 
+              muted 
+              preload="none"
+            >
+              <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+            </video>
+          </div>
         {% endif %}
       {% endif %}
     </div>

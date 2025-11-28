@@ -1,0 +1,28 @@
+{% if items %}
+  {% for item in items %}
+    {% set image_entity = item.entity %}
+    {% if image_entity %}
+      {# Get image URIs for full and thumbnail versions #}
+      {% set full_uri = image_entity.uri.value %}
+      {% set full_url = file_url(full_uri) %}
+      
+      {# Generate thumbnail URL (create "thumbnail_blur" image style in Drupal) #}
+      {% set thumb_url = full_uri|image_style('thumbnail_blur') %}
+      
+      {# Alternative: use existing thumbnail style if no blur style exists #}
+      {# set thumb_url = full_uri|image_style('thumbnail') #}
+      
+      <img 
+        class="lazy-image lazy-loading"
+        src="{{ thumb_url }}"
+        data-src="{{ full_url }}"
+        {% if item.alt %}
+          alt="{{ item.alt }}"
+        {% endif %}
+        width="{{ image_entity.width.value }}"
+        height="{{ image_entity.height.value }}"
+        loading="lazy"
+      >
+    {% endif %}
+  {% endfor %}
+{% endif %}

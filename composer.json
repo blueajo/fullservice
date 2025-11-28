@@ -26,6 +26,7 @@
         "drupal/file_mdm": "^2.0",
         "drupal/image_effects": "^3.4",
         "drupal/mailsystem": "^4.5",
+        "drupal/media_thumbnails_video": "^2.0",
         "drupal/paragraphs": "^1.15",
         "drupal/reroute_email": "^2.2",
         "drupal/smtp": "^1.4",

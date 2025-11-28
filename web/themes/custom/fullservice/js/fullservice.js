@@ -1,3 +1,5 @@
+// Drupal.behaviors = {};
+
 // =====================================================================================================================================
 // START UP
 // =====================================================================================================================================
@@ -10,6 +12,13 @@ let scrollInterval = null;
 document.addEventListener("DOMContentLoaded", (event) => {
   if (screen.width <= 768) {
     mobile = true;
+    const mobileVideo = document.querySelector('#mobile-video');
+    // Play as soon as the lazy loader has loaded the video
+    mobileVideo.addEventListener('loadeddata', () => {
+      mobileVideo.play().catch(err => {
+        console.warn('Mobile autoplay failed:', err);
+      });
+    });
     openPage('index');
     if (location.hash) {
       history.pushState("", document.title, window.location.pathname);
@@ -17,6 +26,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
     setTimeout(setupProductionObserver, 500);
   } else {
+    showOnMouseMove('#index-cursor');
+    document.querySelectorAll('#production-page video').forEach(v => {
+      v.autoplay = false;
+      v.removeAttribute('autoplay');
+      v.load();
+      v.pause();
+      v.currentTime = 0;
+    });
     if (location.hash) {
       openPage(location.hash.substring(1));
     } else {
@@ -30,78 +47,6 @@ window.addEventListener('hashchange', function () {
   closePage();
   openPage(section);
 });
-
-// =====================================================================================================================================
-// VIDEO PRELOAD
-// =====================================================================================================================================
-
-const videoCache = new Map();
-let videosLoaded = false;
-
-// Preload all videos and track their state
-function preloadIndexVideos() {
-  const videos = document.querySelectorAll('#index-page video');
-
-  videos.forEach(video => {
-    const src = video.src || video.querySelector('source')?.src;
-    if (src) {
-      videoCache.set(video, {
-        src: src,
-        loaded: false,
-        loading: false
-      });
-
-      // Add load event listener
-      video.addEventListener('loadeddata', () => {
-        const cache = videoCache.get(video);
-        if (cache) {
-          cache.loaded = true;
-          cache.loading = false;
-        }
-      });
-
-      // Force preload
-      video.load();
-    }
-  });
-}
-
-// Reload a specific video if needed
-function ensureVideoLoaded(video) {
-  if (!video) return Promise.resolve();
-
-  const cache = videoCache.get(video);
-
-  // Check if video needs reloading (Safari unloaded it)
-  if (video.readyState === 0 || video.networkState === 3) {
-    console.log('Video needs reload:', video.id);
-
-    if (cache && !cache.loading) {
-      cache.loading = true;
-      cache.loaded = false;
-
-      return new Promise((resolve) => {
-        const onLoaded = () => {
-          cache.loaded = true;
-          cache.loading = false;
-          video.removeEventListener('loadeddata', onLoaded);
-          resolve();
-        };
-
-        video.addEventListener('loadeddata', onLoaded);
-        video.load();
-
-        // Timeout fallback
-        setTimeout(() => {
-          video.removeEventListener('loadeddata', onLoaded);
-          resolve();
-        }, 3000);
-      });
-    }
-  }
-
-  return Promise.resolve();
-}
 
 // =====================================================================================================================================
 // GLOBAL VARIABLES
@@ -124,21 +69,22 @@ function remToPx(remValue) {
 
 // Index cursor objects
 const videoDot = document.getElementById('index-cursor');
-const allVideos = videoDot.querySelectorAll("video");
+const allVideos = videoDot.querySelectorAll(".lazy-video-container");
 let activeLink = null;
 const quadrants = [['production', 'pitches'],
 ['service-providers', 'info']];
 let cursorInterval = null;
 // Cursor object
-var mouseX = window.innerWidth / 2,
-  mouseY = window.innerHeight / 2;
+var mouseX = (window.innerWidth - remToPx(45)) / 2,
+  mouseY = (window.innerHeight - remToPx(45)) / 2;
 
 var indexCursor = {
   el: document.getElementById('index-cursor'),
-  x: window.innerWidth / 2,
-  y: window.innerHeight / 2,
+  x: mouseX,
+  y: mouseY,
   quadrant: [0, 0],
   curVideo: null,
+  curContainer: null,
   update: async function () {
 
     // LOCATION OF FOLLOWER
@@ -150,39 +96,29 @@ var indexCursor = {
     this.quadrant[0] = (this.x / window.innerWidth) > .5 ? 1 : 0;
     this.quadrant[1] = (this.y / window.innerHeight) > .5 ? 1 : 0;
     const category = quadrants[this.quadrant[0]][this.quadrant[1]];
-    const video = document.getElementById(category + '-' + videoNumber + '-video');
 
-    if (this.curVideo != video) {
+    const videoContainer = document.getElementById(category + '-' + videoNumber + '-video-container');
+    const video = videoContainer ? videoContainer.querySelector('video') : null;
 
-      // PAUSE THE CURRENT VIDEO
-      if (this.curVideo && this.curVideo.classList.contains("active")) {
-        this.curVideo.classList.remove("active");
+    if (this.curContainer != videoContainer) {
+
+      if (this.curContainer && this.curContainer.classList.contains("active")) {
+        this.curContainer.classList.remove("active");
         this.curVideo.pause();
       }
 
-      // PLAY THE NEW VIDEO (with reload check)
-      if (video && !video.classList.contains("active")) {
-        video.classList.add("active");
-
-        // Ensure video is loaded before playing
-        await ensureVideoLoaded(video);
-
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log("Video play prevented:", error);
-          });
-        }
+      if (videoContainer && !videoContainer.classList.contains("active")) {
+        videoContainer.classList.add("active");
+        video.play(); // Lazy loader will handle thumbnail hiding
       }
-
-      this.curVideo = video;
-
     }
 
+    this.curVideo = video;
+    this.curContainer = videoContainer;
     this.el.style = 'transform: translate3d(' + this.x + 'px,' + this.y + 'px, 0);';
-
   }
 };
+
 
 function lerp(start, end, amt) {
   return (1 - amt) * start + amt * end;
@@ -257,6 +193,29 @@ for (let i = 0; i < infoLinks.length; i++) {
   });
 }
 
+function showOnMouseMove(selector) {
+  const elements = document.querySelectorAll(selector);
+
+  // Initially hide all matching elements
+  elements.forEach(el => {
+    el.style.opacity = 0;
+    el.style.transition = 'opacity 0.3s ease';
+  });
+
+  // Mouse move handler
+  function handleMouseMove() {
+    elements.forEach(el => {
+      el.style.opacity = 1;
+    });
+
+    // Remove listener after first mouse move
+    window.removeEventListener('mousemove', handleMouseMove);
+  }
+
+  // Listen for mouse move anywhere on the window
+  window.addEventListener('mousemove', handleMouseMove);
+}
+
 // =====================================================================================================================================
 // NAV
 // =====================================================================================================================================
@@ -283,6 +242,9 @@ function closePage() {
   } else if (section == 'production') {
     if (ProductionCarousel.initialized()) {
       ProductionCarousel.deinitialize();
+      document.querySelectorAll('#production-page video').forEach(v => {
+        v.addEventListener('play', () => console.log('Video started:', v.id));
+      });
     }
     const productionVideos = production.querySelectorAll('video');
     for (let i = 0; i < productionVideos.length; i++) {
@@ -304,15 +266,6 @@ function openPage(section) {
     videoCredits.classList.add('active');
     document.getElementById('header').classList.add('index-header');
     if (!mobile) {
-      // Preload videos if not already done
-      if (!videosLoaded) {
-        preloadIndexVideos();
-        videosLoaded = true;
-      } else {
-        // Reload videos that may have been unloaded
-        const videos = document.querySelectorAll('#index-page video');
-        videos.forEach(video => ensureVideoLoaded(video));
-      }
       cursorInterval = setInterval(indexFollow, 1000 / 60);
     }
   }
@@ -321,7 +274,6 @@ function openPage(section) {
   }
   if (section == 'production' && !mobile) {
     ProductionCarousel.init();
-    setTimeout(setupProductionObserver, 500);
   }
 }
 
@@ -425,6 +377,31 @@ for (let i = 0; i < linkAreas.length; i++) {
 // PRODUCTION
 // =====================================================================================================================================
 
+function scaleMedia(media, w, h, container) {
+  let heightRatio = null;
+  let widthRatio = null;
+  if (mobile) {
+    heightRatio = (window.innerHeight * 0.5) / h;
+    widthRatio = (window.innerWidth - remToPx(4)) / w;
+  } else {
+    heightRatio = (window.innerHeight - remToPx(18)) / h;
+    widthRatio = (0.8 * window.innerWidth) / w;
+  }
+  const scaleRatio = Math.min(heightRatio, widthRatio);
+
+  if (container) {
+    // For videos, scale the container
+    container.style.width = `${w * scaleRatio}px`;
+    const caption = container.parentElement.querySelector('p');
+    if (caption) caption.style.width = `${w * scaleRatio}px`;
+  } else {
+    // For images, scale directly
+    media.style.width = `${w * scaleRatio}px`;
+    const caption = media.parentElement.querySelector('p');
+    if (caption) caption.style.width = `${w * scaleRatio}px`;
+  }
+}
+
 // =======================
 // Production Carousel
 // =======================
@@ -464,6 +441,7 @@ const ProductionCarousel = (() => {
   // Carousel Initialization
   // =======================
   function createCarousel() {
+    console.log('Creating production carousel');
     // Destroy any existing instance first
     if (state.flkty) {
       state.flkty.destroy();
@@ -478,7 +456,7 @@ const ProductionCarousel = (() => {
       prevNextButtons: false,
       cellSelector: ".product",
       freeScroll: true,
-      lazyLoad: false,           // Disable lazy loading
+      lazyLoad: true,           // Disable lazy loading
       contain: false,            // Allow infinite scroll
       percentPosition: false,     // Use pixel positioning
       initialIndex: 3
@@ -496,7 +474,10 @@ const ProductionCarousel = (() => {
       else openProduct(cellElement, cellIndex);
     });
 
-    console.log('flkty initialized');
+    setTimeout(() => {
+      console.log('flkty initialized');
+      production.classList.add('flickity-ready');
+    }, "200");
   }
 
   function initialized() {
@@ -519,6 +500,7 @@ const ProductionCarousel = (() => {
   // Product Controls
   // =======================
   function openProduct(cellElement, cellIndex) {
+    console.log("openProduct called:", cellElement.id);
     temporarilyPauseScroll(750);
     if (!state.currOpenProduct && state.ticking) cancelScroll();
 
@@ -526,23 +508,31 @@ const ProductionCarousel = (() => {
       closeProduct();
 
       cellElement.classList.add("open");
-      let productMedia = cellElement.querySelector("img, video");
+
+      // UPDATED: Handle both images and videos inside lazy-video-container
+      let productMedia = cellElement.querySelector("img.lazy-image, img.lazy-loaded, .lazy-video-container video");
       let productCaption = cellElement.querySelector("p");
 
-      if (productMedia.tagName === 'VIDEO') {
+      // UPDATED: Check if it's a video inside lazy-video-container
+      if (productMedia && productMedia.tagName === 'VIDEO') {
+        const videoContainer = productMedia.closest('.lazy-video-container');
         productMedia.currentTime = 0;
-        productMedia.play();
+        if (videoContainer.classList.contains('video-ready')) {
+          productMedia.play(); // Lazy loader handles thumbnail hiding
+        }
+
+        const poster = videoContainer.querySelector('img.video-thumbnail');
+        // Get dimensions from poster image
+        let w = poster.naturalWidth;
+        let h = poster.naturalHeight;
+        scaleMedia(productMedia, w, h, videoContainer);
+      } else if (productMedia && productMedia.tagName === 'IMG') {
+        let w = productMedia.naturalWidth;
+        let h = productMedia.naturalHeight;
+        scaleMedia(productMedia, w, h);
       }
 
-      let w = productMedia.naturalWidth || productMedia.videoWidth;
-      let h = productMedia.naturalHeight || productMedia.videoHeight;
-
-      const heightRatio = (window.innerHeight - remToPx(18)) / h;
-      const widthRatio = (0.8 * window.innerWidth) / w;
-      const scaleRatio = Math.min(heightRatio, widthRatio);
-
-      productMedia.style.width = `${w * scaleRatio}px`;
-      productCaption.style.width = `${w * scaleRatio}px`;
+      productCaption.style.width = w;
 
       state.flkty.reposition();
       state.flkty.selectCell(cellIndex, true, false);
@@ -563,9 +553,19 @@ const ProductionCarousel = (() => {
     const product = state.currOpenProduct;
     product.classList.remove("open");
 
-    const productMedia = product.querySelector("img, video");
-    // if (productMedia.tagName === 'VIDEO') productMedia.pause();
-    productMedia.style.width = "15vw";
+    // UPDATED: Handle both images and videos
+    const productMedia = product.querySelector("img.lazy-image, img.lazy-loaded, .lazy-video-container video");
+    const videoContainer = product.querySelector('.lazy-video-container');
+
+    if (productMedia && productMedia.tagName === 'VIDEO') {
+      productMedia.pause();
+      videoContainer.classList.remove('video-playing');
+      if (videoContainer) {
+        videoContainer.style.width = "15vw";
+      }
+    } else if (productMedia && productMedia.tagName === 'IMG') {
+      productMedia.style.width = "15vw";
+    }
 
     state.flkty.reposition();
     state.currOpenProduct = null;
@@ -741,6 +741,8 @@ const ProductionCarousel = (() => {
   // =======================
   return {
     init() {
+      console.log('ProductionCarousel.init called');
+      console.trace(); 
       createCarousel();
       setupArrowControls();
       setupScrollHandling();
@@ -976,18 +978,24 @@ observer2.observe(document.getElementById('mobile-video'));
 function observeProducts(entries) {
   entries.forEach(entry => {
     const el = entry.target;
-    const video = el.querySelector('video');
+
+    // UPDATED: Find video inside lazy-video-container
+    const videoContainer = el.querySelector('.lazy-video-container');
+    const video = videoContainer ? videoContainer.querySelector('video') : null;
+
     if (ProductionCarousel.getCurrentProduct()) return;
 
     if (entry.isIntersecting) {
-      if (mobile) el.classList.add('focus');
+      el.classList.add('focus');
       if (video) {
-        video.play();
+        video.play(); // Lazy loader handles thumbnail
+        videoContainer.classList.add('video-playing');
       }
     } else {
-      if (mobile) el.classList.remove('focus');
-      if (video) { 
+      el.classList.remove('focus');
+      if (video) {
         video.pause();
+        videoContainer.classList.remove('video-playing');
       }
     }
   });
@@ -998,24 +1006,55 @@ function setupProductionObserver() {
   let observerOptions = { threshold: 0 };
 
   if (mobile) {
+    setupMobileProduction();
+    production.classList.add('flickity-ready');
     elementsToObserve = Array.from(production.querySelectorAll('.product'));
     observerOptions.root = null;
     observerOptions.rootMargin = '-49% 0px -49% 0px';
-    console.log('Setting up observer for', elementsToObserve.length, 'mobile products in carousel');
-  } else {
-    elementsToObserve = Array.from(production.querySelectorAll('div:has(video)'));
-    observerOptions.root = null; // viewport
-    observerOptions.rootMargin = '0px';
-    console.log('Setting up observer for', elementsToObserve.length, 'videos on desktop');
+    const observer = new IntersectionObserver(observeProducts, observerOptions);
+    elementsToObserve.forEach(el => observer.observe(el));
   }
+}
 
-  if (elementsToObserve.length === 0) {
-    console.warn('No elements to observe!');
-    return;
-  }
+production.querySelectorAll('.lazy-video-container').forEach(container => {
+  const video = container.querySelector('video');
+  if (!video) return;
 
-  const observer = new IntersectionObserver(observeProducts, observerOptions);
-  elementsToObserve.forEach(el => observer.observe(el));
+  container.addEventListener('mouseenter', () => {
+    if (ProductionCarousel.getCurrentProduct()) return;
+    video.play();
+    container.classList.add('video-playing');
+  });
+
+  container.addEventListener('mouseleave', () => {
+    if (ProductionCarousel.getCurrentProduct()) return;
+    video.pause();
+    container.classList.remove('video-playing');
+  });
+});
+
+function setupMobileProduction() {
+  let products = production.querySelectorAll('.product');
+  products.forEach(product => {
+    let productMedia = product.querySelector("img.lazy-image, img.lazy-loaded, .lazy-video-container video");
+    let productCaption = product.querySelector("p");
+
+    // UPDATED: Check if it's a video inside lazy-video-container
+    if (productMedia && productMedia.tagName === 'VIDEO') {
+      const videoContainer = productMedia.closest('.lazy-video-container');
+      const poster = videoContainer.querySelector('img.video-thumbnail');
+      // Get dimensions from poster image
+      let w = poster.naturalWidth;
+      let h = poster.naturalHeight;
+      scaleMedia(productMedia, w, h, videoContainer);
+      productCaption.style.width = w;
+    } else if (productMedia && productMedia.tagName === 'IMG') {
+      let w = productMedia.naturalWidth;
+      let h = productMedia.naturalHeight;
+      scaleMedia(productMedia, w, h);
+      productCaption.style.width = w;
+    }
+  });
 }
 
 // =====================================================================================================================================
@@ -1046,14 +1085,6 @@ document.addEventListener('visibilitychange', () => {
     // Resume based on current page
     const section = document.querySelector('.page:not(.inactive)')?.id.slice(0, -5);
     if (section === 'index' && !mobile) {
-      const videos = document.querySelectorAll('#index-page video');
-      videos.forEach(video => {
-        // Mark all as potentially needing reload
-        const cache = videoCache.get(video);
-        if (cache) {
-          cache.loaded = false;
-        }
-      });
       cursorInterval = setInterval(indexFollow, 1000 / 60);
     } else if (section === 'info' && !mobile) {
       cursorInterval = setInterval(infoFollow, 1000 / 60);
@@ -1073,16 +1104,4 @@ document.addEventListener('visibilitychange', () => {
 
 window.addEventListener('error', (event) => {
   console.error('Global error caught:', event.error);
-
-  // Attempt recovery
-  try {
-    // Reset to safe state
-    const section = document.querySelector('.page:not(.inactive)')?.id.slice(0, -5);
-    if (section === 'production' && ProductionCarousel.initialized()) {
-      ProductionCarousel.deinitialize();
-      setTimeout(() => ProductionCarousel.init(), 100);
-    }
-  } catch (recoveryError) {
-    console.error('Recovery failed:', recoveryError);
-  }
 });

@@ -6,6 +6,17 @@ flickity:
   js:
     js/flickity.js: {}
 
+lazy-load:
+  version: 1.0
+  js:
+    js/lazy-load.js: {}
+  css:
+    theme:
+      css/lazy-load.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 # Global styling loaded on every page
 global-styling:
   css:

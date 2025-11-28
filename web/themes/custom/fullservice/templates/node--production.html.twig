@@ -1,10 +1,8 @@
-{%
-  set classes = [
-    'product',
-    'node',
-    'node--type-' ~ node.bundle()|clean_class,
-  ]
-%}
+{% set classes = [
+  'product',
+  'node',
+  'node--type-' ~ node.bundle()|clean_class,
+] %}
 
 {# Hide the title - it's used in caption instead #}
 {% set title_prefix = null %}
@@ -14,30 +12,50 @@
   
   {# VIDEO takes precedence #}
   {% if node.field_video|length %}
+  
     {% set media = node.field_video.0.entity %}
     {% if media.field_media_video_file|length %}
-      {% set file = media.field_media_video_file.0.entity %}
-      <video loop muted playsinline
-             src="{{ file_url(file.uri.value) }}"
-             type="video/mp4"
-             {% if media.field_thumbnail|length %}
-               {% set thumb = media.field_thumbnail.0.entity %}
-               {% if thumb.field_media_image|length %}
-               {% set thumb_file = thumb.field_media_image.0.entity %}
-                 poster="{{ file_url(thumb_file.uri.value) }}"
-               {% endif %}
-             {% endif %}  
-             poster="{{ file_url(file.uri.value) }}"
-             preload="metadata"></video>
+      {% set video_file = media.field_media_video_file.0.entity %}
+      {# Get thumbnail - field_thumbnail references image_file media #}
+      {% set thumbnail_url = null %}
+      {% if media.field_thumbnail|length %}
+        {% set thumbnail_media = media.field_thumbnail.0.entity %}
+        {% if thumbnail_media and thumbnail_media.field_media_image|length %}
+          {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
+          {% if thumbnail_file %}
+            {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
+          {% endif %}
+        {% endif %}
+      {% endif %}    
+      
+      <div class="lazy-video-container">
+        {% if thumbnail_url %}
+          <img 
+            class="video-thumbnail" 
+            src="{{ thumbnail_url }}" 
+          >
+        {% endif %}
+        
+        <video loop muted playsinline preload="none">
+          <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+        </video>
+      </div>
     {% endif %}
   
   {# FALLBACK: IMAGE #}
   {% elseif node.field_image|length %}
     {% set media = node.field_image.0.entity %}
     {% if media.field_media_image|length %}
-      {% set file = media.field_media_image.0.entity %}
-      <img src="{{ file_url(file.uri.value) }}"
-           alt="{{ media.field_media_image.alt|default(label) }}">
+      {% set image_file = media.field_media_image.0.entity %}
+      {% set full_url = file_url(image_file.uri.value) %}
+      {% set thumb_url = image_file.uri.value|image_style('thumbnail_blur') %}
+      
+      <img 
+        class="lazy-image lazy-loading"
+        src="{{ thumb_url }}"
+        data-src="{{ full_url }}"
+        alt="{{ media.field_media_image.0.alt|default(node.title.value) }}"
+      >
     {% endif %}
   {% endif %}
 

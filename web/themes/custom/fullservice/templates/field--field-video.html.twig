@@ -1,0 +1,49 @@
+{% if items %}
+  {% for item in items %}
+    {% set media = item.entity %}
+    
+    {# Get video file #}
+    {% if media.field_media_video_file %}
+      {% set video_file = media.field_media_video_file.entity %}
+      {% set video_url = file_url(video_file.uri.value) %}
+      {{ dump(media) }}
+      
+      {# Get thumbnail - it's a media reference to image_file #}
+      {% set thumbnail_url = null %}
+      {% if media.field_thumbnail %}
+        
+        {% set thumbnail_media = media.field_thumbnail.entity %}
+        {% if thumbnail_media and thumbnail_media.field_media_image %}
+          {% set thumbnail_file = thumbnail_media.field_media_image.entity %}
+          {% if thumbnail_file %}
+            {% set thumbnail_url = file_url(thumbnail_file.uri.value) %}
+          {% endif %}
+        {% endif %}
+      {% endif %}
+      
+      {# Video container with lazy loading #}
+      <div class="lazy-video-container">
+        {# Thumbnail overlay - shown first #}
+        {% if thumbnail_url %}
+          <img 
+            src="{{ thumbnail_url }}" 
+            class="video-thumbnail"
+            loading="eager"
+          >
+          <div class="video-play-button" aria-hidden="true"></div>
+        {% endif %}
+        
+        {# Actual video element - initially hidden behind thumbnail #}
+        <video 
+          loop 
+          muted 
+          playsinline 
+          preload="none"
+        >
+          <source data-src="{{ video_url }}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endif %}

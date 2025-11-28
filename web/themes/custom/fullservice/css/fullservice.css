@@ -316,35 +316,55 @@ span.gap {
   display: none;
 }
 
-#index-cursor video {
-  object-fit: contain;
+#index-cursor .lazy-video-container {
   display: none;
   width: 45rem;
   height: 45rem;
   pointer-events: none;
 }
 
-#index-cursor video.production-video {
-  object-position: left top;
+#index-cursor video {
+  width: 45rem;
+  height: 45rem;
+  pointer-events: none;
+}
+
+.production-video-container {
   transform: translate(.5rem, -4.5rem);
 }
 
-#index-cursor video.service-providers-video {
-  object-position: right top;
+.production-video-container video,
+.production-video-container .video-thumbnail {
+  object-position: left top;
+}
+
+.service-providers-video-container {
   transform: translate(-45.5rem, -4.5rem);
 }
 
-#index-cursor video.pitches-video {
-  object-position: left bottom;
-  transform: translate(.5rem, -50.5rem);
+.service-providers-video-container video,
+.service-providers-video-container .video-thumbnail {
+  object-position: right top;
 }
 
-#index-cursor video.info-video {
-  object-position: right bottom;
+.pitches-video-container {
+  transform: translate(.5rem, -50.5rem);
+}
+.pitches-video-container video,
+.pitches-video-container .video-thumbnail {
+  object-position: left bottom;
+}
+
+.info-video-container {
   transform: translate(-45.5rem, -50.5rem);
 }
 
-#index-cursor.active, #info-cursor.active, #index-cursor video.active {
+.info-video-container video,
+.info-video-container .video-thumbnail {
+  object-position: right bottom;
+}
+
+#index-cursor.active, #info-cursor.active, #index-cursor .lazy-video-container.active {
   display: block;
 }
 
@@ -455,6 +475,12 @@ span.gap {
    width: 100vw;
    height: 100%;
    grid-area: content;
+   opacity: 0;
+}
+
+#production-page.flickity-ready {
+  opacity: 1;
+  transition: opacity 0.4s ease;
 }
 
 .flickity-viewport {
@@ -536,23 +562,77 @@ span.gap {
     cursor: var(--minus-cursor);
 }
 
-.product img:hover, .product video:hover {
-    pointer-events: auto;
-    opacity: 100%; 
-    filter: grayscale(0);
+.product img,
+.product video {
+  object-fit: contain;
+  pointer-events: auto;
+  flex-grow: 1;
+  width: 100%;
+  height: auto;
 }
 
-.product img, .product video {
-    object-fit: contain;
-    opacity: 60%;
-    filter: grayscale(1);
-    mix-blend-mode: multiply;
-    pointer-events: auto;
-    flex-grow: 1;
-    width: 100%;
-    height: auto;
-    transition: opacity 0.4s ease, filter 0.4s ease;
+.product img.lazy-image.lazy-loading {
+  filter: blur(5px) grayscale(1);
+  opacity: 60%;
+  mix-blend-mode: multiply;
+  will-change: transform, filter, opacity;
 }
+
+.product img.lazy-image.lazy-loading:hover {
+  filter: blur(5px) grayscale(0);
+  opacity: 100%;
+  mix-blend-mode: normal;
+  transition: opacity 0.6s ease, filter 0.6s ease;
+}
+
+.product img.lazy-loaded {
+    filter: blur(0) grayscale(1);
+    opacity: 60%;
+    mix-blend-mode: multiply;
+}
+
+.product img.lazy-loaded:hover, .product video:hover {
+    pointer-events: auto;
+    opacity: 100%; 
+    filter: blur(0) grayscale(0);
+    transition: opacity 0.6s ease, filter 0.6s ease;
+}
+
+#production-page .product img.video-thumbnail {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0.6;
+  filter: blur(5px) grayscale(1);
+  mix-blend-mode: multiply;
+  transition: opacity 0.6s ease, filter 0.6s ease;
+  will-change: transform, filter, opacity;
+}
+
+#production-page .product:hover img.video-thumbnail {
+  opacity: 1;
+  filter: blur(5px) grayscale(0);
+  mix-blend-mode: normal;
+}
+
+#production-page .product img.video-thumbnail.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#production-page .product .lazy-video-container.video-ready video {
+  opacity: .6;
+  mix-blend-mode: multiply;
+  filter: blur(0) grayscale(1);
+}
+
+#production-page .product .lazy-video-container.video-playing video {
+  opacity: 1;
+  mix-blend-mode: normal;
+  filter: blur(0) grayscale(0);
+  transition: opacity 0.6s ease, filter 0.6s ease;
+}
+
 
 .product p {
     grid-area: "caption";
@@ -561,9 +641,9 @@ span.gap {
     margin-top: 0;
 }
 
-.product.open img, .product.open video {
+.product.open img.lazy-loaded, .product.open video {
     opacity: 100%; 
-    filter: grayscale(0);
+    filter: blur(0) grayscale(0);
 }
 
 .product.open p {
@@ -985,6 +1065,18 @@ input {
     min-width: 0;
     min-height: 0;
   }
+  #block-fullservice-views-block-production-gallery-block-1 > div {
+    display: grid;
+      grid-template-columns: 100vw;
+      grid-auto-rows: auto;
+      justify-items: center;
+      gap: 5rem;
+      height: auto;
+      padding-top: 7rem;
+      padding-bottom: 7rem;
+      min-width: 0;
+      min-height: 0;
+  }
   #service-providers-page, #service-providers-page.inactive {
     grid-area: sp;
     display: grid;
@@ -1069,11 +1161,53 @@ input {
     grid-area: m;
   }
 
-  #mobile-area video {
+  /* Mobile container */
+  #mobile-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Video wrapper */
+  #mobile-video-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 14rem);
+    /* keep max height proportional to viewport */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* Video element */
+  #mobile-video {
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
     display: block;
-    width: calc(100vw - calc(var(--rg-margin)*2));
-    height: calc(100dvh - 20rem);
+  }
+
+  /* Video thumbnail overlay (if lazy loading) */
+  #mobile-video-container .video-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    /* blurred thumbnail fills container */
+    z-index: 2;
+    transition: opacity 0.5s ease;
+  }
+
+  /* Hide thumbnail when video is ready */
+  #mobile-video-container.video-ready .video-thumbnail {
+    opacity: 0;
   }
 
   #left-arrow-area {
@@ -1084,9 +1218,48 @@ input {
     display: none;
   }
 
+  /* Ensure product is column flex */
   .product {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
     width: auto;
+    /* center horizontally */
+  }
+
+  /* Media (image/video) */
+  .product img,
+  .product .lazy-video-container video {
+    display: block;
+    width: 100%;
+    max-width: calc(100vw - var(--rg-margin) * 2);
+    /* same as product padding */
     height: auto;
+    object-fit: contain;
+  }
+
+  /* Caption */
+  .product .caption {
+    max-width: 100%;
+    /* don’t exceed container */
+    width: fit-content;
+    /* shrink to match content width */
+    text-align: center;
+    /* optional, center text */
+    margin-top: 0.5rem;
+    /* spacing from media */
+  }
+
+  /* Make caption match image/video width exactly */
+  .product img+.caption,
+  .product .lazy-video-container+.caption {
+    max-width: inherit;
+    /* same width as media above */
+    width: 100%;
+    /* match full width of media */
+  }
+
+  .product {
     margin-top: var(--rg-margin);
     padding-left: var(--rg-margin);
     padding-right: var(--rg-margin);
@@ -1094,15 +1267,9 @@ input {
     cursor: var(--dot-cursor);
   }
 
-  .product img, .product img:hover {
-    /* object-fit: contain; */
-    display: block;
-    width: auto;
-    max-width: calc(100vw - calc(var(--rg-margin) * 2));
-    height: auto;
-    max-height: 100vw;
-    margin-bottom: 0;
-    opacity: 100%; 
+  .product img,
+  .product img:hover {
+    opacity: 100%;
     filter: grayscale(100);
     mix-blend-mode: multiply;
   }
