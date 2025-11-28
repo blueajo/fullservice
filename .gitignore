@@ -49,5 +49,4 @@ build/
 # /config/sync/
 
 # Optional: ignore vendor if you choose to switch to composer-only model later
-# /vendor/
-vendor/composer/*
+/vendor/
