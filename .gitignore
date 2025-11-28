@@ -1,5 +1,6 @@
 # macOS
 .DS_Store
+**/.DS_Store
 .AppleDouble
 .LSOverride
 
@@ -42,10 +43,11 @@ build/
 /web/sites/*/private/
 /web/sites/*/settings.local.php
 /web/sites/*/services.local.yml
+/web/sites/default/settings.php
 
 # Config sync dir (if you keep it out of repo) - change if your sync is tracked
 # /config/sync/
 
 # Optional: ignore vendor if you choose to switch to composer-only model later
 # /vendor/
-
+vendor/composer/*
