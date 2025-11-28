@@ -1244,7 +1244,7 @@ input {
     /* don’t exceed container */
     width: fit-content;
     /* shrink to match content width */
-    text-align: center;
+    text-align: left;
     /* optional, center text */
     margin-top: 0.5rem;
     /* spacing from media */

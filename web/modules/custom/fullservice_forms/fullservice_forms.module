@@ -3,16 +3,26 @@
 /**
  * Implements hook_mail().
  */
-function fullservice_forms_mail($key, &$message, $params) {
+function fullservice_forms_mail($key, &$message, $params)
+{
   switch ($key) {
     case 'contact_form':
-      $message['from'] = $params['from'];
-      $message['subject'] = $params['subject'];
-      $message['body'][] = $params['message'];
-      
-      if (!empty($params['pitches'])) {
-        $message['body'][] = "• " . implode("\n• ", $params['pitches']);
+      // Always send from the authenticated mailbox
+      $message['from'] = 'noreply@fullserviceoffice.com';
 
+      // Subject
+      $message['subject'] = $params['subject'];
+
+      // Message body
+      $body = $params['message'] ?? '';
+      if (!empty($params['pitches'])) {
+        $body .= "\n\n• " . implode("\n• ", $params['pitches']);
+      }
+      $message['body'][] = $body;
+
+      // Optional: set Reply-To to the user email so you can reply directly
+      if (!empty($params['reply_to'])) {
+        $message['headers']['Reply-To'] = $params['reply_to'];
       }
       break;
   }
