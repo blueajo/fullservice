@@ -526,13 +526,13 @@ const ProductionCarousel = (() => {
         let w = poster.naturalWidth;
         let h = poster.naturalHeight;
         scaleMedia(productMedia, w, h, videoContainer);
+        productCaption.style.width = w;
       } else if (productMedia && productMedia.tagName === 'IMG') {
         let w = productMedia.naturalWidth;
         let h = productMedia.naturalHeight;
         scaleMedia(productMedia, w, h);
+        productCaption.style.width = w;
       }
-
-      productCaption.style.width = w;
 
       state.flkty.reposition();
       state.flkty.selectCell(cellIndex, true, false);
