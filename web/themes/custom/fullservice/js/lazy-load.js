@@ -100,6 +100,7 @@
                     if (isMobileVideo || isIndexCursor) {
                         console.log('Video ready for playback control:', video.id);
                     }
+                    if (isMobileVideo) video.play();
                 }, { once: true });
 
                 video.addEventListener('error', (e) => {

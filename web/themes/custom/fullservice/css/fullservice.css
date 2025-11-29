@@ -284,7 +284,7 @@ a:active, a.current-page, a.active-link, #footer a.current-page:hover {
 .nav-text {
   display: none;
   color: var(--grey-color);
-  transition: color 0.2s ease;
+  transition: color 0.4s ease;
 }
 
 .nav-text.active {
@@ -314,6 +314,15 @@ span.gap {
   pointer-events: none !important;
   cursor: none;
   display: none;
+}
+
+#index-cursor {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#index-cursor.visible {
+  opacity: 1;
 }
 
 #index-cursor .lazy-video-container {

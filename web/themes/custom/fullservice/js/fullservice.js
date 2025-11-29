@@ -13,19 +13,19 @@ document.addEventListener("DOMContentLoaded", (event) => {
   if (screen.width <= 768) {
     mobile = true;
 
-    // Check if mobile video exists before adding listeners
-    const mobileVideo = document.querySelector('#mobile-video');
-    if (mobileVideo) {
-      console.log('Mobile video found');
-      // Play as soon as the lazy loader has loaded the video
-      mobileVideo.addEventListener('loadeddata', () => {
-        mobileVideo.play().catch(err => {
-          console.warn('Mobile autoplay failed:', err);
-        });
-      });
-    } else {
-      console.warn('Mobile video not found in DOM');
-    }
+    // // Check if mobile video exists before adding listeners
+    // const mobileVideo = document.querySelector('#mobile-video');
+    // if (mobileVideo) {
+    //   console.log('Mobile video found');
+    //   // Play as soon as the lazy loader has loaded the video
+    //   mobileVideo.addEventListener('loadeddata', () => {
+    //     mobileVideo.play().catch(err => {
+    //       console.warn('Mobile autoplay failed:', err);
+    //     });
+    //   });
+    // } else {
+    //   console.warn('Mobile video not found in DOM');
+    // }
 
     openPage('index');
     if (location.hash) {
@@ -213,26 +213,10 @@ for (let i = 0; i < infoLinks.length; i++) {
 }
 
 function showOnMouseMove(selector) {
-  const elements = document.querySelectorAll(selector);
-
-  // Initially hide all matching elements
-  elements.forEach(el => {
-    el.style.opacity = 0;
-    el.style.transition = 'opacity 0.3s ease';
-  });
-
-  // Mouse move handler
-  function handleMouseMove() {
-    elements.forEach(el => {
-      el.style.opacity = 1;
-    });
-
-    // Remove listener after first mouse move
-    window.removeEventListener('mousemove', handleMouseMove);
+  const items = document.querySelectorAll(selector);
+  for (let item in items) {
+    item.addClass('visible');
   }
-
-  // Listen for mouse move anywhere on the window
-  window.addEventListener('mousemove', handleMouseMove);
 }
 
 // =====================================================================================================================================
@@ -1016,7 +1000,6 @@ function observeProducts(entries) {
         videoContainer.classList.add('video-playing');
       }
     } else {
-      el.classList.remove('focus');
       if (video) {
         video.pause();
         videoContainer.classList.remove('video-playing');
