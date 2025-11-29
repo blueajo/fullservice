@@ -218,7 +218,28 @@
     
     {# Mobile video #}
     <div id="mobile-area">
-    
+      <!-- DEBUG START -->
+      <div style="position: fixed; top: 100px; left: 0; background: yellow; padding: 10px; z-index: 9999; font-size: 12px;">
+        <strong>DEBUG:</strong><br>
+        video_collection: {{ video_collection ? 'EXISTS' : 'NULL' }}<br>
+        {% if video_collection %}
+          field_mobile_video: {{ video_collection.field_mobile_video|length }} items<br>
+          {% if video_collection.field_mobile_video.entity %}
+            entity: EXISTS<br>
+            {% set media = video_collection.field_mobile_video.entity %}
+            field_media_video_file: {{ media.field_media_video_file ? 'EXISTS' : 'NULL' }}<br>
+            {% if media.field_media_video_file.entity %}
+              {% set video_file = media.field_media_video_file.entity %}
+              video URI: {{ video_file.uri.value }}<br>
+            {% else %}
+              video_file.entity: NULL<br>
+            {% endif %}
+          {% else %}
+            mobile_video.entity: NULL<br>
+          {% endif %}
+        {% endif %}
+      </div>
+
       {% if video_collection.field_mobile_video.entity %}
         {% set media = video_collection.field_mobile_video.entity %}
         {% set video_file = media.field_media_video_file.entity %}
@@ -248,13 +269,18 @@
             <video 
               id="mobile-video" 
               loop 
-              muted 
+              muted
+              playsinline
               preload="none"
             >
               <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
             </video>
           </div>
+        {% else %}
+          <p style="color: red;">ERROR: video_file is NULL</p>
         {% endif %}
+      {% else %}
+        <p style="color: red;">ERROR: video_collection.field_mobile_video.entity is NULL</p>
       {% endif %}
     </div>
   </div>
