@@ -214,8 +214,8 @@ for (let i = 0; i < infoLinks.length; i++) {
 
 function showOnMouseMove(selector) {
   const items = document.querySelectorAll(selector);
-  for (let item in items) {
-    item.addClass('visible');
+  for (let item of items) {
+    item.classList.add('visible');
   }
 }
 
@@ -1015,7 +1015,7 @@ function setupProductionObserver() {
   if (mobile) {
     setupMobileProduction();
     production.classList.add('flickity-ready');
-    elementsToObserve = Array.from(production.querySelectorAll('.product'));
+    elementsToObserve = Array.from(production.querySelectorAll('.product:has(video)'));
     observerOptions.root = null;
     observerOptions.rootMargin = '-49% 0px -49% 0px';
     const observer = new IntersectionObserver(observeProducts, observerOptions);
@@ -1044,9 +1044,6 @@ function setupMobileProduction() {
   let products = production.querySelectorAll('.product');
   products.forEach(product => {
     let productMedia = product.querySelector("img.lazy-image, img.lazy-loaded, .lazy-video-container video");
-    let productCaption = product.querySelector("p");
-
-    // UPDATED: Check if it's a video inside lazy-video-container
     if (productMedia && productMedia.tagName === 'VIDEO') {
       const videoContainer = productMedia.closest('.lazy-video-container');
       const poster = videoContainer.querySelector('img.video-thumbnail');
@@ -1054,12 +1051,10 @@ function setupMobileProduction() {
       let w = poster.naturalWidth;
       let h = poster.naturalHeight;
       scaleMedia(productMedia, w, h, videoContainer);
-      productCaption.style.width = w;
     } else if (productMedia && productMedia.tagName === 'IMG') {
       let w = productMedia.naturalWidth;
       let h = productMedia.naturalHeight;
       scaleMedia(productMedia, w, h);
-      productCaption.style.width = w;
     }
   });
 }
