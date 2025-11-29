@@ -26,8 +26,8 @@
   <div id="index-page" class="page inactive">
     <div id='index-cursor'>
       {# Production videos #}
-      {% if video_collection.field_production_videos %}
-        {% for i in 0..7 %}
+      {% if video_collection.field_production_videos|length %}
+        {% for i in 0..(video_collection.field_production_videos|length - 1) %}
           {% if video_collection.field_production_videos[i] %}
             {% set media = video_collection.field_production_videos[i].entity %}
             {% set video_file = media.field_media_video_file.entity %}
@@ -72,8 +72,8 @@
       {% endif %}
       
       {# Service provider videos #}
-      {% if video_collection.field_service_provider_videos %}
-        {% for i in 0..7 %}
+      {% if video_collection.field_service_provider_videos|length %}
+        {% for i in 0..(video_collection.field_service_provider_videos|length - 1) %}
           {% if video_collection.field_service_provider_videos[i] %}
             {% set media = video_collection.field_service_provider_videos[i].entity %}
             {% set video_file = media.field_media_video_file.entity %}
@@ -118,8 +118,8 @@
       {% endif %}
       
       {# Pitches videos #}
-      {% if video_collection.field_pitches_videos %}
-        {% for i in 0..7 %}
+      {% if video_collection.field_pitches_videos|length %}
+        {% for i in 0..(video_collection.field_pitches_videos|length - 1) %}
           {% if video_collection.field_pitches_videos[i] %}
             {% set media = video_collection.field_pitches_videos[i].entity %}
             {% set video_file = media.field_media_video_file.entity %}
@@ -164,8 +164,8 @@
       {% endif %}
       
       {# Info videos #}
-      {% if video_collection.field_info_videos %}
-        {% for i in 0..7 %}
+      {% if video_collection.field_info_videos|length %}
+        {% for i in 0..(video_collection.field_info_videos|length - 1) %}
           {% if video_collection.field_info_videos[i] %}
             {% set media = video_collection.field_info_videos[i].entity %}
             {% set video_file = media.field_media_video_file.entity %}

@@ -1,51 +1,45 @@
-{#
-/**
- * @file
- * Theme override for the html template.
- */
-#}
-
 <!DOCTYPE html>
 <html{{ html_attributes }}>
-
   <head>
     {# Drupal placeholders for early-head assets #}
     <head-placeholder token="{{ placeholder_token }}">
     <css-placeholder token="{{ placeholder_token }}">
     <js-placeholder token="{{ placeholder_token }}">
 
-    {# Standard metadata #}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    {# Page title and module-provided head elements #}
-    {{ head }}
-
-    {# Optional dynamic meta description from slogan #}
-    {% if site_slogan %}
-      <meta name="description" content="{{ site_slogan|escape }}">
+    {# Inject your custom title manually from your metadata node #}
+    {% if global_meta_title %}
+      <title>{{ global_meta_title|escape }}</title>
+    {% else %}
+      <title>{{ site_name|escape }}</title>
     {% endif %}
 
-    {# Favicon #}
-    {#
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ directory }}/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ directory }}/favicon-16x16.png">
-    #}
+    {# Keep Drupal core/head stuff, but optional if you want #}
+    {{ head }}
+
+    {# Custom meta description #}
+    {% if global_meta_description %}
+      <meta name="description" content="{{ global_meta_description|escape }}">
+      <meta property="og:description" content="{{ global_meta_description|escape }}">
+    {% endif %}
+
+    {# Custom OG/Twitter image #}
+    {% if global_meta_image_url %}
+      <meta property="og:image" content="{{ global_meta_image_url }}">
+      <meta name="twitter:image" content="{{ global_meta_image_url }}">
+    {% endif %}
+
+    {# JSON-LD structured data #}
+    {% if global_json_ld %}
+      <script type="application/ld+json">
+        {{ global_json_ld|raw }}
+      </script>
+    {% endif %}
   </head>
 
-  <body{{ attributes.addClass('path-' ~ current_path|clean_class) }}>
+  <body{{ attributes }}>
+    {{ page }}
 
-    {# Contextual links, toolbar, etc. #}
-    {{ page_top }}
-
-    <div id="page-wrapper">
-      {{ page }}
-    </div>
-
-    {{ page_bottom }}
-
-    {# Deferred JS #}
+    {# Bottom JS placeholder #}
     <js-bottom-placeholder token="{{ placeholder_token }}">
-
   </body>
 </html>

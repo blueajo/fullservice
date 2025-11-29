@@ -27,13 +27,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
     setTimeout(setupProductionObserver, 500);
   } else {
     showOnMouseMove('#index-cursor');
-    document.querySelectorAll('#production-page video').forEach(v => {
-      v.autoplay = false;
-      v.removeAttribute('autoplay');
-      v.load();
-      v.pause();
-      v.currentTime = 0;
-    });
+    setupHomepageVideos();
+    // document.querySelectorAll('#production-page video').forEach(v => {
+    //   v.autoplay = false;
+    //   v.removeAttribute('autoplay');
+    //   v.load();
+    //   v.pause();
+    //   v.currentTime = 0;
+    // });
     if (location.hash) {
       openPage(location.hash.substring(1));
     } else {
@@ -73,10 +74,19 @@ const allVideos = videoDot.querySelectorAll(".lazy-video-container");
 let activeLink = null;
 const quadrants = [['production', 'pitches'],
 ['service-providers', 'info']];
+const divisions = [[0, 0], [0, 0]];
 let cursorInterval = null;
 // Cursor object
 var mouseX = (window.innerWidth - remToPx(45)) / 2,
   mouseY = (window.innerHeight - remToPx(45)) / 2;
+
+function setupHomepageVideos() {
+  for (let i = 0; i < 2; i++) {
+    for (let j = 0; j < 2; j++) {
+      divisions[i][j] = document.querySelectorAll('.' + quadrants[i][j] + '-video-container').length;
+    }
+  }
+}
 
 var indexCursor = {
   el: document.getElementById('index-cursor'),
@@ -92,11 +102,12 @@ var indexCursor = {
     this.y = lerp(this.y, mouseY, 0.05);
 
     // SET VIDEO
-    const videoNumber = Math.floor(this.x / (window.innerWidth / 16)) % 8;
     this.quadrant[0] = (this.x / window.innerWidth) > .5 ? 1 : 0;
     this.quadrant[1] = (this.y / window.innerHeight) > .5 ? 1 : 0;
     const category = quadrants[this.quadrant[0]][this.quadrant[1]];
-
+    const tempWidth = window.innerWidth / 2;
+    const tempX = (this.x % tempWidth);
+    const videoNumber = Math.floor(tempX / tempWidth * divisions[this.quadrant[0]][this.quadrant[1]]);
     const videoContainer = document.getElementById(category + '-' + videoNumber + '-video-container');
     const video = videoContainer ? videoContainer.querySelector('video') : null;
 

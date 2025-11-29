@@ -6,14 +6,52 @@
  */
 
 use Drupal\Core\Template\Attribute;
+use Drupal\Core\Url;
 
 /**
- * Implements hook_preprocess_HOOK() for HTML document templates.
+ * Implements hook_preprocess_HOOK() for HTML templates.
  */
-function fullservice_preprocess_html(&$variables)
+function fullservice_preprocess_html(array &$variables)
 {
-  // Add body classes
+  // Add a custom body class
   $variables['attributes']['class'][] = 'show-grid';
+
+  // Load the first published Metadata node
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+  $metadata_nodes = $node_storage->loadByProperties([
+    'type' => 'metadata',
+    'status' => 1,
+  ]);
+
+  if ($metadata_nodes) {
+    $metadata_node = reset($metadata_nodes);
+
+    // Make sure we have a Node object
+    if ($metadata_node instanceof \Drupal\node\NodeInterface) {
+
+      // --- Meta description ---
+      $variables['global_meta_description'] = $metadata_node->get('field_meta_description')->value ?? NULL;
+
+      // --- Meta image ---
+      $variables['global_meta_image_url'] = NULL;
+      if (!$metadata_node->get('field_meta_image')->isEmpty()) {
+        $media_entity = $metadata_node->get('field_meta_image')->entity;
+        if ($media_entity instanceof \Drupal\media\Entity\Media) {
+          // Assume the media is an image type
+          if (!$media_entity->get('field_media_image')->isEmpty()) {
+            $file_entity = $media_entity->get('field_media_image')->entity;
+            if ($file_entity instanceof \Drupal\file\Entity\File) {
+              $variables['global_meta_image_url'] = \Drupal::service('file_url_generator')
+                ->generateAbsoluteString($file_entity->getFileUri());
+            }
+          }
+        }
+      }
+      $variables['global_meta_title'] = $metadata_node->get('field_meta_title')->value ?? NULL;
+      // --- JSON-LD structured data ---
+      $variables['global_json_ld'] = $metadata_node->get('field_json_ld')->value ?? NULL;
+    }
+  }
 }
 
 /**
