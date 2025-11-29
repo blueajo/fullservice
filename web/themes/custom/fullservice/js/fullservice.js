@@ -12,13 +12,21 @@ let scrollInterval = null;
 document.addEventListener("DOMContentLoaded", (event) => {
   if (screen.width <= 768) {
     mobile = true;
+
+    // Check if mobile video exists before adding listeners
     const mobileVideo = document.querySelector('#mobile-video');
-    // Play as soon as the lazy loader has loaded the video
-    mobileVideo.addEventListener('loadeddata', () => {
-      mobileVideo.play().catch(err => {
-        console.warn('Mobile autoplay failed:', err);
+    if (mobileVideo) {
+      console.log('Mobile video found');
+      // Play as soon as the lazy loader has loaded the video
+      mobileVideo.addEventListener('loadeddata', () => {
+        mobileVideo.play().catch(err => {
+          console.warn('Mobile autoplay failed:', err);
+        });
       });
-    });
+    } else {
+      console.warn('Mobile video not found in DOM');
+    }
+
     openPage('index');
     if (location.hash) {
       history.pushState("", document.title, window.location.pathname);
@@ -980,7 +988,12 @@ const observer2 = new IntersectionObserver((entries, observer) => {
   });
 }, options2);
 
-observer2.observe(document.getElementById('mobile-video'));
+const mobileVideoElement = document.getElementById('mobile-video');
+if (mobileVideoElement) {
+  observer2.observe(mobileVideoElement);
+} else {
+  console.warn('Mobile video element not found for observer');
+}
 
 // ================
 // SCROLL - PRODUCTION - VIDEOS
