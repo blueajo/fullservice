@@ -1,6 +1,8 @@
 (function (Drupal, once) {
     'use strict';
 
+    console.log("lazy-load.js loaded:", document.getElementById("index-cursor"));
+
     Drupal.behaviors.lazyLoad = {
         attach: function (context, settings) {
             const config = {
@@ -88,9 +90,20 @@
                 video.load();
 
                 video.addEventListener('loadeddata', () => {
+                    console.log('Video loaded:', video.id || 'unnamed');
                     if (thumbnail) thumbnail.classList.add('fade-out');
                     if (container) container.classList.add('video-ready');
-                    try { video.play(); } catch (e) { console.warn('Video play failed', e); }
+
+                    const isMobileVideo = video.id === 'mobile-video';
+                    const isIndexCursor = container.closest('#index-cursor');
+
+                    if (isMobileVideo || isIndexCursor) {
+                        console.log('Video ready for playback control:', video.id);
+                    }
+                }, { once: true });
+
+                video.addEventListener('error', (e) => {
+                    console.error('Video load error:', video.id, e);
                 }, { once: true });
             };
 
