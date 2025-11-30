@@ -396,21 +396,16 @@ function playMobileVideoOnInteraction(videoSelector) {
 function showDisclaimer() {
   const disclaimer = document.querySelector('#mobile-disclaimer');
   if (!disclaimer) return;
-  let disclaimerTimeout = null;
 
-  function onDisclaimer() {
-    if (disclaimerTimeout) clearTimeout(disclaimerTimeout);
-    disclaimer.classList.add('visible');
-  }
-
-  function offDisclaimer() {
-    disclaimerTimeout = setTimeout(() => {
+  function toggleDisclaimer() {
+    if (disclaimer.classList.contains('visible')) {
       disclaimer.classList.remove('visible');
-    }, 2500);
+    } else {
+      disclaimer.classList.add('visible');
+    }
   }
 
-  document.addEventListener('touchstart', onDisclaimer);
-  document.addEventListener('touchend', offDisclaimer);
+  document.addEventListener('touchstart', toggleDisclaimer);
 }
 
 // =====================================================================================================================================
@@ -658,7 +653,6 @@ const ProductionCarousel = (() => {
         }
       }
     });
-
   }
 
   function temporarilyDisablePointer() {
@@ -1023,19 +1017,14 @@ function scrollHandler() {
         openPage(page.id.slice(0, -5));
         currPage = page;
       }
-      if (currPage === index) {
-        const scrollProgress = Math.min(
-          Math.max((window.scrollY - pageTop) / pageHeight, 0),
-          1
-        );
-        console.log(scrollProgress);
-
-        // Set the opacity of your target div based on scroll progress
-        const targetDiv = document.getElementById('index-text');
-        if (targetDiv) {
-          targetDiv.style.opacity = 1 - scrollProgress; // fades out as you scroll
-        }
-      }
+    }
+    const scrollProgress = Math.min(
+      Math.max((window.scrollY - pageTop) / pageHeight, 0),
+      1
+    );
+    const targetDiv = document.getElementById('index-text');
+    if (targetDiv) {
+      targetDiv.style.opacity = 1 - scrollProgress; // fades out as you scroll
     }
   });
 }
@@ -1189,3 +1178,39 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('error', (event) => {
   console.error('Global error caught:', event.error);
 });
+
+
+// =====================================================================================================================================
+// For safari blur zoom
+// =====================================================================================================================================
+
+document.addEventListener(
+  'blur',
+  (event) => {
+    const defaultViewportContent = 'width=device-width, initial-scale=1.0'
+
+    const isRelevantElement =
+      event.target instanceof Element &&
+      (['input', 'textarea', 'select'].includes(
+        event.target.tagName.toLowerCase()
+      ) ||
+        event.target.hasAttribute('contenteditable'))
+
+    if (isRelevantElement) {
+      const viewportMeta = document.querySelector('meta[name="viewport"]')
+      if (viewportMeta) {
+        setTimeout(() => {
+          viewportMeta.setAttribute(
+            'content',
+            defaultViewportContent + ', maximum-scale=1.0'
+          )
+        }, 50)
+
+        setTimeout(() => {
+          viewportMeta.setAttribute('content', defaultViewportContent)
+        }, 100)
+      }
+    }
+  },
+  true
+)
