@@ -198,7 +198,7 @@
                   id="info-{{ i }}-video" 
                   class="info-video"
                   loop 
-                  muted 
+                  muted
                   preload="none"
                 >
                   <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
@@ -248,7 +248,8 @@
             <video 
               id="mobile-video" 
               loop 
-              muted 
+              muted
+              playsinline
               preload="none"
             >
               <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">

@@ -125,6 +125,41 @@ function fullservice_preprocess_node(&$variables)
 
   // Add view mode class
   $variables['attributes']['class'][] = 'node--view-mode-' . $variables['view_mode'];
+  
+  // Only process 'production' nodes
+  if ($node->bundle() === 'production') {
+    $variables['image_ratio'] = null;
+
+    // Prioritize video thumbnail
+    if ($node->hasField('field_video') && !$node->get('field_video')->isEmpty()) {
+      $video_media = $node->get('field_video')->first()->entity;
+      if ($video_media && $video_media->hasField('field_thumbnail') && !$video_media->get('field_thumbnail')->isEmpty()) {
+        $thumb_media = $video_media->get('field_thumbnail')->first()->entity;
+        if ($thumb_media && $thumb_media->hasField('field_media_image') && !$thumb_media->get('field_media_image')->isEmpty()) {
+          $image_file = $thumb_media->get('field_media_image')->first()->entity;
+          if ($image_file instanceof \Drupal\file\FileInterface) {
+            $image_info = getimagesize(\Drupal::service('file_system')->realpath($image_file->getFileUri()));
+            if ($image_info) {
+              $variables['image_ratio'] = $image_info[0] / $image_info[1];
+            }
+          }
+        }
+      }
+    }
+    // Fallback to image field
+    elseif ($node->hasField('field_image') && !$node->get('field_image')->isEmpty()) {
+      $media = $node->get('field_image')->first()->entity;
+      if ($media && $media->hasField('field_media_image') && !$media->get('field_media_image')->isEmpty()) {
+        $image_file = $media->get('field_media_image')->first()->entity;
+        if ($image_file instanceof \Drupal\file\FileInterface) {
+          $image_info = getimagesize(\Drupal::service('file_system')->realpath($image_file->getFileUri()));
+          if ($image_info) {
+            $variables['image_ratio'] = $image_info[0] / $image_info[1];
+          }
+        }
+      }
+    }
+  }
 }
 
 /**

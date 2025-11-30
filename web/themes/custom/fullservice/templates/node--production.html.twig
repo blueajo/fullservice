@@ -9,7 +9,6 @@
 {% set title_suffix = null %}
 
 <div{{ attributes.addClass(classes).setAttribute('id', 'p' ~ node.id()) }}>
-  
   {# VIDEO takes precedence #}
   {% if node.field_video|length %}
   
@@ -28,11 +27,12 @@
         {% endif %}
       {% endif %}    
       
-      <div class="lazy-video-container">
+      <div class="lazy-video-container" {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}>
         {% if thumbnail_url %}
           <img 
             class="video-thumbnail" 
             src="{{ thumbnail_url }}" 
+            {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
           >
         {% endif %}
         
@@ -49,13 +49,13 @@
       {% set image_file = media.field_media_image.0.entity %}
       {% set full_url = file_url(image_file.uri.value) %}
       {% set thumb_url = image_file.uri.value|image_style('thumbnail_blur') %}
-      
-      <img 
-        class="lazy-image lazy-loading"
-        src="{{ thumb_url }}"
-        data-src="{{ full_url }}"
-        alt="{{ media.field_media_image.0.alt|default(node.title.value) }}"
-      >
+        <img 
+          class="lazy-image lazy-loading"
+          src="{{ thumb_url }}"
+          data-src="{{ full_url }}"
+          alt="{{ media.field_media_image.0.alt|default(node.title.value) }}"
+          {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
+        >
     {% endif %}
   {% endif %}
 
@@ -68,5 +68,5 @@
       {{ node.field_year.value }}
     {% endif %}
   </p>
-
+  
 </div>

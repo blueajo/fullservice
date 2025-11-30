@@ -13,19 +13,23 @@ document.addEventListener("DOMContentLoaded", (event) => {
   if (screen.width <= 768) {
     mobile = true;
 
-    // // Check if mobile video exists before adding listeners
-    // const mobileVideo = document.querySelector('#mobile-video');
-    // if (mobileVideo) {
-    //   console.log('Mobile video found');
-    //   // Play as soon as the lazy loader has loaded the video
-    //   mobileVideo.addEventListener('loadeddata', () => {
-    //     mobileVideo.play().catch(err => {
-    //       console.warn('Mobile autoplay failed:', err);
-    //     });
-    //   });
-    // } else {
-    //   console.warn('Mobile video not found in DOM');
-    // }
+    // Check if mobile video exists before adding listeners
+    const mobileVideo = document.querySelector('#mobile-video');
+    if (mobileVideo) {
+      console.log('Mobile video found');
+      // Play as soon as the lazy loader has loaded the video
+      mobileVideo.addEventListener('loadeddata', () => {
+        console.log('playing mobile video');
+        mobileVideo.play().catch(err => {
+          playMobileVideoOnInteraction('#mobile-video');
+          console.warn('Mobile autoplay failed:', err);
+        });
+      });
+    } else {
+      console.warn('Mobile video not found in DOM');
+    }
+
+    syncCaptionWidth();
 
     openPage('index');
     if (location.hash) {
@@ -34,21 +38,21 @@ document.addEventListener("DOMContentLoaded", (event) => {
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
     setTimeout(setupProductionObserver, 500);
   } else {
-    showOnMouseMove('#index-cursor');
+    const indexCursor = document.getElementById('index-cursor')
+    document.addEventListener('mousemove', (event) => {
+      document.getElementById('index-cursor').classList.add('visible');
+    }, { once: true });
     setupHomepageVideos();
-    // document.querySelectorAll('#production-page video').forEach(v => {
-    //   v.autoplay = false;
-    //   v.removeAttribute('autoplay');
-    //   v.load();
-    //   v.pause();
-    //   v.currentTime = 0;
-    // });
     if (location.hash) {
       openPage(location.hash.substring(1));
     } else {
       openPage('index');
     }
   }
+
+  setTimeout(() => {
+    document.getElementById('container').classList.add('visible');
+  }, 250);
 });
 
 window.addEventListener('hashchange', function () {
@@ -212,13 +216,6 @@ for (let i = 0; i < infoLinks.length; i++) {
   });
 }
 
-function showOnMouseMove(selector) {
-  const items = document.querySelectorAll(selector);
-  for (let item of items) {
-    item.classList.add('visible');
-  }
-}
-
 // =====================================================================================================================================
 // NAV
 // =====================================================================================================================================
@@ -254,7 +251,7 @@ function closePage() {
       productionVideos[i].pause();
     }
   } else if (section == 'pitches') {
-    resetPitches();
+    if (!mobile) resetPitches();
   } else if (section == 'info') {
     copyright.classList.remove('active');
   }
@@ -374,6 +371,25 @@ for (let i = 0; i < linkAreas.length; i++) {
       hoverLink.click();
     }
   });
+}
+
+function playMobileVideoOnInteraction(videoSelector) {
+  const video = document.querySelector(videoSelector);
+  if (!video) return;
+
+  function tryPlay() {
+    video.play()
+      .then(() => console.log('Mobile video playing'))
+      .catch(err => console.warn('Mobile autoplay failed:', err));
+
+    // Remove the listener after first interaction
+    document.removeEventListener('click', tryPlay);
+    document.removeEventListener('touchstart', tryPlay);
+  }
+
+  // Listen for user interaction
+  document.addEventListener('click', tryPlay, { once: true });
+  document.addEventListener('touchstart', tryPlay, { once: true });
 }
 
 // =====================================================================================================================================
@@ -941,42 +957,21 @@ function scrollHandler() {
         openPage(page.id.slice(0, -5));
         currPage = page;
       }
+      if (currPage === index) {
+        const scrollProgress = Math.min(
+          Math.max((window.scrollY - pageTop) / pageHeight, 0),
+          1
+        );
+        console.log(scrollProgress);
+
+        // Set the opacity of your target div based on scroll progress
+        const targetDiv = document.getElementById('index-text');
+        if (targetDiv) {
+          targetDiv.style.opacity = 1 - scrollProgress; // fades out as you scroll
+        }
+      }
     }
   });
-}
-
-// ================
-// SCROLL - INDEX
-// ================
-
-const thresholds = [];
-const numSteps = 20;
-
-for (let i = 1.0; i <= numSteps; i++) {
-  const ratio = i / numSteps;
-  thresholds.push(ratio);
-}
-
-const options2 = {
-  root: null, // default is the viewport
-  rootMargin: "0px",
-  threshold: thresholds // Trigger when 0% of the target element is visible
-};
-
-const observer2 = new IntersectionObserver((entries, observer) => {
-  entries.forEach(entry => {
-    if (mobile) {
-      const indexText = document.getElementById('index-text');
-      indexText.style.opacity = entry.intersectionRatio;
-    }
-  });
-}, options2);
-
-const mobileVideoElement = document.getElementById('mobile-video');
-if (mobileVideoElement) {
-  observer2.observe(mobileVideoElement);
-} else {
-  console.warn('Mobile video element not found for observer');
 }
 
 // ================
@@ -1013,7 +1008,7 @@ function setupProductionObserver() {
   let observerOptions = { threshold: 0 };
 
   if (mobile) {
-    setupMobileProduction();
+    // setupMobileProduction();
     production.classList.add('flickity-ready');
     elementsToObserve = Array.from(production.querySelectorAll('.product:has(video)'));
     observerOptions.root = null;
@@ -1058,6 +1053,27 @@ function setupMobileProduction() {
     }
   });
 }
+
+function syncCaptionWidth() {
+  document.querySelectorAll('.product').forEach(node => {
+    const img = node.querySelector('img');
+    const video = node.querySelector('video');
+    const caption = node.querySelector('.caption');
+    if (img && caption) {
+      const aspectRatio = parseFloat(img.style.aspectRatio);
+      const maxWidth = parseFloat(getComputedStyle(img).maxWidth);
+      const maxHeight = parseFloat(getComputedStyle(img).maxHeight);
+      const renderedWidth = Math.min(maxWidth, maxHeight * aspectRatio);
+      img.style.width = renderedWidth + 'px';
+      if (video) video.style.width = renderedWidth + 'px';
+      caption.style.width = renderedWidth + 'px';
+    }
+  });
+}
+
+// Update on window resize
+window.addEventListener('resize', syncCaptionWidth);
+
 
 // =====================================================================================================================================
 // Visibility Handler

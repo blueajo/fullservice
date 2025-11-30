@@ -93,14 +93,6 @@
                     console.log('Video loaded:', video.id || 'unnamed');
                     if (thumbnail) thumbnail.classList.add('fade-out');
                     if (container) container.classList.add('video-ready');
-
-                    const isMobileVideo = video.id === 'mobile-video';
-                    const isIndexCursor = container.closest('#index-cursor');
-
-                    if (isMobileVideo || isIndexCursor) {
-                        console.log('Video ready for playback control:', video.id);
-                    }
-                    if (isMobileVideo) video.play();
                 }, { once: true });
 
                 video.addEventListener('error', (e) => {
