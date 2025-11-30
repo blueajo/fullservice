@@ -1029,7 +1029,7 @@ function setupProductionObserver() {
   let observerOptions = { threshold: 0 };
 
   if (mobile) {
-    // setupMobileProduction();
+    setupMobileProduction();
     production.classList.add('flickity-ready');
     elementsToObserve = Array.from(production.querySelectorAll('.product:has(video)'));
     observerOptions.root = null;

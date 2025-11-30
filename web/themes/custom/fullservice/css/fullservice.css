@@ -1414,6 +1414,10 @@ input {
     padding-top: var(--caption-baseline-shift);
     margin-bottom: var(--caption-baseline-push);
   }
+
+  .caption {
+    -webkit-text-size-adjust: 100%;
+  }
 }
 
 @media only screen and (max-device-width: 392px) {
