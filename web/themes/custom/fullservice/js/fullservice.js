@@ -81,8 +81,8 @@ function remToPx(remValue) {
 const videoDot = document.getElementById('index-cursor');
 const allVideos = videoDot.querySelectorAll(".lazy-video-container");
 let activeLink = null;
-const quadrants = [['production', 'pitches'],
-['service-providers', 'info']];
+const quadrants = [['production', 'service-providers'],
+['pitches', 'info']];
 const divisions = [[0, 0], [0, 0]];
 let cursorInterval = null;
 // Cursor object
@@ -269,6 +269,8 @@ function openPage(section) {
     document.getElementById('header').classList.add('index-header');
     if (!mobile) {
       cursorInterval = setInterval(indexFollow, 1000 / 60);
+    } else {
+      document.querySelector('#mobile-video').play();
     }
   }
   if (section == 'info' && !mobile) {
@@ -405,7 +407,7 @@ function showDisclaimer() {
     }
   }
 
-  document.addEventListener('touchstart', toggleDisclaimer);
+  document.querySelector('#mobile-video-container').addEventListener('touchstart', toggleDisclaimer);
 }
 
 // =====================================================================================================================================
@@ -1063,7 +1065,7 @@ function setupProductionObserver() {
   let observerOptions = { threshold: 0 };
 
   if (mobile) {
-    setupMobileProduction();
+    // setupMobileProduction();
     production.classList.add('flickity-ready');
     elementsToObserve = Array.from(production.querySelectorAll('.product:has(video)'));
     observerOptions.root = null;
@@ -1090,24 +1092,24 @@ production.querySelectorAll('.lazy-video-container').forEach(container => {
   });
 });
 
-function setupMobileProduction() {
-  let products = production.querySelectorAll('.product');
-  products.forEach(product => {
-    let productMedia = product.querySelector("img.lazy-image, img.lazy-loaded, .lazy-video-container video");
-    if (productMedia && productMedia.tagName === 'VIDEO') {
-      const videoContainer = productMedia.closest('.lazy-video-container');
-      const poster = videoContainer.querySelector('img.video-thumbnail');
+// function setupMobileProduction() {
+//   let products = production.querySelectorAll('.product');
+  // products.forEach(product => {
+  //   let productMedia = product.querySelector("img.lazy-image, img.lazy-loaded, .lazy-video-container video");
+  //   if (productMedia && productMedia.tagName === 'VIDEO') {
+  //     const videoContainer = productMedia.closest('.lazy-video-container');
+  //     const poster = videoContainer.querySelector('img.video-thumbnail');
       // Get dimensions from poster image
-      let w = poster.naturalWidth;
-      let h = poster.naturalHeight;
-      scaleMedia(productMedia, w, h, videoContainer);
-    } else if (productMedia && productMedia.tagName === 'IMG') {
-      let w = productMedia.naturalWidth;
-      let h = productMedia.naturalHeight;
-      scaleMedia(productMedia, w, h);
-    }
-  });
-}
+      // let w = poster.naturalWidth;
+      // let h = poster.naturalHeight;
+      // scaleMedia(productMedia, w, h, videoContainer);
+    // } else if (productMedia && productMedia.tagName === 'IMG') {
+    //   let w = productMedia.naturalWidth;
+    //   let h = productMedia.naturalHeight;
+    //   scaleMedia(productMedia, w, h);
+    // }
+  // });
+// }
 
 function syncCaptionWidth() {
   document.querySelectorAll('.product').forEach(node => {
@@ -1119,8 +1121,6 @@ function syncCaptionWidth() {
       const maxWidth = parseFloat(getComputedStyle(img).maxWidth);
       const maxHeight = parseFloat(getComputedStyle(img).maxHeight);
       const renderedWidth = Math.min(maxWidth, maxHeight * aspectRatio);
-      img.style.width = renderedWidth + 'px';
-      if (video) video.style.width = renderedWidth + 'px';
       caption.style.width = renderedWidth + 'px';
     }
   });
@@ -1184,33 +1184,10 @@ window.addEventListener('error', (event) => {
 // For safari blur zoom
 // =====================================================================================================================================
 
-document.addEventListener(
-  'blur',
-  (event) => {
-    const defaultViewportContent = 'width=device-width, initial-scale=1.0'
+document.getElementById('from').addEventListener('blur', function () {
 
-    const isRelevantElement =
-      event.target instanceof Element &&
-      (['input', 'textarea', 'select'].includes(
-        event.target.tagName.toLowerCase()
-      ) ||
-        event.target.hasAttribute('contenteditable'))
-
-    if (isRelevantElement) {
-      const viewportMeta = document.querySelector('meta[name="viewport"]')
-      if (viewportMeta) {
-        setTimeout(() => {
-          viewportMeta.setAttribute(
-            'content',
-            defaultViewportContent + ', maximum-scale=1.0'
-          )
-        }, 50)
-
-        setTimeout(() => {
-          viewportMeta.setAttribute('content', defaultViewportContent)
-        }, 100)
-      }
-    }
-  },
-  true
-)
+  document.body.style.zoom = 0.99;
+  setTimeout(function () {
+    document.body.style.zoom = 1;
+  }, 50);
+});

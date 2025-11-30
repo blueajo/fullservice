@@ -16,8 +16,8 @@
   {# HEADER #}
   <div id="header">
       <p><span class="paren">(</span><a id="production-link" class="page-link" href="#production">Production</a><span id="production-text" class="nav-text">{% if header_node.field_production_blurb %} {{ header_node.field_production_blurb.value }}{% endif %}</span><span>, </span><span id="production-gap"></span>
-          <a id="service-providers-link" class="page-link" href="#service-providers">Service Providers</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span>, </span><span id="service-providers-gap"></span>
           <a id="pitches-link" class="page-link" href="#pitches">Pitches</a><span id="pitches-text" class="nav-text">{% if header_node.field_pitches_blurb %} {{ header_node.field_pitches_blurb.value }}{% endif %}</span><span>, </span><span id="pitches-gap"></span>
+          <a id="service-providers-link" class="page-link" href="#service-providers">Service Providers</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span>, </span><span id="service-providers-gap"></span>
           <a id="info-link" class="page-link" href="#info">Info</a><span id="info-text" class="nav-text">{% if header_node.field_info_blurb %}{{ header_node.field_info_blurb.value }}{% endif %}</span><span id="info-gap"></span><span><span class="paren">)</span></span>
       </p>
   </div>
@@ -70,6 +70,52 @@
           {% endif %}
         {% endfor %}
       {% endif %}
+
+      {# Pitches videos #}
+      {% if video_collection.field_pitches_videos|length %}
+        {% for i in 0..(video_collection.field_pitches_videos|length - 1) %}
+          {% if video_collection.field_pitches_videos[i] %}
+            {% set media = video_collection.field_pitches_videos[i].entity %}
+            {% set video_file = media.field_media_video_file.entity %}
+            {% if video_file %}
+              {# Get thumbnail #}
+              {% set thumbnail_url = null %}
+              {% if media.field_thumbnail|length %}
+                {% set thumbnail_media = media.field_thumbnail.0.entity %}
+                {% if thumbnail_media and thumbnail_media.field_media_image|length %}
+                  {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
+                  {% if thumbnail_file %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+              
+              <div 
+                id="pitches-{{ i }}-video-container" 
+                class="lazy-video-container pitches-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Pitches video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="pitches-{{ i }}-video" 
+                  class="pitches-video"
+                  loop 
+                  muted 
+                  preload="none"
+                >
+                  <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+                </video>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
       
       {# Service provider videos #}
       {% if video_collection.field_service_provider_videos|length %}
@@ -105,52 +151,6 @@
                 <video 
                   id="service-providers-{{ i }}-video" 
                   class="service-providers-video"
-                  loop 
-                  muted 
-                  preload="none"
-                >
-                  <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
-                </video>
-              </div>
-            {% endif %}
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-      
-      {# Pitches videos #}
-      {% if video_collection.field_pitches_videos|length %}
-        {% for i in 0..(video_collection.field_pitches_videos|length - 1) %}
-          {% if video_collection.field_pitches_videos[i] %}
-            {% set media = video_collection.field_pitches_videos[i].entity %}
-            {% set video_file = media.field_media_video_file.entity %}
-            {% if video_file %}
-              {# Get thumbnail #}
-              {% set thumbnail_url = null %}
-              {% if media.field_thumbnail|length %}
-                {% set thumbnail_media = media.field_thumbnail.0.entity %}
-                {% if thumbnail_media and thumbnail_media.field_media_image|length %}
-                  {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
-                  {% if thumbnail_file %}
-                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
-                  {% endif %}
-                {% endif %}
-              {% endif %}
-              
-              <div 
-                id="pitches-{{ i }}-video-container" 
-                class="lazy-video-container pitches-video-container"
-              >
-                {% if thumbnail_url %}
-                  <img 
-                    src="{{ thumbnail_url }}" 
-                    class="video-thumbnail"
-                    alt="Pitches video {{ i }}"
-                  >
-                {% endif %}
-                
-                <video 
-                  id="pitches-{{ i }}-video" 
-                  class="pitches-video"
                   loop 
                   muted 
                   preload="none"
@@ -211,9 +211,9 @@
     </div>
 
     {# Invisible clickable areas #}
-    <div id="service-providers-area" class="link-area"></div>
     <div id="production-area" class="link-area"></div>
     <div id="pitches-area" class="link-area"></div>
+    <div id="service-providers-area" class="link-area"></div>
     <div id="info-area" class="link-area"></div>
     
     {# Mobile video #}
@@ -277,39 +277,6 @@
     {{ page.production_gallery }}
   </div>
 
-  {# SERVICE PROVIDERS PAGE #}
-  <div id="service-providers-page" class="page inactive">
-    {% if service_providers_node %}
-      {% for provider_item in service_providers_node.field_service_provider %}
-        {% set provider = provider_item.entity %}
-        
-        <div class="service-provider">
-          {% if provider.field_description %}
-            {% for desc in provider.field_description %}
-              {% if loop.first %}
-                <p>
-                  {% if provider.field_personal_link.0.uri %}
-                    <a class="service-provider-link" 
-                       href="{{ provider.field_personal_link.0.uri }}" 
-                       target="_blank">
-                      {{- provider.field_name.value -}}
-                    </a>
-                  {% else %}
-                    {{- provider.field_name.value -}}
-                  {% endif %}
-
-                  {{- desc.value -}}
-                </p>
-              {% else %}
-                <p>{{ desc.value }}</p>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
-        </div>
-      {% endfor %}
-    {% endif %}
-  </div>
-
   {# PITCHES PAGE #}
   <div id="pitches-page" class="page inactive">
     {% if pitches_node %}
@@ -362,6 +329,39 @@
       <div id="form-alert">
         <p></p>
       </div>
+    {% endif %}
+  </div>
+
+  {# SERVICE PROVIDERS PAGE #}
+  <div id="service-providers-page" class="page inactive">
+    {% if service_providers_node %}
+      {% for provider_item in service_providers_node.field_service_provider %}
+        {% set provider = provider_item.entity %}
+        
+        <div class="service-provider">
+          {% if provider.field_description %}
+            {% for desc in provider.field_description %}
+              {% if loop.first %}
+                <p>
+                  {% if provider.field_personal_link.0.uri %}
+                    <a class="service-provider-link" 
+                       href="{{ provider.field_personal_link.0.uri }}" 
+                       target="_blank">
+                      {{- provider.field_name.value -}}
+                    </a>
+                  {% else %}
+                    {{- provider.field_name.value -}}
+                  {% endif %}
+
+                  {{- desc.value -}}
+                </p>
+              {% else %}
+                <p>{{ desc.value }}</p>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      {% endfor %}
     {% endif %}
   </div>
 
