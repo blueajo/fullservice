@@ -29,7 +29,7 @@ class ContactFormController extends ControllerBase
     $params['reply_to'] = $data['from']; // Set reply-to to user email
 
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
-    $from_email = 'noreply@fullserviceoffice.com'; // Must match SMTP
+    $from_email = 'info@fullserviceoffice.com'; // Must match SMTP
 
     $result = $mailManager->mail($module, $key, $to, $langcode, $params, $from_email);
 
