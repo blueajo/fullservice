@@ -359,20 +359,20 @@ span.gap {
 }
 
 .service-providers-video-container {
-  transform: translate(-45.5rem, -4.5rem);
+  transform: translate(.5rem, -50.5rem);
 }
 
 .service-providers-video-container video,
 .service-providers-video-container .video-thumbnail {
-  object-position: right top;
+  object-position: left bottom;
 }
 
 .pitches-video-container {
-  transform: translate(.5rem, -50.5rem);
+  transform: translate(-45.5rem, -4.5rem);
 }
 .pitches-video-container video,
 .pitches-video-container .video-thumbnail {
-  object-position: left bottom;
+  object-position: right top;
 }
 
 .info-video-container {
