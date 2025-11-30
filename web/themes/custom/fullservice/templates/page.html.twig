@@ -323,35 +323,40 @@
       
       {# Contact form #}
       <div id="contact-form">
-        <label for="from">
-          <p>From:</p> 
-          <input type="email" 
-                 id="from" 
-                 name="from" 
-                 required 
-                 placeholder="{{ pitches_node.field_email_placeholder.value|default('type email here') }}"/>
-        </label>
-        
-        <label for="to">
-          <p>To: {{ info_node.field_office_email.value|default('info@fullserviceoffice.com') }}</p>
-        </label>
-        
-        <label for="subject" style="margin-bottom: calc(3rem - 2px);">
-          <p>Subject:</p> 
-          <input type="text" 
-                 id="subject" 
-                 name="subject" 
-                 required 
-                 placeholder="{{ pitches_node.field_subject_placeholder.value|default('We want to collaborate') }}"/>
-        </label>
-        
-        <div id="message" name="message" role="textarea" contenteditable>
-          {{ pitches_node.field_message_placeholder.value|nl2br|default('Hi Fullservice Office,<br><br>Omg, you guys are amazing. I absolutely love your work!<br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. It would be so much fun to collaborate with you on:')|raw }}
+        <div id="sent-alert-container">
+          <p id="sent-alert">Message sent!</p>
         </div>
-        
-        <div id="pitches-to-send"></div>
-        <div class="spacer"></div>
-        <button id="send-form" type="button">Send</button>
+        <div id="actual-contact-form">
+          <label for="from">
+            <p>From:</p> 
+            <input type="email" 
+                  id="from" 
+                  name="from" 
+                  required 
+                  placeholder="{{ pitches_node.field_email_placeholder.value|default('type email here') }}"/>
+          </label>
+          
+          <label for="to">
+            <p>To: {{ info_node.field_office_email.value|default('info@fullserviceoffice.com') }}</p>
+          </label>
+          
+          <label for="subject" style="margin-bottom: calc(3rem - 2px);">
+            <p>Subject:</p> 
+            <input type="text" 
+                  id="subject" 
+                  name="subject" 
+                  required 
+                  placeholder="{{ pitches_node.field_subject_placeholder.value|default('We want to collaborate') }}"/>
+          </label>
+          
+          <div id="message" name="message" role="textarea" contenteditable>
+            {{ pitches_node.field_message_placeholder.value|nl2br|default('Hi Fullservice Office,<br><br>Omg, you guys are amazing. I absolutely love your work!<br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. It would be so much fun to collaborate with you on:')|raw }}
+          </div>
+          
+          <div id="pitches-to-send"></div>
+          <div class="spacer"></div>
+          <button id="send-form" type="button">Send</button>
+        </div>
       </div>
       <div id="form-alert">
         <p></p>

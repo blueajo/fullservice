@@ -754,6 +754,23 @@ img.portrait.visible {
   transition: opacity 0.2s ease;
 }
 
+#sent-alert-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 47.5rem;
+  height: 35rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 4;
+}
+
+#sent-alert-container.visible {
+  opacity: 1;
+}
+
 #form-alert {
   grid-area: fa;
   height: min-content;
@@ -773,6 +790,7 @@ img.portrait.visible {
 #contact-form.active, .pitch-container.active {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 /* Customize the label (the container) */
@@ -825,6 +843,11 @@ p.checkbox-label {
   margin-bottom: calc(1rem - 2px);
   width: 100%;
   border-bottom: 2px solid black;
+}
+
+#actual-contact-form {
+  display: flex;
+  flex-direction: column
 }
 
 @keyframes autofill {
@@ -892,7 +915,7 @@ input {
 
 #send-form:active, #send-form:hover {
   color: var(--bg-color);
-  background-color: black;
+  background-color: black;#contact-form p, div#message, #send-form
   cursor: none;
 }
 
@@ -1372,11 +1395,15 @@ input {
   #pitch-list .checkbox-label, #contact-form .dot-container p {
     font-size: 1.4rem;
     line-height: calc(var(--caption-baselines) * 1.15rem);
-    padding-top: var(--baseline-shift);
+    padding-top: calc(var(--caption-baseline-shift) * 1.15rem);
+    margin-bottom: calc(var(--caption-baseline-push) - .5rem);
+  }
+  p.checkbox-label {
+    margin-bottom: calc(0 - var(--caption-baseline-push));
   }
 
   #pitch-list .checkmark, .dot-container .dot {
-    margin-top: calc(var(--baseline-shift) + .2rem);
+    margin-top: var(--caption-baseline-shift);
     margin-left: 1px;
     height: calc(1rem - 1px);
     width: calc(1rem - 1px);
@@ -1385,7 +1412,7 @@ input {
   #contact-form p, div#message, #send-form {
     font-size: 1.4rem;
     line-height: calc(var(--caption-baselines) * 1.15rem);
-    padding-top: var(--caption-baseline-shift);
+    padding-top: calc(var(--caption-baseline-shift)*1.15rem);
     margin-bottom: calc(var(--caption-baseline-push)*1.15rem);
     display: inline-block;
     vertical-align: baseline;
@@ -1398,8 +1425,8 @@ input {
     height: calc(var(--caption-baselines) * 1.15rem);
     margin-left: .35rem;
     line-height: calc(var(--caption-baselines) * 1.15rem);
-    padding-top: var(--caption-baseline-shift);
-    margin-bottom: var(--caption-baseline-push);
+    padding-top: calc(var(--caption-baseline-shift)*1.15rem);
+    margin-bottom:calc(var(--caption-baseline-push)*1.15rem);
     display: inline-block;
     vertical-align: baseline;
   }
@@ -1414,6 +1441,10 @@ input {
 
   div#message {
     margin-bottom: calc(var(--caption-baselines) * 1.15rem);
+  }
+
+  #sent-alert-container {
+    width: calc(100vw - 2 * var(--rg-margin));
   }
 
   #form-alert p {

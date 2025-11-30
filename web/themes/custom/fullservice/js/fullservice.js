@@ -3,7 +3,6 @@
 // =====================================================================================================================================
 // START UP
 // =====================================================================================================================================
-console.log("fullservice.js loaded:", document.getElementById("index-cursor"));
 
 let mobile = false;
 let scrollInterval = null;
@@ -16,13 +15,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
     // Check if mobile video exists before adding listeners
     const mobileVideo = document.querySelector('#mobile-video');
     if (mobileVideo) {
-      console.log('Mobile video found');
       // Play as soon as the lazy loader has loaded the video
       mobileVideo.addEventListener('loadeddata', () => {
-        console.log('playing mobile video');
         mobileVideo.play().catch(err => {
           playMobileVideoOnInteraction('#mobile-video');
-          console.warn('Mobile autoplay failed:', err);
         });
       });
     } else {
@@ -212,7 +208,6 @@ info.addEventListener("mouseup", (e) => {
 
 for (let i = 0; i < infoLinks.length; i++) {
   const link = infoLinks[i];
-  console.log('Adding listeners to link:', link);
   link.addEventListener('mouseenter', () => {
     copyright.classList.remove('active');
   });
@@ -247,9 +242,6 @@ function closePage() {
   } else if (section == 'production') {
     if (ProductionCarousel.initialized()) {
       ProductionCarousel.deinitialize();
-      document.querySelectorAll('#production-page video').forEach(v => {
-        v.addEventListener('play', () => console.log('Video started:', v.id));
-      });
     }
     const productionVideos = production.querySelectorAll('video');
     for (let i = 0; i < productionVideos.length; i++) {
@@ -389,7 +381,6 @@ function playMobileVideoOnInteraction(videoSelector) {
 
   function tryPlay() {
     video.play()
-      .then(() => console.log('Mobile video playing'))
       .catch(err => console.warn('Mobile autoplay failed:', err));
 
     // Remove the listener after first interaction
@@ -490,7 +481,6 @@ const ProductionCarousel = (() => {
   // Carousel Initialization
   // =======================
   function createCarousel() {
-    console.log('Creating production carousel');
     // Destroy any existing instance first
     if (state.flkty) {
       state.flkty.destroy();
@@ -550,7 +540,7 @@ const ProductionCarousel = (() => {
   // Product Controls
   // =======================
   function openProduct(cellElement, cellIndex) {
-    // temporarilyPauseScroll(750);
+    temporarilyPauseScroll(750);
     if (!state.currOpenProduct && state.ticking) cancelScroll();
 
     if (state.currOpenProduct !== cellElement) {
@@ -711,9 +701,12 @@ const ProductionCarousel = (() => {
       production.classList.remove("scrolling");
     }, 120);
 
-    if (!state.isHoveringCarousel || state.pauseScroll) return;
+    if (state.pauseScroll) {
+      e.preventDefault();
+      return
+    }
+    if (!state.isHoveringCarousel) return;
     if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-
     e.preventDefault();
 
     // next product opens when a swipe is detected (measured by a spike in e.deltaY)
@@ -863,7 +856,7 @@ for (let i = 0; i < pitchList.length; i++) {
 }
 
 function fadeInForm() {
-  contactForm.style.display = "block";
+  contactForm.style.display = "flex";
   pitches.classList.add('expanded');
   requestAnimationFrame(() => {
     contactForm.style.opacity = "1";
@@ -912,6 +905,34 @@ function alertMessage(message) {
   alertTimerId = setTimeout(() => {
     document.querySelector('#form-alert').classList.remove('active');
   }, 2500);
+}
+
+function alertSent() {
+  if (alertTimerId) {
+    clearTimeout(alertTimerId);
+  }
+  document.querySelector('#form-alert p').innerHTML = '';
+
+  if (mobile) info.style.opacity = "0";
+  const sentAlertContainer = document.querySelector('#sent-alert-container');
+  const actualContactForm = document.querySelector('#actual-contact-form');
+
+  const height = window.getComputedStyle(actualContactForm).height;
+  sentAlertContainer.style.height = height;
+  sentAlertContainer.classList.add('visible');
+  
+  actualContactForm.style.opacity = 0;
+
+  alertTimerId = setTimeout(() => {
+    sentAlertContainer.classList.remove('visible');
+    sentAlertContainer.addEventListener("transitionend", () => {
+      contactForm.style.display = "none";
+      pitches.classList.remove('expanded');
+      actualContactForm.style.opacity = "1";
+      if (mobile) info.style.opacity = "1";
+      resetPitches();
+    }, { once: true });
+  }, 3000);
 }
 
 const sendButton = document.getElementById('send-form');
@@ -963,9 +984,7 @@ sendButton.addEventListener('click', async () => {
     const result = await response.json();
 
     if (result.success) {
-      alertMessage('Message sent!');
-      // Reset form
-      fadeOutForm();
+      alertSent();
     } else {
       alert('Error: ' + (result.error || 'Unknown error'));
     }
