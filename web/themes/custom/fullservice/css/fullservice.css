@@ -1421,7 +1421,9 @@ input {
     height: calc(100dvh - 14rem);
   }
 
-  #mobile-video-container {
+  #mobile-area,
+  #mobile-video-container,
+  #mobile-disclaimer-area {
     height: calc(100dvh - 16rem);
   }
 }
