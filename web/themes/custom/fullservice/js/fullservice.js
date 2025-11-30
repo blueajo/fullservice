@@ -12,6 +12,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
   if (screen.width <= 768) {
     mobile = true;
 
+    var meta = document.querySelector('meta[name=viewport]');
+    if (meta) {
+      meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+    }
+
     // Check if mobile video exists before adding listeners
     const mobileVideo = document.querySelector('#mobile-video');
     if (mobileVideo) {
@@ -1185,7 +1190,7 @@ window.addEventListener('error', (event) => {
 // =====================================================================================================================================
 
 document.getElementById('from').addEventListener('blur', function () {
-
+  console.log('blur');
   document.body.style.zoom = 0.99;
   setTimeout(function () {
     document.body.style.zoom = 1;
