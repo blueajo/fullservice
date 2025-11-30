@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
 
     syncCaptionWidth();
+    showDisclaimer();
 
     openPage('index');
     if (location.hash) {
@@ -390,6 +391,26 @@ function playMobileVideoOnInteraction(videoSelector) {
   // Listen for user interaction
   document.addEventListener('click', tryPlay, { once: true });
   document.addEventListener('touchstart', tryPlay, { once: true });
+}
+
+function showDisclaimer() {
+  const disclaimer = document.querySelector('#mobile-disclaimer');
+  if (!disclaimer) return;
+  let disclaimerTimeout = null;
+
+  function onDisclaimer() {
+    if (disclaimerTimeout) clearTimeout(disclaimerTimeout);
+    disclaimer.classList.add('visible');
+  }
+
+  function offDisclaimer() {
+    disclaimerTimeout = setTimeout(() => {
+      disclaimer.classList.remove('visible');
+    }, 2500);
+  }
+
+  document.addEventListener('touchstart', onDisclaimer);
+  document.addEventListener('touchend', offDisclaimer);
 }
 
 // =====================================================================================================================================

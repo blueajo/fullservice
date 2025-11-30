@@ -59,7 +59,7 @@
     display: block;
     /* overflow: hidden; */
     background-color: transparent;
-    width: max-content;
+    width: 100%;
     max-width: 100%;
 }
 
