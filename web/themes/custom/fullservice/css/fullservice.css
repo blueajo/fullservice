@@ -232,11 +232,11 @@ a:active, a.current-page, a.active-link, #footer a.current-page:hover {
   top: 0;
   left: 0;
   height: auto;
-  width: calc(100vw - 4rem);
-  padding-top: 1rem;
+  width: calc(100vw - 2 * var(--rg-margin));
+  padding-top: 1.25rem;
   padding-bottom: 1rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-left: var(--rg-margin);
+  padding-right: var(--rg-margin);
   display: flex;
   grid-area: 'header';
   flex-wrap: nowrap;
@@ -261,7 +261,7 @@ a:active, a.current-page, a.active-link, #footer a.current-page:hover {
 }
 
 #footer p {
-  transition: opacity 0.4s ease;
+  transition: opacity 0.2s ease;
 }
 
 #header p {
@@ -456,7 +456,7 @@ span.gap {
   right: 0;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.2s ease;
   max-height: calc(100vh - 5rem);
   overflow-y: scroll;
   overflow-x: visible;
@@ -750,6 +750,8 @@ img.portrait.visible {
 #contact-form {
   display: none;
   grid-area: cf;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 #form-alert {
@@ -918,6 +920,7 @@ input {
   row-gap: 3rem;
   cursor: none;
   margin-bottom: 5rem;
+  transition: opacity 0.4s ease;
 }
 
 #info-page:active {
@@ -1019,6 +1022,11 @@ input {
     grid-template-areas: 'of'
                          'li';
     height: auto;
+  }
+
+  #links {
+    width: max-content;
+    max-width: calc(100vw - (2 * var(--rg-margin)));
   }
 
   #office {
