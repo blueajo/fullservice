@@ -691,6 +691,7 @@ span.gap {
   padding-top: var(--top-margin);
   padding-left: var(--rg-margin);
   padding-right: var(--rg-margin);
+  transition: opacity 0.4s ease;
 }
 
 .service-provider {
@@ -1266,6 +1267,10 @@ input {
     color: var(--bg-color);
     opacity: 0;
     transition: opacity 0.6s ease;
+    font-size: 1.4rem;
+    line-height: calc(var(--caption-baselines) * 1.15rem);
+    padding-top: var(--caption-baseline-shift);
+    margin-bottom: var(--caption-baseline-push);
   }
 
   #mobile-disclaimer.visible {
@@ -1285,20 +1290,25 @@ input {
 
   /* Video element */
   #mobile-video {
-    min-width: 100%;
-    min-height: 100%;
+    position: absolute;
+    width: auto;
+    height: 100%;
     object-fit: cover;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: block;
   }
 
   /* Video thumbnail overlay (if lazy loading) */
   #mobile-video-container .video-thumbnail {
     position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 100%;
-    min-height: 100%;
+    width: auto;
+    height: 100%;
     object-fit: cover;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     /* blurred thumbnail fills container */
     z-index: 2;
     transition: opacity 0.5s ease;

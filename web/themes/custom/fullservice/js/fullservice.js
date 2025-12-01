@@ -425,6 +425,9 @@ function scaleMedia(media, w, h, container) {
   if (mobile) {
     heightRatio = (window.innerHeight * 0.5) / h;
     widthRatio = (window.innerWidth - remToPx(4)) / w;
+  } else if (window.innerWidth > remToPx(100)) {
+    heightRatio = (window.innerHeight * 0.7) / h;
+    widthRatio = (0.8 * window.innerWidth) / w;
   } else {
     heightRatio = (window.innerHeight - remToPx(18)) / h;
     widthRatio = (0.8 * window.innerWidth) / w;
@@ -456,11 +459,11 @@ const ProductionCarousel = (() => {
     scrollDelta: 0,
     ticking: false,
     isHoveringCarousel: false,
-    scrollTimeout: null
+    scrollTimeout: null,
+    disableNextAnimation: false
   };
 
   let viewport = null;
-  let wheelEndTimeout = null;
   const leftArrow = document.getElementById("left-arrow-area");
   const rightArrow = document.getElementById("right-arrow-area");
   const centerArea = document.getElementById("center-area");
@@ -469,24 +472,17 @@ const ProductionCarousel = (() => {
   // Utility Functions
   // =======================
   const remToPx = rem => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-
   const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
-
   const temporarilyPauseScroll = (duration = 600) => {
     state.pauseScroll = true;
-    setTimeout(() => {
-      state.pauseScroll = false;
-    }, duration);
+    setTimeout(() => { state.pauseScroll = false; }, duration);
   };
 
   // =======================
   // Carousel Initialization
   // =======================
   function createCarousel() {
-    // Destroy any existing instance first
-    if (state.flkty) {
-      state.flkty.destroy();
-    }
+    if (state.flkty) state.flkty.destroy();
 
     state.flkty = new Flickity(production, {
       cellAlign: "center",
@@ -497,18 +493,14 @@ const ProductionCarousel = (() => {
       prevNextButtons: false,
       cellSelector: ".product",
       freeScroll: true,
-      lazyLoad: true,          
-      contain: false,            // Allow infinite scroll
-      percentPosition: false,     // Use pixel positioning
+      lazyLoad: true,
+      contain: false,
+      percentPosition: false,
       initialIndex: 0
     });
 
     viewport = document.querySelector(".flickity-viewport");
 
-    // Reset transform (important for Flickity)
-    // document.querySelector(".flickity-slider").style.transform = "translateX(0%)";
-
-    // Static click: open/close products
     state.flkty.on("staticClick", (event, pointer, cellElement, cellIndex) => {
       if (!cellElement) return;
       if (cellElement === state.currOpenProduct) closeProduct();
@@ -517,26 +509,12 @@ const ProductionCarousel = (() => {
 
     openProduct(state.flkty.cells[0].element, 0);
 
-    setTimeout(() => {
-      production.classList.add('flickity-ready');
-    }, "200");
+    setTimeout(() => { production.classList.add('flickity-ready'); }, 200);
   }
 
-  function initialized() {
-    return !(state.flkty == null);
-  }
-
-  function deinitialize() {
-    if (state.flkty) {
-      closeProduct();
-      state.flkty.destroy();
-    }
-    state.flkty = null;
-  }
-
-  function getCurrentProduct() {
-    return state.currOpenProduct;
-  }
+  function initialized() { return !(state.flkty == null); }
+  function deinitialize() { if (state.flkty) { closeProduct(); state.flkty.destroy(); } state.flkty = null; }
+  function getCurrentProduct() { return state.currOpenProduct; }
 
   // =======================
   // Product Controls
@@ -576,7 +554,8 @@ const ProductionCarousel = (() => {
       }
 
       state.flkty.reposition();
-      state.flkty.selectCell(cellIndex, true, false);
+      const animate = !state.disableNextAnimation;
+      state.flkty.selectCell(cellIndex, true, !animate);
       state.flkty.once('settle', () => state.flkty.reposition());
 
       state.currOpenProduct = cellElement;
@@ -586,6 +565,8 @@ const ProductionCarousel = (() => {
       leftArrow.classList.add("expanded");
       rightArrow.classList.add("expanded");
     }
+
+    state.disableNextAnimation = false;
   }
 
   function closeProduct() {
@@ -621,162 +602,75 @@ const ProductionCarousel = (() => {
   // =======================
   // Arrow Controls
   // =======================
-
   function handleArrowPress(dir) {
     if (state.currOpenProduct) {
-      let index = (state.flkty.selectedIndex + dir) % state.flkty.cells.length;
-      index = index < 0 ? state.flkty.cells.length - 1 : index;
+      let index = (state.flkty.selectedIndex + dir + state.flkty.cells.length) % state.flkty.cells.length;
       openProduct(state.flkty.cells[index].element, index);
     } else {
-      let index = (state.flkty.selectedIndex + (dir * 5)) % state.flkty.cells.length;
-      index = index < 0 ? state.flkty.cells.length - 5 : index;
+      let index = (state.flkty.selectedIndex + (dir * 5) + state.flkty.cells.length) % state.flkty.cells.length;
       state.flkty.selectCell(index, true, false);
     }
     temporarilyDisablePointer();
   }
 
   function setupArrowControls() {
-    leftArrow.addEventListener("click", () => {
-      handleArrowPress(-1);
-    });
-
-    rightArrow.addEventListener("click", () => {
-      handleArrowPress(1);
-    });
-
+    leftArrow.addEventListener("click", () => handleArrowPress(-1));
+    rightArrow.addEventListener("click", () => handleArrowPress(1));
     centerArea.addEventListener("click", closeProduct);
-
     document.addEventListener("keydown", (event) => {
       const section = document.querySelector('.page:not(.inactive)').id.slice(0, -5);
-      if (section == 'production') {
-        if (event.key === 'ArrowLeft') {
-          event.preventDefault();
-          // Left arrow key pressed
-          handleArrowPress(-1);
-        } else if (event.key === 'ArrowRight') {
-          event.preventDefault();
-          // Right arrow key pressed
-          handleArrowPress(1);
-        }
+      if (section === 'production') {
+        if (event.key === 'ArrowLeft') { event.preventDefault(); handleArrowPress(-1); }
+        else if (event.key === 'ArrowRight') { event.preventDefault(); handleArrowPress(1); }
       }
     });
   }
 
   function temporarilyDisablePointer() {
     viewport.style.zIndex = "-1";
-    production.addEventListener(
-      "mousemove",
-      () => (viewport.style.zIndex = "1"),
-      { once: true }
-    );
+    production.addEventListener("mousemove", () => (viewport.style.zIndex = "1"), { once: true });
   }
 
   // =======================
-  // Scroll Momentum Logic
+  // Scroll Handling
   // =======================
   function setupScrollHandling() {
-    production.addEventListener("mouseenter", () => (state.isHoveringCarousel = true));
-    production.addEventListener("mouseleave", () => (state.isHoveringCarousel = false));
-
+    production.addEventListener("mouseenter", () => state.isHoveringCarousel = true);
+    production.addEventListener("mouseleave", () => state.isHoveringCarousel = false);
     window.addEventListener("wheel", handleWheel, { passive: false });
   }
 
-  let lastDeltaY = 0;
-  let lastGap = 0;
-  let scrollDebounceTimeout = null; // timer for scroll debouncer 
-  let swiped = false;
+  function isTrackpadEvent(e) {
+    if (e.wheelDeltaY !== undefined) return e.wheelDeltaY !== e.deltaY * -3;
+    return e.deltaMode === 0;
+  }
 
   function handleWheel(e) {
-    clearTimeout(scrollDebounceTimeout);
-    scrollDebounceTimeout = setTimeout(() => {
-      if (!swiped && state.currOpenProduct) {
-        let nextIndex = (state.flkty.selectedIndex + Math.sign(e.deltaY)) % state.flkty.cells.length;
-        nextIndex = nextIndex < 0 ? state.flkty.cells.length - 1 : nextIndex;
-        const nextEl = state.flkty.cells[nextIndex].element;
-        openProduct(nextEl, nextIndex);
-        return;
-      }
-      state.scrollDelta = 0;
-      state.scrollMomentum = 0;
-      swiped = false;
-      production.classList.remove("scrolling");
-    }, 120);
-
-    if (state.pauseScroll) {
-      e.preventDefault();
-      return
-    }
-    if (!state.isHoveringCarousel) return;
-    if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+    if (!state.isHoveringCarousel || state.pauseScroll) return;
     e.preventDefault();
 
-    // next product opens when a swipe is detected (measured by a spike in e.deltaY)
+    let delta = e.deltaY;
+    if (e.deltaMode === 1) delta *= 15;
+    if (e.deltaMode === 2) delta *= 60;
+    delta = -delta;
+
+    const isTrackpad = isTrackpadEvent(e);
+    const isMouseWheel = !isTrackpad;
+
     if (state.currOpenProduct) {
-      const gap = e.deltaY - lastDeltaY;
-      const swipe = (Math.sign(gap) !== Math.sign(lastGap)) && (Math.abs(e.deltaY) > 10) || state.scrollDelta > 200;
-
-      // const swipe = (Math.sign(gap) !== Math.sign(lastGap)) && (Math.abs(e.deltaY) > 15);
-
-      if (swipe) {
-        swiped = true;
-        let nextIndex = (state.flkty.selectedIndex + Math.sign(e.deltaY)) % state.flkty.cells.length;
-        nextIndex = nextIndex < 0 ? state.flkty.cells.length - 1 : nextIndex;
-        const nextEl = state.flkty.cells[nextIndex].element;
-        openProduct(nextEl, nextIndex);
-        return;
-      }
-
-      lastGap = e.deltaY - lastDeltaY;
-      lastDeltaY = e.deltaY;
+      // Always animate next product when a product is open
+      let nextIndex = (state.flkty.selectedIndex + Math.sign(delta) + state.flkty.cells.length) % state.flkty.cells.length;
+      openProduct(state.flkty.cells[nextIndex].element, nextIndex);
+      return;
     }
 
-    // Apply momentum
-    state.scrollMomentum += Math.sign(e.deltaY) * Math.pow(Math.abs(e.deltaY), 0.9) * 0.3;
-    state.scrollMomentum = clamp(state.scrollMomentum, -100, 100);
-    state.scrollDelta += e.deltaY;
-
-    production.classList.add("scrolling");
-    if (!swiped) {
-      animateScroll();
-    }
-  }
-
-  function cancelScroll() {
+    // Free scroll → move carousel instantly
+    state.flkty.x -= delta * 0.5;
     state.flkty.dragX = state.flkty.x;
-    state.flkty.velocity = 0;
-    state.flkty.dragEnd();
-    state.ticking = false;
-    state.scrollMomentum = 0;
-    state.scrollDelta = 0;
-    production.classList.remove("scrolling");
-  }
+    state.flkty.positionSlider();
 
-  function animateScroll() {
-    if (state.ticking) return;
-    state.ticking = true;
-
-    const update = () => {
-      if (state.pauseScroll) {
-        state.ticking = false;
-        state.scrollMomentum = 0;
-        state.scrollDelta = 0;
-        production.classList.remove("scrolling");
-        return;
-      }
-
-      state.scrollMomentum *= 0.9; // friction
-
-      if (Math.abs(state.scrollMomentum) > 0.1) {
-        state.flkty.x -= state.scrollMomentum;
-        state.flkty.dragX = state.flkty.x;
-        state.flkty.positionSlider();
-        requestAnimationFrame(update);
-      } else {
-        cancelScroll();
-      }
-    };
-
-    requestAnimationFrame(update);
+    // Next product open should not animate
+    state.disableNextAnimation = true;
   }
 
   // =======================
@@ -785,7 +679,6 @@ const ProductionCarousel = (() => {
   return {
     init() {
       console.log('ProductionCarousel.init called');
-      console.trace(); 
       createCarousel();
       setupArrowControls();
       setupScrollHandling();
@@ -797,6 +690,8 @@ const ProductionCarousel = (() => {
     getCurrentProduct
   };
 })();
+
+
 
 // =====================================================================================================================================
 // SERVICE PROVIDERS
@@ -866,11 +761,11 @@ function fadeInForm() {
 
 function fadeOutForm() {
   contactForm.style.opacity = "0";
-  if (mobile) info.style.opacity = "0";
+  if (mobile) serviceProviders.style.opacity = "0";
   contactForm.addEventListener("transitionend", () => {
     contactForm.style.display = "none";
     pitches.classList.remove('expanded');
-    if (mobile) info.style.opacity = "1";
+    if (mobile) serviceProviders.style.opacity = "1";
     resetPitches();
   }, { once: true });
 }
