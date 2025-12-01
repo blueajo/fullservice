@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     var meta = document.querySelector('meta[name=viewport]');
     if (meta) {
-      meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+      meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no');
     }
 
     // Check if mobile video exists before adding listeners
@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
     setTimeout(setupProductionObserver, 500);
   } else {
-    document.querySelector('#cursor').classList.add('active');
     document.addEventListener('mousemove', (event) => {
+      document.querySelector('#cursor').classList.add('active');
       document.getElementById('index-cursor').classList.add('visible');
     }, { once: true });
     setupHomepageVideos();
