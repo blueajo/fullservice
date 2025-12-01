@@ -1197,11 +1197,6 @@ input {
                             );
   }
 
-  #header p {
-    position: sticky;
-    top: 6rem;
-  }
-
   #index-link.active, #index-link.current-page, #footer a.current-page:hover {
     text-decoration: none;
   }
@@ -1221,6 +1216,13 @@ input {
     height: min-content;
     position: fixed;
     z-index: 1000;
+  }
+
+  #header,
+  #footer {
+    isolation: isolate;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   #mobile-footer {
