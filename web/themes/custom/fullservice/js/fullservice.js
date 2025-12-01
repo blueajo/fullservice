@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
     setTimeout(setupProductionObserver, 500);
   } else {
-    const indexCursor = document.getElementById('index-cursor')
+    document.querySelector('#cursor').classList.add('active');
     document.addEventListener('mousemove', (event) => {
       document.getElementById('index-cursor').classList.add('visible');
     }, { once: true });
@@ -155,7 +155,7 @@ function lerp(start, end, amt) {
 
 // Info cursor objects
 const copyright = document.getElementById('info-cursor');
-const infoLinks = document.querySelectorAll('#info-page a');
+const infoLinks = document.querySelectorAll('#info-page a, #footer a');
 
 var infoCursor = {
   el: copyright,
@@ -194,32 +194,113 @@ index.addEventListener("mouseenter", (e) => {
   videoDot.classList.add('active');
 });
 
-// Copyright cursor behavior
-info.addEventListener("mouseleave", (e) => {
-  copyright.classList.remove('active');
-});
-
-info.addEventListener("mouseenter", (e) => {
-  copyright.classList.add('active');
-});
-
 info.addEventListener("mousedown", (e) => {
-  copyright.classList.remove('active');
+  copyright.classList.remove('visible');
 });
 
 info.addEventListener("mouseup", (e) => {
-  copyright.classList.add('active');
+  copyright.classList.add('visible');
 });
 
 for (let i = 0; i < infoLinks.length; i++) {
   const link = infoLinks[i];
   link.addEventListener('mouseenter', () => {
-    copyright.classList.remove('active');
+    copyright.classList.remove('visible');
   });
   link.addEventListener('mouseout', () => {
-    copyright.classList.add('active');
+    copyright.classList.add('visible');
   });
 }
+
+// ========================
+//  New dot cursor
+// ========================
+// Animated cursor objects
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursor-dot');
+const cursorIcon = document.getElementById('cursor-icon');
+
+const animatedCursor = {
+  el: cursor,
+  dot: cursorDot,
+  icon: cursorIcon,
+  x: window.innerWidth / 2,
+  y: window.innerHeight / 2,
+  state: 'default',
+  update: function () {
+    this.x = mouseX;
+    this.y = mouseY;
+    this.el.style = 'transform: translate3d(' + this.x + 'px,' + this.y + 'px, 0);';
+  },
+  setState: function (newState) {
+    if (this.state === newState) return;
+
+    // Remove all state classes
+    this.dot.classList.remove('default', 'link', 'plus', 'minus', 'hidden');
+
+    // Add new state class
+    this.dot.classList.add(newState);
+    this.state = newState;
+
+  }
+};
+
+// Mouse move tracking
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  animatedCursor.update();
+});
+
+// Cursor state management
+document.addEventListener('mouseover', (e) => {
+  const link = e.target.closest('a');
+  let product = e.target.closest('.product img');
+  if (!product) product = e.target.closest('.product video');
+  const arrowLeft = e.target.closest('#left-arrow-area');
+  const arrowRight = e.target.closest('#right-arrow-area');
+  const pitch = e.target.closest('.checkbox-container');
+  const button = e.target.closest('#send-form');
+  const header = e.target.closest('#header');
+  const section = document.querySelector('.page:not(.inactive)').id.slice(0, -5);
+  const editable = e.target.closest('input, #message');
+
+  if (link || pitch || button) {
+    animatedCursor.setState('link');
+  } else if (product) {
+    const action = product.closest('.product').classList.contains('open') ? 'minus' : 'plus';
+    animatedCursor.setState(action);
+  } else if (link || pitch || button) {
+    animatedCursor.setState('link');
+  } else if (arrowLeft || arrowRight || editable || section === 'info') {
+    if (header) {
+      animatedCursor.setState('default');
+      copyright.classList.remove('visible');
+    } else {
+      animatedCursor.setState('hidden');
+      copyright.classList.add('visible');
+    }
+  } else {
+    animatedCursor.setState('default');
+  }
+});
+
+document.addEventListener('pointerdown', (e) => {
+  animatedCursor.dot.classList.add('clicking');
+  if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
+    animatedCursor.setState('default');
+  }
+});
+
+document.addEventListener('pointerup', (e) => {
+  animatedCursor.dot.classList.remove('clicking');
+  if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
+    animatedCursor.setState('hidden');
+  }
+});
+
+// Initialize cursor
+animatedCursor.update();
 
 // =====================================================================================================================================
 // NAV
@@ -346,6 +427,7 @@ const videoCredits = document.getElementById('video-credits');
 const indexLink = document.querySelector('#footer p');
 
 videoCredits.addEventListener('mouseenter', () => {
+  document.getElementById('index-cursor').classList.remove('visible');
   if (window.innerWidth > 900) {
     indexLink.style.opacity = 1;
   } else {
@@ -355,6 +437,7 @@ videoCredits.addEventListener('mouseenter', () => {
 
 videoCredits.addEventListener('mouseleave', () => {
   indexLink.style.opacity = 1;
+  document.getElementById('index-cursor').classList.add('visible');
 });
 
 // Link areas on index page
@@ -503,8 +586,13 @@ const ProductionCarousel = (() => {
 
     state.flkty.on("staticClick", (event, pointer, cellElement, cellIndex) => {
       if (!cellElement) return;
-      if (cellElement === state.currOpenProduct) closeProduct();
-      else openProduct(cellElement, cellIndex);
+      if (cellElement === state.currOpenProduct) {
+        animatedCursor.setState('plus');
+        closeProduct();
+      } else {
+        openProduct(cellElement, cellIndex);
+        animatedCursor.setState('minus');
+      }
     });
 
     openProduct(state.flkty.cells[0].element, 0);
@@ -665,7 +753,7 @@ const ProductionCarousel = (() => {
     }
 
     // Free scroll → move carousel instantly
-    state.flkty.x -= delta * 0.5;
+    state.flkty.x -= delta;
     state.flkty.dragX = state.flkty.x;
     state.flkty.positionSlider();
 
@@ -1077,17 +1165,4 @@ document.addEventListener('visibilitychange', () => {
 
 window.addEventListener('error', (event) => {
   console.error('Global error caught:', event.error);
-});
-
-
-// =====================================================================================================================================
-// For safari blur zoom
-// =====================================================================================================================================
-
-document.getElementById('from').addEventListener('blur', function () {
-  console.log('blur');
-  document.body.style.zoom = 0.99;
-  setTimeout(function () {
-    document.body.style.zoom = 1;
-  }, 50);
 });

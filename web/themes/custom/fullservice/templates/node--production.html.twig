@@ -27,7 +27,11 @@
         {% endif %}
       {% endif %}    
       
-      <div class="lazy-video-container" {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}>
+      <div
+        class="lazy-video-container"
+        data-cursor-action="plus"
+        {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
+      >
         {% if thumbnail_url %}
           <img 
             class="video-thumbnail" 
@@ -54,6 +58,7 @@
           src="{{ thumb_url }}"
           data-src="{{ full_url }}"
           alt="{{ media.field_media_image.0.alt|default(node.title.value) }}"
+          data-cursor-action="plus"
           {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
         >
     {% endif %}

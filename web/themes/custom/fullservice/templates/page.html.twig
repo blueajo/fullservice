@@ -12,12 +12,19 @@
 {% set service_providers_node = service_providers_node ?? null %}
 
 <div id='container'>
+
+  <div id="cursor">
+    <div id="cursor-dot">
+      <img id="plus" src="{{ directory }}/img/cursors/plus.svg" />
+      <img id="minus" src="{{ directory }}/img/cursors/minus.svg" />
+    </div>
+  </div>
   
   {# HEADER #}
   <div id="header">
-      <p><span class="paren">(</span><a id="production-link" class="page-link" href="#production">Production</a><span id="production-text" class="nav-text">{% if header_node.field_production_blurb %} {{ header_node.field_production_blurb.value }}{% endif %}</span><span>, </span><span id="production-gap"></span>
-          <a id="pitches-link" class="page-link" href="#pitches">Pitches</a><span id="pitches-text" class="nav-text">{% if header_node.field_pitches_blurb %} {{ header_node.field_pitches_blurb.value }}{% endif %}</span><span>, </span><span id="pitches-gap"></span>
-          <a id="service-providers-link" class="page-link" href="#service-providers">Service Providers</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span>, </span><span id="service-providers-gap"></span>
+      <p><span class="paren">(</span><a id="production-link" class="page-link" href="#production">Production</a><span id="production-text" class="nav-text">{% if header_node.field_production_blurb %} {{ header_node.field_production_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="production-gap"></span>
+          <a id="pitches-link" class="page-link" href="#pitches">Pitches</a><span id="pitches-text" class="nav-text">{% if header_node.field_pitches_blurb %} {{ header_node.field_pitches_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="pitches-gap"></span>
+          <a id="service-providers-link" class="page-link" href="#service-providers">Service Providers</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="service-providers-gap"></span>
           <a id="info-link" class="page-link" href="#info">Info</a><span id="info-text" class="nav-text">{% if header_node.field_info_blurb %}{{ header_node.field_info_blurb.value }}{% endif %}</span><span id="info-gap"></span><span><span class="paren">)</span></span>
       </p>
   </div>
