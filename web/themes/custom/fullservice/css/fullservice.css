@@ -1252,7 +1252,7 @@ input {
   }
 
   #mobile-disclaimer-area {
-    width: calc(300px - var(--rg-margin));
+    width: calc(300px - (1.5 * var(--rg-margin)));
     height: calc(100dvh - 14rem);
     display: flex;
     justify-content: center;
@@ -1492,6 +1492,6 @@ input {
   }
 
   #mobile-disclaimer-area {
-    width: calc(100vw - 3 * var(--rg-margin));
+    width: calc(100vw - 3.5 * var(--rg-margin));
   }
 }
