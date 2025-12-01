@@ -11,15 +11,13 @@
 {% set pitches_node = pitches_node ?? null %}
 {% set service_providers_node = service_providers_node ?? null %}
 
-<div id='container'>
-
-  <div id="cursor">
-    <div id="cursor-dot">
-      <img id="plus" src="{{ directory }}/img/cursors/plus.svg" />
-      <img id="minus" src="{{ directory }}/img/cursors/minus.svg" />
-    </div>
+<div id="cursor">
+  <div id="cursor-dot">
+    <img id="plus" src="{{ directory }}/img/cursors/plus.svg" />
+    <img id="minus" src="{{ directory }}/img/cursors/minus.svg" />
   </div>
-  
+</div>
+<div id='container'>
   {# HEADER #}
   <div id="header">
       <p><span class="paren">(</span><a id="production-link" class="page-link" href="#production">Production</a><span id="production-text" class="nav-text">{% if header_node.field_production_blurb %} {{ header_node.field_production_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="production-gap"></span>
