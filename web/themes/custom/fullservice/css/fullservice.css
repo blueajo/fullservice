@@ -39,12 +39,6 @@
   grid-template-areas: 'header'
                        'content'
                        'footer';
-  opacity: 0;
-  transition: opacity 1s ease;
-}
-
-#container.visible {
-  opacity: 1;
 }
 
 ::selection {
@@ -1081,7 +1075,6 @@ input {
                         'sp'
                         'in'
                         'mf';
-    transition: opacity 1s ease;
   }
 
   #cursorFollower, #cursorFollower.active {
