@@ -12,10 +12,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
   if (screen.width <= 768) {
     mobile = true;
 
-    var meta = document.querySelector('meta[name=viewport]');
-    if (meta) {
-      meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no');
-    }
+    // var meta = document.querySelector('meta[name=viewport]');
+    // if (meta) {
+    //   meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no');
+    // }
 
     // Check if mobile video exists before adding listeners
     const mobileVideo = document.querySelector('#mobile-video');
