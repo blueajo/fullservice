@@ -12,6 +12,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
   if (screen.width <= 768) {
     mobile = true;
 
+    window.addEventListener('hashchange', forceSafariRepaint);
+    window.addEventListener('scroll', forceSafariRepaint);
+    window.addEventListener('orientationchange', forceSafariRepaint);
+
     var meta = document.querySelector('meta[name=viewport]');
     if (meta) {
       meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no');
@@ -1159,6 +1163,14 @@ document.addEventListener('visibilitychange', () => {
 // Global Error Handler
 // =====================================================================================================================================
 
-window.addEventListener('error', (event) => {
-  console.error('Global error caught:', event.error);
-});
+function forceSafariRepaint() {
+  const header = document.getElementById('header');
+  const footer = document.getElementById('footer');
+
+  [header, footer].forEach(el => {
+    if (!el) return;          // skip if element not found
+    el.style.display = 'none'; // temporarily hide
+    el.offsetHeight;           // force reflow
+    el.style.display = '';     // restore
+  });
+}
