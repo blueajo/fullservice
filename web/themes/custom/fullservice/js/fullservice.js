@@ -663,7 +663,7 @@ const ProductionCarousel = (() => {
 
       state.flkty.reposition();
       const animate = !state.disableNextAnimation;
-      state.flkty.selectCell(cellIndex, true, !animate);
+      state.flkty.selectCell(cellIndex, true, true);//!animate);
       //state.flkty.once('settle', () => state.flkty.reposition());
 
       state.currOpenProduct = cellElement;
@@ -716,7 +716,7 @@ const ProductionCarousel = (() => {
       openProduct(state.flkty.cells[index].element, index);
     } else {
       let index = (state.flkty.selectedIndex + (dir * 5) + state.flkty.cells.length) % state.flkty.cells.length;
-      state.flkty.selectCell(index, true, false);
+      state.flkty.selectCell(index, true, true);
     }
     temporarilyDisablePointer();
   }
