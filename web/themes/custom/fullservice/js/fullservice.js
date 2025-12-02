@@ -600,7 +600,9 @@ const ProductionCarousel = (() => {
       lazyLoad: true,
       contain: false,
       percentPosition: false,
-      initialIndex: 0
+      initialIndex: 0,
+      selectedAttraction: 0.06,
+      friction: 0.4
     });
 
     viewport = document.querySelector(".flickity-viewport");
@@ -662,7 +664,7 @@ const ProductionCarousel = (() => {
       }
 
       state.flkty.reposition();
-      const animate = state.currOpenProduct ? true : false; //!state.disableNextAnimation;
+      const animate = !state.disableNextAnimation;
       state.flkty.selectCell(cellIndex, true, !animate);
       //state.flkty.once('settle', () => state.flkty.reposition());
 
@@ -690,9 +692,7 @@ const ProductionCarousel = (() => {
     if (productMedia && productMedia.tagName === 'VIDEO') {
       productMedia.pause();
       videoContainer.classList.remove('video-playing');
-      if (videoContainer) {
-        videoContainer.style.width = "15vw";
-      }
+      videoContainer.style.width = "15vw";
     } else if (productMedia && productMedia.tagName === 'IMG') {
       productMedia.style.width = "15vw";
     }
@@ -705,6 +705,7 @@ const ProductionCarousel = (() => {
 
     state.flkty.options.dragThreshold = 3;
     state.flkty.updateDraggable();
+
   }
 
   // =======================
@@ -716,7 +717,7 @@ const ProductionCarousel = (() => {
       openProduct(state.flkty.cells[index].element, index);
     } else {
       let index = (state.flkty.selectedIndex + (dir * 5) + state.flkty.cells.length) % state.flkty.cells.length;
-      state.flkty.selectCell(index, true, true);
+      state.flkty.selectCell(index, true, false);
     }
     temporarilyDisablePointer();
   }
@@ -755,7 +756,7 @@ const ProductionCarousel = (() => {
 
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   let lastWheelTime = 0;
-  const SAFARI_THROTTLE = 16; // ~60fps
+  const SAFARI_THROTTLE = 30; // ~60fps
 
   function handleWheel(e) {
     if (!state.isHoveringCarousel || state.pauseScroll) return;
@@ -771,6 +772,7 @@ const ProductionCarousel = (() => {
     let delta = e.deltaY;
     if (e.deltaMode === 1) delta *= 15;
     if (e.deltaMode === 2) delta *= 60;
+    if (isSafari) delta *= 2;
     delta = -delta;
 
     const isTrackpad = isTrackpadEvent(e);

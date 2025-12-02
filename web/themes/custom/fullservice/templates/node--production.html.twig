@@ -51,16 +51,35 @@
     {% set media = node.field_image.0.entity %}
     {% if media.field_media_image|length %}
       {% set image_file = media.field_media_image.0.entity %}
-      {% set full_url = file_url(image_file.uri.value) %}
-      {% set thumb_url = image_file.uri.value|image_style('thumbnail_blur') %}
-        <img 
-          class="lazy-image lazy-loading"
-          src="{{ thumb_url }}"
-          data-src="{{ full_url }}"
-          alt="{{ media.field_media_image.0.alt|default(node.title.value) }}"
-          data-cursor-action="plus"
-          {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
-        >
+      {% set image_uri = image_file.uri.value %}
+      {% set image_alt = media.field_media_image.0.alt|default(node.title.value) %}
+
+      {# Placeholder thumbnail #}
+      {% set thumb = image_uri|image_style('thumbnail_blur') %}
+
+      {# Full responsive images #}
+      {% set mobile = file_url(image_uri|image_style('mobile')) %}
+      {% set desktop = file_url(image_uri|image_style('desktop')) %}
+      {% set desktop_large = file_url(image_uri|image_style('desktop_large')) %}
+
+      <img
+        class="lazy-image lazy-loading"
+        src="{{ thumb }}"
+        data-src="{{ mobile }}"
+        data-srcset="
+          {{ mobile }} 600w,
+          {{ desktop }} 1200w,
+          {{ desktop_large }} 1980w
+        "
+        data-sizes="
+          (min-width: 1600px) 1980px,
+          (min-width: 1200px) 1200px,
+          100vw
+        "
+        alt="{{ image_alt }}"
+        data-cursor-action="plus"
+        {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
+      >
     {% endif %}
   {% endif %}
 

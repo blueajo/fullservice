@@ -1,0 +1,15 @@
+mytheme.mobile:
+  label: Mobile
+  mediaQuery: '(min-width: 0px)'
+  weight: 0
+  multipliers:
+    - 1x
+    - 2x
+
+mytheme.tablet:
+  label: Desktop
+  mediaQuery: '(min-width: 768px)'
+  weight: 1
+  multipliers:
+    - 1x
+    - 2x
