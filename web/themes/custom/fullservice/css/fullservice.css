@@ -44,7 +44,7 @@ body {
                        'content'
                        'footer';
   opacity: 0;
-  transition: opacity 3s ease;
+  transition: opacity 1s ease;
 }
 
 ::selection {

@@ -632,11 +632,9 @@ const ProductionCarousel = (() => {
 
       cellElement.classList.add("open");
 
-      // UPDATED: Handle both images and videos inside lazy-video-container
       let productMedia = cellElement.querySelector("img.lazy-image, img.lazy-loaded, .lazy-video-container video");
       let productCaption = cellElement.querySelector("p");
 
-      // UPDATED: Check if it's a video inside lazy-video-container
       if (productMedia && productMedia.tagName === 'VIDEO') {
         const videoContainer = productMedia.closest('.lazy-video-container');
         productMedia.currentTime = 0;
@@ -660,7 +658,7 @@ const ProductionCarousel = (() => {
       state.flkty.reposition();
       const animate = !state.disableNextAnimation;
       state.flkty.selectCell(cellIndex, true, !animate);
-      state.flkty.once('settle', () => state.flkty.reposition());
+      //state.flkty.once('settle', () => state.flkty.reposition());
 
       state.currOpenProduct = cellElement;
       state.flkty.options.dragThreshold = 10000;
