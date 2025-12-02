@@ -540,7 +540,7 @@ function scaleMedia(media, w, h, container) {
 
   if (container) {
     // For videos, scale the container
-    container.style.transforms = `${w * scaleRatio}px`;
+    container.style.width = `${w * scaleRatio}px`;
     const caption = container.parentElement.querySelector('p');
     if (caption) caption.style.width = `${w * scaleRatio}px`;
   } else {
