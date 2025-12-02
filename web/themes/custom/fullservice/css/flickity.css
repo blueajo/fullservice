@@ -30,3 +30,17 @@ https://flickity.metafizzy.co
       -ms-user-select: none;
           user-select: none;
 }
+
+/* Add to your CSS */
+.flickity-slider {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.product {
+  will-change: transform, width, height;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

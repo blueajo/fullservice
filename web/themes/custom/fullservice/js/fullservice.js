@@ -308,6 +308,12 @@ document.addEventListener('pointerup', (e) => {
 // Initialize cursor
 animatedCursor.update();
 
+window.addEventListener('mouseout', (e) => {
+  if (!e.relatedTarget && !e.toElement) {
+    animatedCursor.setState('hidden');
+  }
+});
+
 // =====================================================================================================================================
 // NAV
 // =====================================================================================================================================
@@ -534,7 +540,7 @@ function scaleMedia(media, w, h, container) {
 
   if (container) {
     // For videos, scale the container
-    container.style.width = `${w * scaleRatio}px`;
+    container.style.transforms = `${w * scaleRatio}px`;
     const caption = container.parentElement.querySelector('p');
     if (caption) caption.style.width = `${w * scaleRatio}px`;
   } else {
