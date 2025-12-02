@@ -274,7 +274,7 @@ document.addEventListener('mouseover', (e) => {
   } else if (link || pitch || button) {
     animatedCursor.setState('link');
   } else if (arrowLeft || arrowRight || editable || section === 'info') {
-    if (header) {
+    if (section === 'info' && header) {
       animatedCursor.setState('default');
       copyright.classList.remove('visible');
     } else {
@@ -361,6 +361,7 @@ function openPage(section) {
     }
   }
   if (section == 'info' && !mobile) {
+    copyright.classList.remove('visible');
     cursorInterval = setInterval(infoFollow, 1000 / 60);
   }
   if (section == 'production' && !mobile) {
@@ -439,6 +440,13 @@ videoCredits.addEventListener('mouseenter', () => {
 videoCredits.addEventListener('mouseleave', () => {
   indexLink.style.opacity = 1;
   document.getElementById('index-cursor').classList.add('visible');
+});
+
+index.addEventListener('mouseenter', () => {
+  document.getElementById('index-cursor').classList.add('visible');
+});
+index.addEventListener('mouseleave', () => {
+  document.getElementById('index-cursor').classList.remove('visible');
 });
 
 // Link areas on index page
@@ -767,7 +775,6 @@ const ProductionCarousel = (() => {
   // =======================
   return {
     init() {
-      console.log('ProductionCarousel.init called');
       createCarousel();
       setupArrowControls();
       setupScrollHandling();
@@ -1152,6 +1159,7 @@ document.addEventListener('visibilitychange', () => {
       cursorInterval = setInterval(infoFollow, 1000 / 60);
     } else if (mobile) {
       scrollInterval = setInterval(scrollHandler, 1000 / 30);
+      document.querySelector('#mobile-video').play();
     }
     pausedVideos.forEach(v => {
       v.play();

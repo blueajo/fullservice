@@ -321,12 +321,7 @@ span.gap {
   pointer-events: none !important;
   cursor: none;
   opacity: 0;
-  transition: opacity 0.1s ease;
-}
-
-#index-cursor {
-  opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.2s ease;
 }
 
 #index-cursor.visible,
