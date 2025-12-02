@@ -30,6 +30,10 @@
   --grey-color: #999999;
 }
 
+body {
+  cursor: none;
+}
+
 #container {
   height: 100vh;
   width: 100%;
@@ -1509,72 +1513,80 @@ input {
 
 
 /* new custom cursor */
-
 /* Cursor styles */
 #cursor {
   position: fixed;
   pointer-events: none;
   z-index: 9999;
-  transform: translate3d(0, 0, 0);
   display: none;
+  left: 0;
+  top: 0;
 }
 
 #cursor.active {
   display: block;
 }
 
+#cursor-wrapper {
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+
 #cursor-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 1.125rem;
   height: 1.125rem;
   background-color: black;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(1);
-  transition: background-color 0.3s ease, opacity 0.3s ease;
+  border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  text-align: center;
+  transition: background-color 0.2s ease,
+    opacity 0.2s ease,
+    width 0.2s ease,
+    height 0.2s ease;
 }
 
-#plus, #minus {
-  width: auto;
+#plus,
+#minus {
+  position: absolute;
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0;
+  /* transition: opacity 0.2s ease; */
+}
+
+#cursor-dot.link,
+#cursor-dot.plus,
+#cursor-dot.minus {
+  width: 2rem;
   height: 2rem;
-  font-size: 2rem;
-  line-height: 2rem;
-  display: none;
-}
-
-/* State classes with animations */
-#cursor-dot.default {
-  animation: scale-to-default 0.6s ease-out forwards;
-}
-
-#cursor-dot.link {
-  animation: scale-to-2rem 0.6s ease-out forwards;
-}
-
-#cursor-dot.link.clicking {
-  animation: scale-to-default 0.6s ease-out forwards;
 }
 
 #cursor-dot.plus,
 #cursor-dot.minus {
   background-color: var(--bg-color);
-  /* beige */
-  animation: scale-to-2rem 0.6s ease-out forwards;
-}
-
-#cursor-dot.plus.clicking,
-#cursor-dot.minus.clicking {
-  animation: scale-to-default 0.6s ease-out forwards;
 }
 
 #cursor-dot.plus #plus,
 #cursor-dot.minus #minus {
-  display: flex;
-  transition: opacity 0.6s ease;
   opacity: 1;
+}
+
+#cursor-dot.link.clicking,
+#cursor-dot.plus.clicking,
+#cursor-dot.minus.clicking {
+  width: 1.125rem;
+  height: 1.125rem;
+  transition: width 0.2s ease,
+              height 0.2s ease;
 }
 
 #cursor-dot.plus.clicking #plus,
@@ -1583,104 +1595,51 @@ input {
 }
 
 #cursor-dot.hidden {
-  transition: transform 0.2s ease-in;
-  transform: translate(-50%, -50%) scale(0);
+  width: 0;
+  height: 0;
 }
 
-@keyframes scale-to-2rem {
-  0% {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  16% {
-    width: 2.32rem;
-    height: 2.32rem;
-  }
-
-  28% {
-    width: 1.87rem;
-    height: 1.87rem;
-  }
-
-  44% {
-    width: 2.05rem;
-    height: 2.05rem;
-  }
-
-  59% {
-    width: 1.98rem;
-    height: 1.98rem;
-  }
-
-  73% {
-    width: 2.01rem;
-    height: 2.01rem;
-  }
-
-  88% {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  100% {
-    width: 2rem;
-    height: 2rem;
-  }
+/* Globally hide cursor */
+/* Exhaustive cursor hide: normal, hover, active, focus, focus-visible */
+html,
+body,
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  cursor: none !important;
 }
 
-@keyframes scale-to-default {
-  0% {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  12% {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  24% {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  36% {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  54% {
-    width: 0.84rem;
-    height: 0.84rem;
-  }
-
-  74% {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  82% {
-    width: 1.06rem;
-    height: 1.06rem;
-  }
-
-  92% {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  96% {
-    width: 1.11rem;
-    height: 1.11rem;
-  }
-
-  100% {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
+/* Interactive states */
+a,
+a:hover,
+a:active,
+a:focus,
+a:focus-visible,
+button,
+button:hover,
+button:active,
+button:focus,
+button:focus-visible,
+[role="button"],
+[role="button"]:hover,
+[role="button"]:active,
+[role="button"]:focus,
+.page-link,
+.page-link:hover,
+.page-link:active,
+.page-link:focus,
+input,
+textarea,
+select {
+  cursor: none !important;
 }
 
-body {
+/* Ensure custom cursor elements never trigger native cursor */
+#cursor,
+#cursor *,
+#cursor-dot,
+#cursor-dot * {
   cursor: none !important;
 }

@@ -230,7 +230,8 @@ const animatedCursor = {
   update: function () {
     this.x = mouseX;
     this.y = mouseY;
-    this.el.style = 'transform: translate3d(' + this.x + 'px,' + this.y + 'px, 0);';
+    this.el.style.left = this.x + 'px';
+    this.el.style.top = this.y + 'px';
   },
   setState: function (newState) {
     if (this.state === newState) return;
