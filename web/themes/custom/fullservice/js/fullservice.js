@@ -1034,7 +1034,7 @@ function scrollHandler() {
     targetDiv.style.opacity = blurbOpacity > 0 ? blurbOpacity : 0; // fades out as you scroll
   }
   if (production) {
-    const productionOpacity = Math.max((scrollProgress - 1) / 0.6, 0);
+    const productionOpacity = Math.max((scrollProgress - 1) / 0.25, 0);
     production.style.opacity = productionOpacity < 1 ? productionOpacity : 1;
   }
   if (!scrollAnimations) return;
