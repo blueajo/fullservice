@@ -753,9 +753,20 @@ const ProductionCarousel = (() => {
     return e.deltaMode === 0;
   }
 
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  let lastWheelTime = 0;
+  const SAFARI_THROTTLE = 16; // ~60fps
+
   function handleWheel(e) {
     if (!state.isHoveringCarousel || state.pauseScroll) return;
     e.preventDefault();
+
+    // Safari throttle: skip frames if updates are too frequent
+    if (isSafari) {
+      const now = performance.now();
+      if (now - lastWheelTime < SAFARI_THROTTLE) return;
+      lastWheelTime = now;
+    }
 
     let delta = e.deltaY;
     if (e.deltaMode === 1) delta *= 15;
