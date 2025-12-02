@@ -253,6 +253,8 @@ document.addEventListener('mousemove', (e) => {
   animatedCursor.update();
 });
 
+var pointerDown = false;
+
 // Cursor state management
 document.addEventListener('mouseover', (e) => {
   const link = e.target.closest('a');
@@ -265,6 +267,8 @@ document.addEventListener('mouseover', (e) => {
   const header = e.target.closest('#header');
   const section = document.querySelector('.page:not(.inactive)').id.slice(0, -5);
   const editable = e.target.closest('input, #message');
+
+  if (animatedCursor.dot.classList.contains('clicking')) return;
 
   if (link || pitch || button) {
     animatedCursor.setState('link');
@@ -288,6 +292,7 @@ document.addEventListener('mouseover', (e) => {
 
 document.addEventListener('pointerdown', (e) => {
   animatedCursor.dot.classList.add('clicking');
+  console.log('hi');
   if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
     animatedCursor.setState('default');
   }

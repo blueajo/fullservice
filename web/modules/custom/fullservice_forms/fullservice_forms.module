@@ -11,7 +11,8 @@ function fullservice_forms_mail($key, &$message, $params)
       $message['from'] = 'noreply@fullserviceoffice.com';
 
       // Subject
-      $message['subject'] = $params['subject'];
+      $message['subject'] = '[Form] ';
+      $message['subject'] .= $params['subject'];
 
       // Message body
       $body = $params['message'] ?? '';
