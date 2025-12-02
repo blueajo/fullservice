@@ -1103,23 +1103,6 @@ input {
     border-bottom: 2px solid var(--grey-color);
   }
 
-  .inactive .product img.lazy-image.lazy-loading,
-  .inactive .product img.lazy-image.lazy-loading:hover,
-  #production-page.inactive .product img.video-thumbnail,
-  #production-page.inactive .product.focus img.video-thumbnail {
-    filter: blur(5px) grayscale(1);
-    opacity: 60%;
-  }
-
-  .inactive .product img.lazy-loaded,
-  .inactive .product.focus img.lazy-loaded,
-  .inactive .product.focus video,
-  .inactive #production-page .product .lazy-video-container.video-ready video,
-  .inactive #production-page .product .lazy-video-container.video-playing video {
-    filter: blur(0) grayscale(1);
-    opacity: 60%;
-  }
-
   #index-page, #index-page.inactive { 
     grid-area: ix;
     margin-top: 6rem;
@@ -1366,31 +1349,41 @@ input {
   .product img.lazy-image.lazy-loading,
   .product img.lazy-image.lazy-loading:hover,
   #production-page .product img.video-thumbnail,
-  #production-page .product.focus img.video-thumbnail
+  #production-page .product img.video-thumbnail
     {
+    filter: blur(5px) grayscale(1);
+    opacity: 100%;
+    mix-blend-mode: normal;
+    transition: opacity 0.4s ease, filter 0.4s ease;
+  }
+
+  #production-page .product.focus img.video-thumbnail {
     filter: blur(5px) grayscale(0);
     opacity: 100%;
     mix-blend-mode: normal;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.4s ease, filter 0.4s ease;
   }
 
   #production-page .product .lazy-video-container.video-ready img.video-thumbnail,
   #production-page .product .lazy-video-container.video-playing img.video-thumbnail {
-    filter: blur(5px) grayscale(0);
+    filter: blur(5px) grayscale(1);
     opacity: 0;
     mix-blend-mode: normal;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.4s ease, filter 0.4s ease;
   }
 
-  .product img.lazy-loaded,
-  .product.focus img.lazy-loaded,
-  .product.focus video,
-  #production-page .product .lazy-video-container.video-ready video,
-  #production-page .product .lazy-video-container.video-playing video {
-    filter: blur(0) grayscale(0);
+  .product img.lazy-loaded {
+    filter: blur(0) grayscale(1);
     opacity: 100%;
     mix-blend-mode: normal;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.4s ease, filter 0.4s ease;
+  }
+
+  .product.focus img.lazy-loaded,
+  .product.focus video,
+  #production-page .product .lazy-video-container.video-playing video {
+    filter: blur(0) grayscale(0);
+    transition: opacity 0.4s ease, filter 0.4s ease;
   }
 
   .category {

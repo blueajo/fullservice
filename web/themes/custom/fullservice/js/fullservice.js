@@ -1053,6 +1053,7 @@ function observeProducts(entries) {
         videoContainer.classList.add('video-playing');
       }
     } else {
+      el.classList.remove('focus');
       if (video) {
         video.pause();
         videoContainer.classList.remove('video-playing');
@@ -1068,7 +1069,7 @@ function setupProductionObserver() {
   if (mobile) {
     // setupMobileProduction();
     production.classList.add('flickity-ready');
-    elementsToObserve = Array.from(production.querySelectorAll('.product:has(video)'));
+    elementsToObserve = Array.from(production.querySelectorAll('.product'));
     observerOptions.root = null;
     observerOptions.rootMargin = '-49% 0px -49% 0px';
     const observer = new IntersectionObserver(observeProducts, observerOptions);
