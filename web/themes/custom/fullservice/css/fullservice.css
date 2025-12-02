@@ -43,6 +43,8 @@ body {
   grid-template-areas: 'header'
                        'content'
                        'footer';
+  opacity: 0;
+  transition: opacity 3s ease;
 }
 
 ::selection {
@@ -1065,7 +1067,7 @@ input {
   #container {
     height: auto;
     width: 100%;
-    grid-template-rows: minmax(0, auto) minmax(0, auto) calc(100dvh - 7rem) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto);
+    grid-template-rows: minmax(0, auto) minmax(0, auto) calc(100dvh - 24rem) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto);
     grid-auto-columns: minmax(0, auto);
     grid-template-areas:'ix'
                         'header'
