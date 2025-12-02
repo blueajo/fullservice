@@ -9,17 +9,17 @@ let scrollInterval = null;
 
 // Load page on start
 document.addEventListener("DOMContentLoaded", (event) => {
+  var meta = document.querySelector('meta[name=viewport]');
+  if (meta) {
+    meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no');
+  }
+
   if (screen.width <= 768) {
     mobile = true;
 
     window.addEventListener('hashchange', forceSafariRepaint);
     window.addEventListener('scroll', forceSafariRepaint);
     window.addEventListener('orientationchange', forceSafariRepaint);
-
-    var meta = document.querySelector('meta[name=viewport]');
-    if (meta) {
-      meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no');
-    }
 
     // Check if mobile video exists before adding listeners
     const mobileVideo = document.querySelector('#mobile-video');
@@ -292,7 +292,6 @@ document.addEventListener('mouseover', (e) => {
 
 document.addEventListener('pointerdown', (e) => {
   animatedCursor.dot.classList.add('clicking');
-  console.log('hi');
   if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
     animatedCursor.setState('default');
   }
@@ -1009,6 +1008,15 @@ function scrollAnimationOn() {
 }
 
 function scrollHandler() {
+  const scrollProgress = Math.min(
+    Math.max((window.scrollY - 10) / window.innerHeight, 0),
+    1
+  );
+  console.log(scrollProgress);
+  const targetDiv = document.getElementById('index-text');
+  if (targetDiv) {
+    targetDiv.style.opacity = 1 - scrollProgress; // fades out as you scroll
+  }
   if (!scrollAnimations) return;
   [index, production, serviceProviders, pitches, info].forEach(page => {
     const pageTop = page.offsetTop;
@@ -1020,14 +1028,6 @@ function scrollHandler() {
         openPage(page.id.slice(0, -5));
         currPage = page;
       }
-    }
-    const scrollProgress = Math.min(
-      Math.max((window.scrollY - pageTop) / pageHeight, 0),
-      1
-    );
-    const targetDiv = document.getElementById('index-text');
-    if (targetDiv) {
-      targetDiv.style.opacity = 1 - scrollProgress; // fades out as you scroll
     }
   });
 }
