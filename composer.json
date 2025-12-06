@@ -16,7 +16,6 @@
     ],
     "require": {
         "composer/installers": "^2.0",
-        "drupal/admin_toolbar": "^3",
         "drupal/config_inspector": "^2",
         "drupal/core-composer-scaffold": "^10.5",
         "drupal/core-project-message": "^10.5",
@@ -30,8 +29,7 @@
         "drupal/paragraphs": "^1.15",
         "drupal/reroute_email": "^2.2",
         "drupal/smtp": "^1.4",
-        "drupal/twig_tweak": "^3",
-        "drupal/webform": "^6.2",
+        "drupal/twig_tweak": "^3.4",
         "drush/drush": "^13.6"
     },
     "conflict": {

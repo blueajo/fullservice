@@ -45,8 +45,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     setTimeout(setupProductionObserver, 500);
   } else {
     document.addEventListener('mousemove', (event) => {
-      document.querySelector('#cursor').classList.add('active');
-      document.getElementById('index-cursor').classList.add('visible');
+      document.querySelector('#cursor').classList.add('visible');
+      document.querySelector('#index-cursor').classList.add('visible');
     }, { once: true });
     setupHomepageVideos();
     if (location.hash) {
@@ -180,19 +180,7 @@ function infoFollow() {
 document.addEventListener('mousemove', (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
-});
-
-// Video cursor behavior
-index.addEventListener("mouseleave", (e) => {
-  videoDot.classList.remove('active');
-  if (activeLink) {
-    activeLink.classList.remove('active-link');
-    activeLink = null;
-  }
-});
-
-index.addEventListener("mouseenter", (e) => {
-  videoDot.classList.add('active');
+  animatedCursor.update();
 });
 
 info.addEventListener("mousedown", (e) => {
@@ -246,13 +234,6 @@ const animatedCursor = {
 
   }
 };
-
-// Mouse move tracking
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  animatedCursor.update();
-});
 
 var pointerDown = false;
 
@@ -335,7 +316,6 @@ function closePage() {
 
   if (section == 'index') {
     videoDot.classList.remove('active');
-    videoCredits.classList.remove('active');
     document.getElementById('header').classList.remove('index-header');
   } else if (section == 'production') {
     if (ProductionCarousel.initialized()) {
@@ -363,7 +343,6 @@ function openPage(section) {
   expandHeader(section);
   // page-specific
   if (section == 'index') {
-    videoCredits.classList.add('active');
     document.getElementById('header').classList.add('index-header');
     if (!mobile) {
       cursorInterval = setInterval(indexFollow, 1000 / 60);
@@ -371,6 +350,7 @@ function openPage(section) {
       document.querySelector('#mobile-video').play();
       production.style.opacity = 0;
     }
+    videoDot.classList.add('active');
   }
   if (section == 'info' && !mobile) {
     copyright.classList.remove('visible');
@@ -386,9 +366,15 @@ function closeHeader(section) {
   const pageText = document.getElementById(section + '-text');
   const pageGap = document.getElementById(section + '-gap');
   if (pageLink) { pageLink.classList.remove('current-page'); }
-  if (pageText) {
+  if (pageText && section == 'index') {
+    pageText.style.opacity = 0;
+    videoCredits.style.opacity = 0;
+    setTimeout(() => {
+      pageText.classList.remove('active');
+      videoCredits.classList.remove('active');
+    }, 500);
+  } else {
     pageText.classList.remove('active');
-    pageText.classList.remove('fully-active');
   }
   if (pageGap) { pageGap.classList.remove('gap'); }
 }
@@ -400,9 +386,13 @@ function expandHeader(section) {
   if (pageLink) { pageLink.classList.add('current-page'); }
   if (pageText) {
     pageText.classList.add('active');
-    setTimeout(() => {
-      pageText.classList.add('fully-active');
-    }, 25);
+    if (section == 'index') {
+      videoCredits.classList.add('active');
+      setTimeout(() => {
+        pageText.style.opacity = 1;
+        videoCredits.style.opacity = 1;
+      }, 10);
+    }
   }
   if (pageGap) { pageGap.classList.add('gap'); }
 }
@@ -457,8 +447,13 @@ videoCredits.addEventListener('mouseleave', () => {
 index.addEventListener('mouseenter', () => {
   document.getElementById('index-cursor').classList.add('visible');
 });
+
 index.addEventListener('mouseleave', () => {
   document.getElementById('index-cursor').classList.remove('visible');
+  if (activeLink) {
+    activeLink.classList.remove('active-link');
+    activeLink = null;
+  }
 });
 
 // Link areas on index page
@@ -619,13 +614,13 @@ const ProductionCarousel = (() => {
     });
 
     setTimeout(() => {
-      production.classList.add('flickity-ready');
       openProduct(state.flkty.cells[0].element, 0);
+      production.classList.add('flickity-ready');
     }, 200);
   }
 
   function initialized() { return !(state.flkty == null); }
-  function deinitialize() { if (state.flkty) { closeProduct(); state.flkty.destroy(); } state.flkty = null; }
+  function deinitialize() { if (state.flkty) { closeProduct(); state.flkty.destroy(); production.classList.remove('flickity-ready'); } state.flkty = null; }
   function getCurrentProduct() { return state.currOpenProduct; }
 
   // =======================
@@ -754,29 +749,23 @@ const ProductionCarousel = (() => {
     return e.deltaMode === 0;
   }
 
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   let lastWheelTime = 0;
-  const SAFARI_THROTTLE = 30; // ~60fps
+  const THROTTLE = 30; // ~60fps
 
   function handleWheel(e) {
     if (!state.isHoveringCarousel || state.pauseScroll) return;
     e.preventDefault();
 
-    // Safari throttle: skip frames if updates are too frequent
-    if (isSafari) {
-      const now = performance.now();
-      if (now - lastWheelTime < SAFARI_THROTTLE) return;
-      lastWheelTime = now;
-    }
+    // throttle: skip frames if updates are too frequent
+    const now = performance.now();
+    if (now - lastWheelTime < THROTTLE) return;
+    lastWheelTime = now;
 
     let delta = e.deltaY;
     if (e.deltaMode === 1) delta *= 15;
     if (e.deltaMode === 2) delta *= 60;
-    if (isSafari) delta *= 2;
+    delta *= 2;
     delta = -delta;
-
-    const isTrackpad = isTrackpadEvent(e);
-    const isMouseWheel = !isTrackpad;
 
     if (state.currOpenProduct) {
       // Always animate next product when a product is open

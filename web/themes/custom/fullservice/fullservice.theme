@@ -66,7 +66,7 @@ function fullservice_preprocess_page(&$variables)
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
   // Load Header node
-  $header_nodes = $node_storage->loadByProperties(values: [
+  $header_nodes = $node_storage->loadByProperties([
     'type' => 'header_fullservice',
     'status' => 1,
   ]);
@@ -232,5 +232,22 @@ function fullservice_preprocess_block(&$variables)
         unset($variables['content'][0]['#theme_wrappers'][$key]);
       }
     }
+  }
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function fullservice_page_attachments_alter(array &$attachments)
+{
+  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    // Force a visible change to verify this runs
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'style',
+        '#value' => 'body { background: red !important; }',
+      ],
+      'test_hook_runs'
+    ];
   }
 }

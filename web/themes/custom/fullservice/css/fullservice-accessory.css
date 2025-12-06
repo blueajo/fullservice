@@ -1,0 +1,285 @@
+/* general */
+
+:root {
+    /* Set baseline size */
+    font-size: 62.5%;
+    /* 1rem = 10px */
+
+    /* Variables */
+    --baselines: 2;
+    --caption-baselines: 1.4;
+    --beneath: 1;
+    --baseline-shift: calc(calc(calc(var(--baselines) * 1rem) - 1cap) / 2);
+    --baseline-push: calc(calc(var(--beneath) * 1rem) - var(--baseline-shift));
+    --caption-baseline-shift: calc(calc(calc(var(--caption-baselines) * 1rem) - 1cap) / 2);
+    --caption-baseline-push: calc(0 - var(--caption-baseline-shift));
+    --right-arrow-cursor: url('../img/cursors/right-arrow.svg') 7.5 7.5, auto;
+    --left-arrow-cursor: url('../img/cursors/left-arrow.svg') 7.5 7.5, auto;
+    --type-cursor: url('../img/cursors/type.png') 6 6, auto;
+
+    --top-margin: 10rem;
+    --rg-margin: 2rem;
+    --in-margin: 23rem;
+
+    --bg-color: #FAFFE4;
+    --grey-color: #999999;
+}
+
+@font-face {
+    font-family: 'Akzidenz Grotesk';
+    font-weight: 500;
+    src: url("../fonts/AkzidGro.otf") format("opentype");
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Akzidenz Grotesk', monospace;
+    font-weight: 500;
+    color: black;
+    background-color: var(--bg-color);
+    margin: 0;
+    cursor: none !important;
+}
+
+p,
+ul,
+ol,
+a,
+input {
+    font-family: 'Akzidenz Grotesk', monospace;
+    font-weight: 500;
+    font-size: 1.75rem;
+    line-height: calc(var(--baselines) * 1rem);
+    margin: 0;
+    padding: 0;
+    font-feature-settings: 'kern', 'onum', 'liga';
+    padding-top: var(--baseline-shift);
+    margin-bottom: var(--baseline-push);
+    transition: color 0.3s ease;
+}
+
+a, a:active {
+    color: black;
+    cursor: none !important;
+}
+
+/* login page */
+.login-page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    width: 100vw;
+}
+
+.login-main {
+    width: min-content;
+}
+
+.login-main label {
+    font-weight: 500;
+    font-size: 1.75rem;
+    line-height: calc(var(--baselines) * 1rem);
+    margin: 0;
+    padding: 0;
+    font-feature-settings: 'kern', 'onum', 'liga';
+    padding-top: var(--baseline-shift);
+    margin-bottom: var(--baseline-push);
+    transition: color 0.3s ease;
+}
+
+.login-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.form-type-textfield {
+    grid-area: user;
+    margin-bottom: calc(1rem - 2px);
+}
+
+.form-type-password {
+    grid-area: pass;
+    margin-bottom: calc(1rem - 2px);
+}
+
+#edit-actions {
+    grid-area: submit;
+}
+
+.form-type-textfield,
+.form-type-password {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    border-bottom: 2px solid black;
+}
+
+[contenteditable]:focus,
+input {
+    outline: 0px solid transparent;
+    max-width: 20rem;
+}
+
+/* 404 specific */
+
+.dialog-off-canvas-main-canvas {
+    display: grid;
+    height: 100%;
+    width: 100%;
+    place-items: center;
+}
+
+/* Cursor styles */
+#cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+#cursor-wrapper {
+    position: absolute;
+    width: 4rem;
+    height: 4rem;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+}
+
+#cursor-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 1.125rem;
+    height: 1.125rem;
+    background-color: black;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease,
+                width 0.2s ease,
+                height 0.2s ease;
+    will-change: background-color, width, height;
+}
+
+#cursor-dot.link {
+    width: 2rem;
+    height: 2rem;
+}
+
+#cursor-dot.link.clicking {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+#cursor-dot.hidden {
+    width: 0;
+    height: 0;
+}
+
+/* form styling */
+
+.user-login-form {
+    display: grid;
+    height: 15rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr 3rem;
+    grid-template-areas: "user"
+                         "pass"
+                         "."
+                         "submit";
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    /* This creates a large, inset shadow to cover the browser's default background */
+    -webkit-box-shadow: 0 0 0px 1000px var(--bg-color) inset !important;
+    /* Delay the background-color transition by a very long time to prevent it from ever being seen */
+    /* transition: --var(--bg-color) 5000s ease-in-out 0s; */
+}
+
+p,
+ul,
+ol,
+a,
+input {
+    font-family: 'Akzidenz Grotesk', monospace;
+    font-weight: 500;
+    font-size: 1.75rem;
+    line-height: calc(var(--baselines) * 1rem);
+    margin: 0;
+    padding: 0;
+    font-feature-settings: 'kern', 'onum', 'liga';
+    padding-top: var(--baseline-shift);
+    margin-bottom: var(--baseline-push);
+    transition: color 0.3s ease;
+}
+
+p.caption,
+a.caption {
+    font-size: 1.4rem;
+    line-height: calc(var(--caption-baselines) * 1.15rem);
+    padding-top: var(--caption-baseline-shift);
+    margin-bottom: var(--caption-baseline-push);
+}
+
+input {
+    border-style: none;
+    padding-top: var(--baseline-shift);
+    cursor: var(--type-cursor);
+    height: 2rem;
+    margin-left: 1rem;
+    line-height: calc(var(--baselines) * 1rem);
+    background-color: var(--bg-color);
+}
+
+a.button,
+input.button {
+    font-family: 'Akzidenz Grotesk', monospace;
+    font-weight: 500;
+    font-size: 1.75rem;
+    line-height: calc(var(--baselines) * 1rem);
+    color: black;
+    background-color: var(--bg-color);
+    border: 2px solid black;
+    padding: .5rem 1rem;
+    width: min-content;
+    cursor: none !important;
+    height: min-content;
+    margin: 0;
+}
+
+@media (hover: hover) {
+
+    a:hover {
+        text-decoration: underline;
+        text-decoration-skip-ink: none;
+        text-decoration-thickness: .18rem;
+        text-underline-offset: .3rem;
+    }
+
+    a.button:hover,
+    input.button:hover {
+        color: var(--bg-color);
+        background-color: black;
+    }
+
+}

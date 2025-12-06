@@ -31,7 +31,6 @@ https://flickity.metafizzy.co
           user-select: none;
 }
 
-/* Add to your CSS */
 .flickity-slider {
   will-change: transform;
   transform: translateZ(0);
@@ -39,8 +38,8 @@ https://flickity.metafizzy.co
   perspective: 1000px;
 }
 
-.product {
-  will-change: transform, width, height;
-  transform: translateZ(0);
+.carousel-cell img,
+.carousel-cell video {
+  contain: paint;
   backface-visibility: hidden;
 }

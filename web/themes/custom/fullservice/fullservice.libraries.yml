@@ -17,16 +17,25 @@ lazy-load:
     - core/drupal
     - core/once
 
-# Global styling loaded on every page
-global-styling:
-  css:
-    theme:
-      css/fullservice.css: {}
-
-global-scripts:
+mainpage-scripts:
   js:
     js/fullservice.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
     - fullservice/flickity
+
+# Global styling loaded on every page
+mainpage-styling:
+  css:
+    theme:
+      css/fullservice.css: {}
+
+accessory-scripts:
+  js:
+    js/fullservice-accessory.js: {}
+
+accessory-styling:
+  css:
+    theme:
+      css/fullservice-accessory.css: {}

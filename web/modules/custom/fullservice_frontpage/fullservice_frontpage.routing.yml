@@ -1,0 +1,7 @@
+fullservice_frontpage.front:
+  path: '/home'
+  defaults:
+    _controller: '\Drupal\fullservice_frontpage\Controller\FrontPageController::content'
+    _title: 'Home'
+  requirements:
+    _access: 'TRUE'

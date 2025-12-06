@@ -154,7 +154,8 @@ p, ul, ol, a, input, #message {
   transition: color 0.3s ease;
 }
 
-p.caption {
+p.caption,
+a.caption {
   font-size: 1.4rem;
   line-height: calc(var(--caption-baselines) * 1.15rem);
   padding-top: var(--caption-baseline-shift);
@@ -292,16 +293,12 @@ a:active, a.current-page, a.active-link, #footer a.current-page:hover {
 
 .nav-text {
   display: none;
-  color: var(--grey-color);
-  transition: color 0.4s ease;
+  color: black;
+  transition: opacity 0.4s ease;
 }
 
 .nav-text.active {
   display: inline;
-}
-
-.nav-text.fully-active {
-  color: black;
 }
 
 .nav-text.active + span {
@@ -324,6 +321,10 @@ span.gap {
   cursor: none;
   opacity: 0;
   transition: opacity 0.2s ease;
+}
+
+#index-cursor {
+  display: none;
 }
 
 #index-cursor.visible,
@@ -440,6 +441,7 @@ span.gap {
 #video-credits {
   position: relative;
   display: none;
+  transition: opacity 0.4s ease;
 }
 
 #video-credits.active {
@@ -457,10 +459,11 @@ span.gap {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
-  max-height: calc(100vh - 5rem);
+  max-height: calc(100vh - 10rem);
   overflow-y: scroll;
   overflow-x: visible;
   width: min-content;
+  max-width: calc(100vw - 2 * var(--rg-margin));
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -470,7 +473,8 @@ span.gap {
 }
 
 #credits .dot-container {
-  min-width: max-content;
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--rg-margin));
   padding-right: .15rem;
 }
 
@@ -498,11 +502,11 @@ span.gap {
    height: 100%;
    grid-area: content;
    opacity: 0;
+  transition: opacity .6s ease;
 }
 
 #production-page.flickity-ready {
   opacity: 1;
-  transition: opacity 0.4s ease;
 }
 
 .flickity-viewport {
@@ -1517,7 +1521,7 @@ input {
   backface-visibility: hidden;
 }
 
-#cursor.active {
+#cursor.visible {
   display: block;
 }
 
@@ -1625,8 +1629,6 @@ button:focus-visible,
 .page-link:hover,
 .page-link:active,
 .page-link:focus,
-input,
-textarea,
 select {
   cursor: none !important;
 }

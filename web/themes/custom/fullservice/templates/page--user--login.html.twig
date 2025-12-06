@@ -3,28 +3,19 @@
   Does NOT interfere with other pages.
 #}
 
+{{ attach_library('fullservice/accessory-styling') }}
+{{ attach_library('fullservice/accessory-scripts') }}
+
 <div class="login-page-wrapper">
-
-  {% if page.header %}
-    <header class="site-header">
-      {{ page.header }}
-    </header>
-  {% endif %}
-
-  {% if page.messages %}
-    <div class="messages">
-      {{ page.messages }}
+  <div id="cursor">
+    <div id="cursor-wrapper">
+      <div id="cursor-dot">
+      </div>
     </div>
-  {% endif %}
+  </div>
 
   <main class="login-main">
     {{ page.content }}
   </main>
-
-  {% if page.footer %}
-    <footer class="site-footer">
-      {{ page.footer }}
-    </footer>
-  {% endif %}
 
 </div>
