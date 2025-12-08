@@ -90,7 +90,6 @@
                 video.load();
 
                 video.addEventListener('loadeddata', () => {
-                    console.log('Video loaded:', video.id || 'unnamed');
                     if (thumbnail) thumbnail.classList.add('fade-out');
                     if (container) container.classList.add('video-ready');
                 }, { once: true });

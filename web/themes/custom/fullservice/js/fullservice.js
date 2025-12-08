@@ -27,7 +27,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
       // Play as soon as the lazy loader has loaded the video
       mobileVideo.addEventListener('loadeddata', () => {
         mobileVideo.play().catch(err => {
-          playMobileVideoOnInteraction('#mobile-video');
+          mobileVideo.addEventListener("canplay", () => {
+            mobileVideo.play();
+          });
         });
       });
     } else {
@@ -112,9 +114,14 @@ var indexCursor = {
   curContainer: null,
   update: async function () {
 
+    const toolbar = document.querySelector('.toolbar-fixed');
+    const toolbarHeight = toolbar ? parseInt(toolbar.style.paddingTop.slice(0, -2), 10) : 0;
+    const header = document.querySelector('#header');
+    const headerHeight = header ? header.offsetHeight : 0;
+
     // LOCATION OF FOLLOWER
-    this.x = lerp(this.x, mouseX, 0.05);
-    this.y = lerp(this.y, mouseY, 0.05);
+    this.x = lerp(this.x, mouseX, 0.04);
+    this.y = lerp(this.y, mouseY - toolbarHeight - headerHeight, 0.04);
 
     // SET VIDEO
     this.quadrant[0] = (this.x / window.innerWidth) > .5 ? 1 : 0;
@@ -163,8 +170,11 @@ var infoCursor = {
   x: window.innerWidth / 2,
   y: window.innerHeight / 2,
   update: function () {
+    const toolbar = document.querySelector('.toolbar-fixed');
+    const toolbarHeight = toolbar ? parseInt(toolbar.style.paddingTop.slice(0, -2), 10) : 0;
+
     this.x = mouseX;
-    this.y = mouseY;
+    this.y = mouseY - toolbarHeight;
     this.el.style = 'transform: translate3d(' + this.x + 'px,' + this.y + 'px, 0);';
   }
 };
@@ -202,7 +212,7 @@ for (let i = 0; i < infoLinks.length; i++) {
 }
 
 // ========================
-//  New dot cursor
+// dot cursor
 // ========================
 // Animated cursor objects
 const cursor = document.getElementById('cursor');
@@ -352,6 +362,15 @@ function openPage(section) {
     }
     videoDot.classList.add('active');
   }
+  if (mobile) {
+    if (section == 'info' || section == 'service-providers') {
+      document.getElementById('header').style.position = 'fixed';
+      document.getElementById('header').style.top = '2.5rem';
+    } else {
+      document.getElementById('header').style.position = 'sticky';
+      document.getElementById('header').style.top = '3.5rem';
+    }
+  }
   if (section == 'info' && !mobile) {
     copyright.classList.remove('visible');
     cursorInterval = setInterval(infoFollow, 1000 / 60);
@@ -386,7 +405,7 @@ function expandHeader(section) {
   if (pageLink) { pageLink.classList.add('current-page'); }
   if (pageText) {
     pageText.classList.add('active');
-    if (section == 'index') {
+    if (section == 'index' && !mobile) {
       videoCredits.classList.add('active');
       setTimeout(() => {
         pageText.style.opacity = 1;
@@ -412,7 +431,9 @@ for (let i = 0; i < pageLinks.length; i++) {
     }
     if (mobile) {
       scrollAnimations = false;
-      setTimeout(scrollAnimationOn, 1500);
+      window.addEventListener("scrollend", (event) => {
+        scrollAnimations = true;
+      }, {once: true});
       const scrollCoord = document.getElementById(section + '-page').offsetTop - remToPx(6);
       window.scrollTo({
         top: scrollCoord,
@@ -546,6 +567,54 @@ function scaleMedia(media, w, h, container) {
   }
 }
 
+const videoListeners = new WeakMap();
+
+function safePlayVideo(video, container = null) {
+  if (!video) return;
+
+  // Remove any previous listener for this video
+  const prevListener = videoListeners.get(video);
+  if (prevListener) {
+    video.removeEventListener('canplay', prevListener);
+  }
+
+  const addPlayingClass = () => {
+    if (container) {
+      container.classList.add('video-playing');
+      container.classList.add('video-ready');
+    }
+  };
+
+  const onCanPlay = () => {
+    video.play()
+      .then(addPlayingClass)
+      .catch(() => { });
+    video.removeEventListener('canplay', onCanPlay);
+    videoListeners.delete(video);
+  };
+
+  video.play()
+    .then(addPlayingClass)
+    .catch(() => {
+      video.addEventListener('canplay', onCanPlay);
+      videoListeners.set(video, onCanPlay);
+    });
+}
+
+// Pause function that works for any video
+function pauseVideo(video, container = null) {
+  if (!video) return;
+
+  const listener = videoListeners.get(video);
+  if (listener) {
+    video.removeEventListener('canplay', listener);
+    videoListeners.delete(video);
+  }
+
+  video.pause();
+  if (container) container.classList.remove('video-playing');
+}
+
 // =======================
 // Production Carousel
 // =======================
@@ -577,6 +646,15 @@ const ProductionCarousel = (() => {
     setTimeout(() => { state.pauseScroll = false; }, duration);
   };
 
+  function syncSelectedIndex() {
+    let nearestIndex = state.flkty.cells.reduce((closest, cell, i) => {
+      const distance = Math.abs(cell.target + state.flkty.x);
+      return distance < closest.dist ? { index: i, dist: distance } : closest;
+    }, { index: 0, dist: Infinity }).index;
+
+    state.flkty.select(nearestIndex, false, true); // no animate
+  }
+
   // =======================
   // Carousel Initialization
   // =======================
@@ -605,7 +683,6 @@ const ProductionCarousel = (() => {
     state.flkty.on("staticClick", (event, pointer, cellElement, cellIndex) => {
       if (!cellElement) return;
       if (cellElement === state.currOpenProduct) {
-        animatedCursor.setState('plus');
         closeProduct();
       } else {
         openProduct(cellElement, cellIndex);
@@ -701,21 +778,75 @@ const ProductionCarousel = (() => {
     state.flkty.options.dragThreshold = 3;
     state.flkty.updateDraggable();
 
+    const el = document.elementFromPoint(mouseX, mouseY);
+    const arrowLeft = el.closest('#left-arrow-area');
+    const arrowRight = el.closest('#right-arrow-area');
+    let productHovered = el.closest('.product img');
+    if (!productHovered) productHovered = el.closest('.product video');
+
+    if (productHovered) {
+      animatedCursor.setState('plus');
+    } else if (arrowLeft || arrowRight) {
+      animatedCursor.setState('hidden');
+    } else {
+      animatedCursor.setState('default');
+    }
   }
 
   // =======================
   // Arrow Controls
   // =======================
+
+  let arrowMomentumRaf = null;
+  let arrowVelocity = 0;
+  const ARROW_FRICTION = 0.85;     // lower = longer glide
+  const ARROW_MIN_VELOCITY = 0.4;  // stop threshold
+
+  function startArrowMomentum() {
+    if (arrowMomentumRaf) cancelAnimationFrame(arrowMomentumRaf);
+
+    function step() {
+      arrowVelocity *= ARROW_FRICTION;
+
+      if (Math.abs(arrowVelocity) < ARROW_MIN_VELOCITY) {
+        arrowMomentumRaf = null;
+        return;
+      }
+
+      state.flkty.x += arrowVelocity;
+      state.flkty.dragX = state.flkty.x;
+      state.flkty.positionSlider();
+
+      arrowMomentumRaf = requestAnimationFrame(step);
+    }
+
+    arrowMomentumRaf = requestAnimationFrame(step);
+  }
+
   function handleArrowPress(dir) {
     if (state.currOpenProduct) {
+      syncSelectedIndex();
       let index = (state.flkty.selectedIndex + dir + state.flkty.cells.length) % state.flkty.cells.length;
       openProduct(state.flkty.cells[index].element, index);
     } else {
-      let index = (state.flkty.selectedIndex + (dir * 5) + state.flkty.cells.length) % state.flkty.cells.length;
-      state.flkty.selectCell(index, true, false);
+      // 1. Apply the immediate 80vw jump (your logic)
+      const jump = window.innerWidth * 0.4 * dir * -1;
+      state.flkty.x += jump;
+      state.flkty.dragX = state.flkty.x;
+      state.flkty.positionSlider();
+
+      // 2. Set the initial momentum velocity
+      arrowVelocity = jump * 0.15;   // 15% of the jump as initial speed (tweakable)
+
+      // 3. Start the coast animation
+      startArrowMomentum();
+
+      state.disableNextAnimation = true;
     }
+
     temporarilyDisablePointer();
   }
+
 
   function setupArrowControls() {
     leftArrow.addEventListener("click", () => handleArrowPress(-1));
@@ -751,6 +882,14 @@ const ProductionCarousel = (() => {
 
   let lastWheelTime = 0;
   const THROTTLE = 30; // ~60fps
+  let swipeActive = false;
+  let peakDelta = 0;
+  let swipeDirection = 0;
+  let lastWheelTs = 0;
+  let lastSwipeEnd = 0;
+
+  const MIN_GESTURE_GAP = 120;      // idle gap between swipes
+  const MIN_DROP = 10;              // how much delta must drop to count as "gesture ended"
 
   function handleWheel(e) {
     if (!state.isHoveringCarousel || state.pauseScroll) return;
@@ -767,12 +906,55 @@ const ProductionCarousel = (() => {
     delta *= 2;
     delta = -delta;
 
+    // if (state.currOpenProduct) {
+    //   syncSelectedIndex();
+    //   // Always animate next product when a product is open
+    //   let nextIndex = (state.flkty.selectedIndex + Math.sign(delta) + state.flkty.cells.length) % state.flkty.cells.length;
+    //   openProduct(state.flkty.cells[nextIndex].element, nextIndex);
+    //   return;
+    // }
+
     if (state.currOpenProduct) {
-      // Always animate next product when a product is open
-      let nextIndex = (state.flkty.selectedIndex + Math.sign(delta) + state.flkty.cells.length) % state.flkty.cells.length;
-      openProduct(state.flkty.cells[nextIndex].element, nextIndex);
+      const now = performance.now();
+      const absDelta = Math.abs(delta);
+      const direction = Math.sign(delta);
+
+      const timeSinceLast = now - lastWheelTs;
+      lastWheelTs = now;
+
+      // Start new gesture
+      if (!swipeActive && now - lastSwipeEnd > MIN_GESTURE_GAP) {
+        swipeActive = true;
+        peakDelta = absDelta;
+        swipeDirection = direction;
+        return;
+      }
+
+      if (!swipeActive) return;
+
+      // Track peak
+      if (absDelta > peakDelta) {
+        peakDelta = absDelta;
+        swipeDirection = direction;
+        return;
+      }
+
+      // End-of-gesture: delta dropped by MIN_DROP
+      if (peakDelta - absDelta >= MIN_DROP) {
+        swipeActive = false;
+        lastSwipeEnd = now;
+
+        const nextIndex =
+          (state.flkty.selectedIndex + swipeDirection + state.flkty.cells.length) %
+          state.flkty.cells.length;
+
+        openProduct(state.flkty.cells[nextIndex].element, nextIndex);
+      }
+
       return;
     }
+
+
 
     // Free scroll → move carousel instantly
     state.flkty.x -= delta;
@@ -855,6 +1037,8 @@ for (let i = 0; i < pitchList.length; i++) {
         if (!pitches.classList.contains('expanded')) {
           fadeInForm();
         }
+      } else {
+        alertMessage('Select up to 5 pitches.');
       }
     }
   });
@@ -1017,8 +1201,8 @@ function scrollAnimationOn() {
 }
 
 function scrollHandler() {
+  if (window.scrollY < 1) return;
   const scrollProgress = Math.max((window.scrollY - 10) / window.innerHeight, 0);
-  console.log(scrollProgress);
   const targetDiv = document.getElementById('index-text');
   if (targetDiv) {
     const blurbOpacity = 1 - scrollProgress
@@ -1030,11 +1214,15 @@ function scrollHandler() {
   }
   if (!scrollAnimations) return;
   [index, production, serviceProviders, pitches, info].forEach(page => {
-    const pageTop = page.offsetTop;
+    var pageTop = page.offsetTop;
+    if (page == index) pageTop = -100;
     const pageHeight = page.offsetHeight;
     if (window.scrollY >= pageTop - remToPx(20) &&
       window.scrollY < pageTop + pageHeight - remToPx(20)) {
-      if (currPage !== page) {
+      if (currPage === null) {
+        openPage(page.id.slice(0, -5));
+        currPage = page;
+      } else if (currPage !== page) {
         closePage();
         openPage(page.id.slice(0, -5));
         currPage = page;
@@ -1051,7 +1239,6 @@ function observeProducts(entries) {
   entries.forEach(entry => {
     const el = entry.target;
 
-    // UPDATED: Find video inside lazy-video-container
     const videoContainer = el.querySelector('.lazy-video-container');
     const video = videoContainer ? videoContainer.querySelector('video') : null;
 
@@ -1060,14 +1247,12 @@ function observeProducts(entries) {
     if (entry.isIntersecting) {
       el.classList.add('focus');
       if (video) {
-        video.play(); // Lazy loader handles thumbnail
-        videoContainer.classList.add('video-playing');
+        safePlayVideo(video, videoContainer);
       }
     } else {
       el.classList.remove('focus');
       if (video) {
-        video.pause();
-        videoContainer.classList.remove('video-playing');
+        pauseVideo(video, videoContainer);
       }
     }
   });
@@ -1094,14 +1279,12 @@ production.querySelectorAll('.lazy-video-container').forEach(container => {
 
   container.addEventListener('mouseenter', () => {
     if (ProductionCarousel.getCurrentProduct() && ProductionCarousel.getCurrentProduct().contains(container)) return;
-    video.play();
-    container.classList.add('video-playing');
+    safePlayVideo(video, container);
   });
 
   container.addEventListener('mouseleave', () => {
     if (ProductionCarousel.getCurrentProduct() && ProductionCarousel.getCurrentProduct().contains(container)) return;
-    video.pause();
-    container.classList.remove('video-playing');
+    pauseVideo(video, container);
   });
 });
 
