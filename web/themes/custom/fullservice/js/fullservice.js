@@ -453,9 +453,18 @@ for (let i = 0; i < pageLinks.length; i++) {
     }
     if (mobile) {
       scrollAnimations = false;
-      window.addEventListener("scrollend", (event) => {
-        scrollAnimations = true;
-      }, {once: true});
+
+      let scrollEndTimer = null;
+      const checkScrollEnd = () => {
+        clearTimeout(scrollEndTimer);
+        scrollEndTimer = setTimeout(() => {
+          scrollAnimations = true;
+          window.removeEventListener('scroll', checkScrollEnd);
+        }, 150); // Re-enable after 150ms of no scrolling
+      };
+
+      window.addEventListener('scroll', checkScrollEnd);
+
       const scrollCoord = document.getElementById(section + '-page').offsetTop - remToPx(6);
       window.scrollTo({
         top: scrollCoord,
