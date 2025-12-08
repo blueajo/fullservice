@@ -647,7 +647,7 @@ span.gap {
 }
 
 .product img.video-thumbnail.fade-out {
-  opacity: 0;
+  opacity: 0 !important;
   pointer-events: none;
   transition: opacity 0.6s ease; 
 }

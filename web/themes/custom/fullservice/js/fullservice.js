@@ -352,6 +352,10 @@ function closePage() {
   } else if (section == 'info') {
     copyright.classList.remove('active');
   }
+  if (mobile && (section == 'info' || section == 'service-providers')) {
+    document.getElementById('header').style.position = 'sticky';
+    document.getElementById('header').style.top = '3.5rem';
+  }
 }
 
 function openPage(section) {
@@ -391,15 +395,20 @@ function closeHeader(section) {
   const pageLink = document.getElementById(section + '-link');
   const pageText = document.getElementById(section + '-text');
   const pageGap = document.getElementById(section + '-gap');
+
   if (pageLink) { pageLink.classList.remove('current-page'); }
   if (pageText && section == 'index') {
     pageText.style.opacity = 0;
-    videoCredits.style.opacity = 0;
-    setTimeout(() => {
-      pageText.classList.remove('active');
-      videoCredits.classList.remove('active');
-    }, 500);
-  } else {
+    if (!mobile) {
+      // Only remove active class on desktop
+      videoCredits.style.opacity = 0;
+      setTimeout(() => {
+        pageText.classList.remove('active');
+        videoCredits.classList.remove('active');
+      }, 500);
+    }
+    // On mobile: keep active class, just change opacity
+  } else if (pageText) {
     pageText.classList.remove('active');
   }
   if (pageGap) { pageGap.classList.remove('gap'); }
@@ -409,15 +418,21 @@ function expandHeader(section) {
   const pageLink = document.getElementById(section + '-link');
   const pageText = document.getElementById(section + '-text');
   const pageGap = document.getElementById(section + '-gap');
+
   if (pageLink) { pageLink.classList.add('current-page'); }
   if (pageText) {
     pageText.classList.add('active');
-    if (section == 'index' && !mobile) {
-      videoCredits.classList.add('active');
-      setTimeout(() => {
+    if (section == 'index') {
+      if (!mobile) {
+        videoCredits.classList.add('active');
+        setTimeout(() => {
+          pageText.style.opacity = 1;
+          videoCredits.style.opacity = 1;
+        }, 10);
+      } else {
+        // Mobile: just set opacity
         pageText.style.opacity = 1;
-        videoCredits.style.opacity = 1;
-      }, 10);
+      }
     }
   }
   if (pageGap) { pageGap.classList.add('gap'); }
@@ -1241,34 +1256,55 @@ function scrollAnimationOn() {
 }
 
 function scrollHandler() {
-  if (window.scrollY < 1) return;
+  if (window.scrollY < 1) {
+    if (currPage !== index) {
+      if (currPage !== null) {
+        closePage();
+      }
+      openPage('index');
+      currPage = index;
+    }
+    return;
+  }
+
   const scrollProgress = Math.max((window.scrollY - 10) / window.innerHeight, 0);
   const targetDiv = document.getElementById('index-text');
   if (targetDiv) {
     const blurbOpacity = 1 - scrollProgress
-    targetDiv.style.opacity = blurbOpacity > 0 ? blurbOpacity : 0; // fades out as you scroll
+    targetDiv.style.opacity = blurbOpacity > 0 ? blurbOpacity : 0;
   }
   if (production) {
     const productionOpacity = Math.max((scrollProgress - 1) / 0.25, 0);
     production.style.opacity = productionOpacity < 1 ? productionOpacity : 1;
   }
   if (!scrollAnimations) return;
+
+  let foundActivePage = false;
+  let targetPage = null; // CHANGE: track which page should be active
+
   [index, production, serviceProviders, pitches, info].forEach(page => {
     var pageTop = page.offsetTop;
     if (page == index) pageTop = -100;
     const pageHeight = page.offsetHeight;
+
     if (window.scrollY >= pageTop - remToPx(20) &&
       window.scrollY < pageTop + pageHeight - remToPx(20)) {
-      if (currPage === null) {
-        openPage(page.id.slice(0, -5));
-        currPage = page;
-      } else if (currPage !== page) {
-        closePage();
-        openPage(page.id.slice(0, -5));
-        currPage = page;
-      }
+      foundActivePage = true;
+      targetPage = page; // CHANGE: store the target page
     }
   });
+
+  // CHANGE: Only switch if we found a page AND it's different from current
+  if (targetPage && targetPage !== currPage) {
+    closePage();
+    openPage(targetPage.id.slice(0, -5));
+    currPage = targetPage;
+  } else if (!foundActivePage && window.scrollY < window.innerHeight * 0.8 && currPage !== index) {
+    // Only switch to index if we're not already on it
+    closePage();
+    openPage('index');
+    currPage = index;
+  }
 }
 
 // ================
