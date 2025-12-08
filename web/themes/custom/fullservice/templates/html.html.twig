@@ -27,13 +27,7 @@
       <meta property="og:image" content="{{ global_meta_image_url }}">
       <meta name="twitter:image" content="{{ global_meta_image_url }}">
     {% endif %}
-
-    {# JSON-LD structured data #}
-    {% if global_json_ld %}
-      <script type="application/ld+json">
-        {{ global_json_ld|raw }}
-      </script>
-    {% endif %}
+    
   </head>
 
   <body{{ attributes }}>

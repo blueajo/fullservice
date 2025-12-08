@@ -48,8 +48,6 @@ function fullservice_preprocess_html(array &$variables)
         }
       }
       $variables['global_meta_title'] = $metadata_node->get('field_meta_title')->value ?? NULL;
-      // --- JSON-LD structured data ---
-      $variables['global_json_ld'] = $metadata_node->get('field_json_ld')->value ?? NULL;
     }
   }
 }

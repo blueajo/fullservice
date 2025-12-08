@@ -32,6 +32,13 @@ document.addEventListener("DOMContentLoaded", (event) => {
           });
         });
       });
+      index.addEventListener('touchstart', () => {
+        mobileVideo.play().catch(err => {
+          mobileVideo.addEventListener("canplay", () => {
+            mobileVideo.play();
+          });
+        });
+      })
     } else {
       console.warn('Mobile video not found in DOM');
     }
@@ -697,7 +704,14 @@ const ProductionCarousel = (() => {
   }
 
   function initialized() { return !(state.flkty == null); }
-  function deinitialize() { if (state.flkty) { closeProduct(); state.flkty.destroy(); production.classList.remove('flickity-ready'); } state.flkty = null; }
+  function deinitialize() {
+    if (state.flkty) {
+      closeProduct();
+      state.flkty.destroy();
+      production.classList.remove('flickity-ready');
+    }
+    state.flkty = null;
+  }
   function getCurrentProduct() { return state.currOpenProduct; }
 
   // =======================
@@ -738,7 +752,6 @@ const ProductionCarousel = (() => {
       state.flkty.reposition();
       const animate = !state.disableNextAnimation;
       state.flkty.selectCell(cellIndex, true, !animate);
-      //state.flkty.once('settle', () => state.flkty.reposition());
 
       state.currOpenProduct = cellElement;
       state.flkty.options.dragThreshold = 10000;
@@ -757,7 +770,6 @@ const ProductionCarousel = (() => {
     const product = state.currOpenProduct;
     product.classList.remove("open");
 
-    // UPDATED: Handle both images and videos
     const productMedia = product.querySelector("img.lazy-image, img.lazy-loaded, .lazy-video-container video");
     const videoContainer = product.querySelector('.lazy-video-container');
 
@@ -799,8 +811,8 @@ const ProductionCarousel = (() => {
 
   let arrowMomentumRaf = null;
   let arrowVelocity = 0;
-  const ARROW_FRICTION = 0.85;     // lower = longer glide
-  const ARROW_MIN_VELOCITY = 0.4;  // stop threshold
+  const ARROW_FRICTION = 0.85;
+  const ARROW_MIN_VELOCITY = 0.4;
 
   function startArrowMomentum() {
     if (arrowMomentumRaf) cancelAnimationFrame(arrowMomentumRaf);
@@ -829,14 +841,14 @@ const ProductionCarousel = (() => {
       let index = (state.flkty.selectedIndex + dir + state.flkty.cells.length) % state.flkty.cells.length;
       openProduct(state.flkty.cells[index].element, index);
     } else {
-      // 1. Apply the immediate 80vw jump (your logic)
+      // 1. Apply the immediate 80vw jump
       const jump = window.innerWidth * 0.4 * dir * -1;
       state.flkty.x += jump;
       state.flkty.dragX = state.flkty.x;
       state.flkty.positionSlider();
 
       // 2. Set the initial momentum velocity
-      arrowVelocity = jump * 0.15;   // 15% of the jump as initial speed (tweakable)
+      arrowVelocity = jump * 0.15;
 
       // 3. Start the coast animation
       startArrowMomentum();
@@ -847,20 +859,6 @@ const ProductionCarousel = (() => {
     temporarilyDisablePointer();
   }
 
-
-  function setupArrowControls() {
-    leftArrow.addEventListener("click", () => handleArrowPress(-1));
-    rightArrow.addEventListener("click", () => handleArrowPress(1));
-    centerArea.addEventListener("click", closeProduct);
-    document.addEventListener("keydown", (event) => {
-      const section = document.querySelector('.page:not(.inactive)').id.slice(0, -5);
-      if (section === 'production') {
-        if (event.key === 'ArrowLeft') { event.preventDefault(); handleArrowPress(-1); }
-        else if (event.key === 'ArrowRight') { event.preventDefault(); handleArrowPress(1); }
-      }
-    });
-  }
-
   function temporarilyDisablePointer() {
     viewport.style.zIndex = "-1";
     production.addEventListener("mousemove", () => (viewport.style.zIndex = "1"), { once: true });
@@ -869,11 +867,6 @@ const ProductionCarousel = (() => {
   // =======================
   // Scroll Handling
   // =======================
-  function setupScrollHandling() {
-    production.addEventListener("mouseenter", () => state.isHoveringCarousel = true);
-    production.addEventListener("mouseleave", () => state.isHoveringCarousel = false);
-    window.addEventListener("wheel", handleWheel, { passive: false });
-  }
 
   function isTrackpadEvent(e) {
     if (e.wheelDeltaY !== undefined) return e.wheelDeltaY !== e.deltaY * -3;
@@ -888,8 +881,8 @@ const ProductionCarousel = (() => {
   let lastWheelTs = 0;
   let lastSwipeEnd = 0;
 
-  const MIN_GESTURE_GAP = 120;      // idle gap between swipes
-  const MIN_DROP = 10;              // how much delta must drop to count as "gesture ended"
+  const MIN_GESTURE_GAP = 120;
+  const MIN_DROP = 10;
 
   function handleWheel(e) {
     if (!state.isHoveringCarousel || state.pauseScroll) return;
@@ -905,14 +898,6 @@ const ProductionCarousel = (() => {
     if (e.deltaMode === 2) delta *= 60;
     delta *= 2;
     delta = -delta;
-
-    // if (state.currOpenProduct) {
-    //   syncSelectedIndex();
-    //   // Always animate next product when a product is open
-    //   let nextIndex = (state.flkty.selectedIndex + Math.sign(delta) + state.flkty.cells.length) % state.flkty.cells.length;
-    //   openProduct(state.flkty.cells[nextIndex].element, nextIndex);
-    //   return;
-    // }
 
     if (state.currOpenProduct) {
       const now = performance.now();
@@ -954,8 +939,6 @@ const ProductionCarousel = (() => {
       return;
     }
 
-
-
     // Free scroll → move carousel instantly
     state.flkty.x -= delta;
     state.flkty.dragX = state.flkty.x;
@@ -971,17 +954,74 @@ const ProductionCarousel = (() => {
   return {
     init() {
       createCarousel();
-      setupArrowControls();
-      setupScrollHandling();
     },
     openProduct,
     closeProduct,
     initialized,
     deinitialize,
-    getCurrentProduct
+    getCurrentProduct,
+    getFlickity: () => state.flkty,
+    handleArrowPress,
+    handleWheel,
+    setHovering: (val) => { state.isHoveringCarousel = val; }
   };
 })();
 
+// =======================
+// Set up event listeners ONCE on page load
+// =======================
+document.addEventListener("DOMContentLoaded", () => {
+  const leftArrow = document.getElementById("left-arrow-area");
+  const rightArrow = document.getElementById("right-arrow-area");
+  const centerArea = document.getElementById("center-area");
+  const production = document.getElementById('production-page');
+
+  if (!leftArrow || !rightArrow || !centerArea || !production) return;
+
+  // Arrow clicks
+  leftArrow.addEventListener("click", () => {
+    if (ProductionCarousel.initialized()) {
+      ProductionCarousel.handleArrowPress(-1);
+    }
+  });
+
+  rightArrow.addEventListener("click", () => {
+    if (ProductionCarousel.initialized()) {
+      ProductionCarousel.handleArrowPress(1);
+    }
+  });
+
+  centerArea.addEventListener("click", () => {
+    if (ProductionCarousel.initialized()) {
+      ProductionCarousel.closeProduct();
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener("keydown", (event) => {
+    if (!ProductionCarousel.initialized()) return;
+    const section = document.querySelector('.page:not(.inactive)')?.id.slice(0, -5);
+    if (section === 'production') {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        ProductionCarousel.handleArrowPress(-1);
+      }
+      else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        ProductionCarousel.handleArrowPress(1);
+      }
+    }
+  });
+
+  // Scroll handling
+  production.addEventListener("mouseenter", () => ProductionCarousel.setHovering(true));
+  production.addEventListener("mouseleave", () => ProductionCarousel.setHovering(false));
+
+  window.addEventListener("wheel", (e) => {
+    if (!ProductionCarousel.initialized()) return;
+    ProductionCarousel.handleWheel(e);
+  }, { passive: false });
+});
 
 
 // =====================================================================================================================================
