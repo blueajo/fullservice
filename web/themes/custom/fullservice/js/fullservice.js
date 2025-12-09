@@ -127,8 +127,8 @@ var indexCursor = {
     const headerHeight = header ? header.offsetHeight : 0;
 
     // LOCATION OF FOLLOWER
-    this.x = lerp(this.x, mouseX, 0.04);
-    this.y = lerp(this.y, mouseY - toolbarHeight - headerHeight, 0.04);
+    this.x = lerp(this.x, mouseX, 0.03);
+    this.y = lerp(this.y, mouseY - toolbarHeight - headerHeight, 0.03);
 
     // SET VIDEO
     this.quadrant[0] = (this.x / window.innerWidth) > .5 ? 1 : 0;
@@ -334,6 +334,9 @@ function closePage() {
   if (section == 'index') {
     videoDot.classList.remove('active');
     document.getElementById('header').classList.remove('index-header');
+    if (mobile) {
+      production.style.opacity = 1;
+    }
   } else if (section == 'production') {
     if (ProductionCarousel.initialized()) {
       ProductionCarousel.deinitialize();
@@ -361,6 +364,11 @@ function closePage() {
 function openPage(section) {
   const page = document.getElementById(section + '-page');
   if (page) { page.classList.remove('inactive'); }
+  if (section == 'index') {
+    history.pushState("", document.title, window.location.pathname);
+  } else {
+    location.hash = section;
+  }
   expandHeader(section);
   // page-specific
   if (section == 'index') {
@@ -443,14 +451,8 @@ for (let i = 0; i < pageLinks.length; i++) {
   const pageLink = pageLinks[i];
   pageLink.addEventListener('click', () => {
     const section = pageLink.id.slice(0, -5);
-    // set anchor link
-    if (section == 'index') {
-      history.pushState("", document.title, window.location.pathname);
-      closePage();
-      openPage(section);
-    } else {
-      location.hash = section;
-    }
+    closePage();
+    openPage(section);
     if (mobile) {
       scrollAnimations = false;
 
@@ -1110,10 +1112,12 @@ for (let i = 0; i < pitchList.length; i++) {
 
 function fadeInForm() {
   contactForm.style.display = "flex";
+  document.querySelector('#form-alert').style.display = "block";
   pitches.classList.add('expanded');
   requestAnimationFrame(() => {
     contactForm.style.opacity = "1";
   });
+  pitches.style.marginBottom = '-1rem';
 }
 
 function fadeOutForm() {
@@ -1121,7 +1125,9 @@ function fadeOutForm() {
   if (mobile) serviceProviders.style.opacity = "0";
   contactForm.addEventListener("transitionend", () => {
     contactForm.style.display = "none";
+    document.querySelector('#form-alert').style.display = "none";
     pitches.classList.remove('expanded');
+    pitches.style.marginBottom = '';
     if (mobile) serviceProviders.style.opacity = "1";
     resetPitches();
   }, { once: true });
@@ -1281,10 +1287,6 @@ function scrollHandler() {
   if (targetDiv) {
     const blurbOpacity = 1 - scrollProgress
     targetDiv.style.opacity = blurbOpacity > 0 ? blurbOpacity : 0;
-  }
-  if (production) {
-    const productionOpacity = Math.max((scrollProgress - 1) / 0.25, 0);
-    production.style.opacity = productionOpacity < 1 ? productionOpacity : 1;
   }
   if (!scrollAnimations) return;
 

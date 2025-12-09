@@ -1081,10 +1081,9 @@ input {
   #container {
     height: auto;
     width: 100%;
-    grid-template-rows: minmax(0, auto) 3rem calc(100dvh - 24rem) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto);
+    grid-template-rows: minmax(0, auto) calc(100dvh - 45rem) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto);
     grid-auto-columns: minmax(0, auto);
     grid-template-areas:'ix'
-                        '.'
                         '.'
                         'pr'
                         'pi'
@@ -1159,7 +1158,7 @@ input {
   #service-providers-page, #service-providers-page.inactive {
     grid-area: sp;
     display: grid;
-    padding-top: 7rem;
+    padding-top: 8rem;
     padding-bottom: 2rem;
   }
   #pitches-page, #pitches-page.inactive {
@@ -1167,6 +1166,7 @@ input {
     display: grid;
     padding-top: 7rem;
     grid-template-rows: auto;
+    margin-bottom: 2rem;
   }
   #info-page, #info-page.inactive {
     grid-area: in;
@@ -1470,6 +1470,10 @@ input {
 
   #sent-alert-container {
     width: calc(100vw - 2 * var(--rg-margin));
+  }
+
+  #form-alert {
+    height: 2.3rem;
   }
 
   #form-alert p {
