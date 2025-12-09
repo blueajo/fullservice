@@ -502,7 +502,7 @@ span.gap {
    height: 100%;
    grid-area: content;
    opacity: 0;
-  transition: opacity .6s ease;
+   transition: opacity 1s ease;
 }
 
 #production-page.flickity-ready {

@@ -335,7 +335,7 @@ function closePage() {
     videoDot.classList.remove('active');
     document.getElementById('header').classList.remove('index-header');
     if (mobile) {
-      production.style.opacity = 1;
+      production.classList.add('flickity-ready');
     }
   } else if (section == 'production') {
     if (ProductionCarousel.initialized()) {
@@ -377,7 +377,7 @@ function openPage(section) {
       cursorInterval = setInterval(indexFollow, 1000 / 60);
     } else {
       document.querySelector('#mobile-video').play();
-      production.style.opacity = 0;
+      production.classList.remove('flickity-ready');
     }
     videoDot.classList.add('active');
   }
@@ -1117,7 +1117,7 @@ function fadeInForm() {
   requestAnimationFrame(() => {
     contactForm.style.opacity = "1";
   });
-  pitches.style.marginBottom = '-1rem';
+  pitches.style.marginBottom = '-1rems';
 }
 
 function fadeOutForm() {
