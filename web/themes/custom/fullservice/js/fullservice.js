@@ -334,6 +334,9 @@ function closePage() {
   if (section == 'index') {
     videoDot.classList.remove('active');
     document.getElementById('header').classList.remove('index-header');
+    if (mobile) {
+      production.classList.add('flickity-ready');
+    }
   } else if (section == 'production') {
     if (ProductionCarousel.initialized()) {
       ProductionCarousel.deinitialize();
@@ -374,6 +377,7 @@ function openPage(section) {
       cursorInterval = setInterval(indexFollow, 1000 / 60);
     } else {
       document.querySelector('#mobile-video').play();
+      production.classList.remove('flickity-ready');
     }
     videoDot.classList.add('active');
   }
