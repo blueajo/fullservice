@@ -430,17 +430,10 @@ function expandHeader(section) {
   if (pageLink) { pageLink.classList.add('current-page'); }
   if (pageText) {
     pageText.classList.add('active');
-    if (section == 'index') {
-      if (!mobile) {
-        videoCredits.classList.add('active');
-        setTimeout(() => {
-          pageText.style.opacity = 1;
-          videoCredits.style.opacity = 1;
-        }, 10);
-      } else {
-        // Mobile: just set opacity
-        pageText.style.opacity = 1;
-      }
+    if (section == 'index' && !mobile) {
+      videoCredits.classList.add('active');
+      pageText.style.opacity = 1;
+      videoCredits.style.opacity = 1;
     }
   }
   if (pageGap) { pageGap.classList.add('gap'); }
