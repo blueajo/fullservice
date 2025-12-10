@@ -127,8 +127,8 @@ var indexCursor = {
     const headerHeight = header ? header.offsetHeight : 0;
 
     // LOCATION OF FOLLOWER
-    this.x = lerp(this.x, mouseX, 0.03);
-    this.y = lerp(this.y, mouseY - toolbarHeight - headerHeight, 0.03);
+    this.x = lerp(this.x, mouseX, 0.035);
+    this.y = lerp(this.y, mouseY - toolbarHeight - headerHeight, 0.035);
 
     // SET VIDEO
     this.quadrant[0] = (this.x / window.innerWidth) > .5 ? 1 : 0;
