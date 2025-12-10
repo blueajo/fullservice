@@ -1145,6 +1145,7 @@ input {
     padding-bottom: 7rem;
     min-width: 0;
     min-height: 0;
+    opacity: 1;
   }
   #block-fullservice-views-block-production-gallery-block-1 > div {
     width: 100vw;
