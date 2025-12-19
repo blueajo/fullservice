@@ -1,0 +1,13 @@
+name: Media Thumbnails Video
+type: module
+description: This module uses the Media Thumbnails framework to create media entity thumbnails for video files.
+package: Media
+core_version_requirement: ^9.3 || ^10 || ^11
+configure: media_thumbnails_video.media_thumbnails_video_settings
+dependencies:
+  - media_thumbnails:media_thumbnails
+
+# Information added by Drupal.org packaging script on 2025-02-07
+version: '2.0.1'
+project: 'media_thumbnails_video'
+datestamp: 1738924653

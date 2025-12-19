@@ -1,0 +1,24 @@
+{
+  "name": "drupal/media_thumbnails_video",
+  "type": "drupal-module",
+  "description": "This module uses the Media Thumbnails framework to create media entity thumbnails for video files.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/media_thumbnails_video",
+  "authors": [
+    {
+      "name": "Szczepan Musial",
+      "homepage": "https://www.drupal.org/u/lamp5",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/media_thumbnails_video",
+    "source": "http://cgit.drupalcode.org/media_thumbnails_video"
+  },
+  "require": {
+    "drupal/media_thumbnails": ">=2.0",
+    "php-ffmpeg/php-ffmpeg": ">=0.14.0",
+    "ext-gd": "*"
+  }
+}

@@ -1,0 +1,24 @@
+{# mobile_detect/templates/mobile-detect-status-block.html.twig #}
+{% block mobile_detect %}
+  <p>Mobile Detect version {{ version }}</p>
+  <ul>
+    {% if is_mobile() %}
+    <li><strong>Is Mobile</strong></li>
+    {% endif %}
+    {% if is_tablet() %}
+    <li><strong>Is Tablet</strong></li>
+    {% endif %}
+    {% if not is_mobile() %}
+    <li><strong>Is Desktop</strong></li>
+    {% endif %}
+    {% if not is_mobile() %}
+    <li>Is Not Mobile</li>
+    {% endif %}
+    {% if not is_tablet() %}
+    <li>Is Not Tablet</li>
+    {% endif %}
+    {% if is_mobile() %}
+    <li>Is Not Desktop</li>
+    {% endif %}
+  </ul>
+{% endblock %}

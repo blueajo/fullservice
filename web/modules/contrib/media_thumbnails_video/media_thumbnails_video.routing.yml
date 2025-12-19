@@ -1,0 +1,7 @@
+media_thumbnails_video.media_thumbnails_video_settings:
+  path: '/admin/config/media/media-thumbnails-video-settings'
+  defaults:
+    _title: 'Media thumbnails video settings'
+    _form: 'Drupal\media_thumbnails_video\Form\MediaThumbnailsVideoSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

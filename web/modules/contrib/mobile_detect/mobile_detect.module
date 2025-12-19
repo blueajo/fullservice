@@ -1,0 +1,93 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations and configurations for Mobile Detect.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function mobile_detect_help($route_name, RouteMatchInterface $route_match) {
+  // Main module help for the mobile_detect module.
+  if ($route_name == 'help.page.mobile_detect') {
+    return _mobile_detect_get_readme();
+  }
+}
+
+/**
+ * Helper for mobile_detect readme.
+ */
+function _mobile_detect_get_readme(): string {
+  $readme = file_get_contents(dirname(__FILE__) . '/README.txt');
+  // Get the module handler service.
+  $module_handler = \Drupal::moduleHandler();
+  if ($module_handler->moduleExists('markdown')) {
+    $filters = $module_handler->invoke('markdown', 'filter_info');
+    $info = $filters['filter_markdown'];
+
+    if (function_exists($info['process callback'])) {
+      $function = $info['process callback'];
+      $output = Xss::filterAdmin($function($readme, NULL));
+    }
+    else {
+      $output = '<pre>' . Html::escape($readme) . '</pre>';
+    }
+  }
+  else {
+    $output = '<pre>' . Html::escape($readme) . '</pre>';
+  }
+
+  return $output;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mobile_detect_theme(): array {
+  return [
+    'mobile_detect_status_block' => [
+      'variables' => ['version' => NULL],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function mobile_detect_page_attachments_alter(array &$attachments): void {
+  if (\Drupal::config('mobile_detect.settings')->get('mobile_detect_is_mobile')) {
+    $attachments['#cache']['contexts'][] = 'mobile_detect_is_mobile';
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function mobile_detect_preprocess_html(&$variables): void {
+  // Add cache context so both versions are saved.
+  $variables['#cache']['contexts'][] = 'mobile_detect_is_mobile';
+
+  // Add classes if device is mobile or tablet.
+  $detect = \Drupal::service('mobile_detect');
+  if ($detect->isMobile()) {
+    $variables['attributes']['class'][] = 'is-mobile';
+  }
+
+  if ($detect->isTablet()) {
+    $variables['attributes']['class'][] = 'is-tablet';
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
+ */
+function mobile_detect_preprocess_paragraph(&$variables): void {
+  $variables['#cache']['contexts'][] = 'mobile_detect_is_mobile';
+}

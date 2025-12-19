@@ -1,0 +1,4 @@
+media_thumbnails_video.settings:
+  title: Media Thumbnails Video
+  route_name: media_thumbnails_video.media_thumbnails_video_settings
+  base_route: media_thumbnails.admin

@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Media Thumbnails Video module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use FFMpeg\Exception\ExecutableNotFoundException;
+use FFMpeg\FFMpeg;
+
+/**
+ * Implements hook_requirements().
+ */
+function media_thumbnails_video_requirements($phase) {
+  $requirements = [];
+  if ('runtime' === $phase) {
+    $config = \Drupal::config('media_thumbnails_video.settings');
+    try {
+      $ffmpeg = FFMpeg::create([
+        'ffmpeg.binaries' => $config->get('ffmpeg'),
+        'ffprobe.binaries' => $config->get('ffprobe'),
+        'timeout' => $config->get('timeout'),
+        'ffmpeg.threads' => $config->get('threads'),
+      ]);
+      $requirements['ffmpeg'] = [
+        'title' => t('FFmpeg'),
+        'value' => t('Installed'),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+    catch (ExecutableNotFoundException $e) {
+      $requirements['ffmpeg'] = [
+        'title' => t('FFmpeg'),
+        'value' => t('Not installed'),
+        'severity' => REQUIREMENT_ERROR,
+        'description' => t('FFmpeg is required to generate video thumbnails.'),
+      ];
+    }
+  }
+  return $requirements;
+}

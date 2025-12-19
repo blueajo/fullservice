@@ -1,0 +1,27 @@
+services:
+  mobile_detect:
+    class: Detection\MobileDetect
+
+  mobile_detect.twig.extension:
+    class: Drupal\mobile_detect\Twig\MobileDetectTwig
+    arguments: ["@mobile_detect"]
+    tags:
+      - { name: twig.extension }
+
+  cache_context.mobile_detect_device_type:
+    class: Drupal\mobile_detect\Cache\Context\DeviceTypeCacheContext
+    arguments: ["@mobile_detect"]
+    tags:
+      - { name: cache.context }
+
+  cache_context.mobile_detect_is_mobile:
+    class: Drupal\mobile_detect\Cache\Context\IsMobileCacheContext
+    arguments: ["@mobile_detect"]
+    tags:
+      - { name: cache.context }
+      
+  cache_context.mobile_detect_platform:
+    class: Drupal\mobile_detect\Cache\Context\PlatformCacheContext
+    arguments: ["@mobile_detect"]
+    tags:
+      - { name: cache.context }
