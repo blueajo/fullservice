@@ -22,26 +22,13 @@
         {% if thumbnail_media and thumbnail_media.field_media_image|length %}
           {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
           {% if thumbnail_file %}
-            {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
+            {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('mobile')) %}
           {% endif %}
         {% endif %}
       {% endif %}    
-      
-      <div
-        class="lazy-video-container"
-        data-cursor-action="plus"
-        {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
-      >
-        {% if thumbnail_url %}
-          <img 
-            class="video-thumbnail" 
-            src="{{ thumbnail_url }}" 
-            {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
-          >
-        {% endif %}
-        
-        <video loop muted playsinline preload="none">
-          <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+      <div class="video-container" {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %} > 
+        <video loop muted playsinline preload="none" {% if thumbnail_url %} poster="{{ thumbnail_url }}" {% endif %} >
+          <source src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
         </video>
       </div>
     {% endif %}
@@ -54,30 +41,25 @@
       {% set image_uri = image_file.uri.value %}
       {% set image_alt = media.field_media_image.0.alt|default(node.title.value) %}
 
-      {# Placeholder thumbnail #}
-      {% set thumb = image_uri|image_style('thumbnail_blur') %}
-
       {# Full responsive images #}
       {% set mobile = file_url(image_uri|image_style('mobile')) %}
       {% set desktop = file_url(image_uri|image_style('desktop')) %}
       {% set desktop_large = file_url(image_uri|image_style('desktop_large')) %}
 
       <img
-        class="lazy-image lazy-loading"
-        src="{{ thumb }}"
-        data-src="{{ mobile }}"
-        data-srcset="
+        src="{{ mobile }}"
+        srcset="
           {{ mobile }} 600w,
           {{ desktop }} 1200w,
           {{ desktop_large }} 1980w
         "
-        data-sizes="
+        sizes="
           (min-width: 1600px) 1980px,
           (min-width: 1200px) 1200px,
           100vw
         "
         alt="{{ image_alt }}"
-        data-cursor-action="plus"
+        {% if not is_first_production %} loading="lazy" {% endif %}
         {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
       >
     {% endif %}

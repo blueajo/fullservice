@@ -26,6 +26,7 @@
     width: 100%;
     height: auto;
     transition: opacity 0.4s ease, filter 0.4s ease;
+    background-color: black;
 }
 
 /**
@@ -58,7 +59,7 @@
     position: relative;
     display: block;
     /* overflow: hidden; */
-    background-color: transparent;
+    background-color: black;
     width: 100%;
     max-width: 100%;
 }
