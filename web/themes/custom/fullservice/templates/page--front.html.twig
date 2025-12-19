@@ -29,16 +29,15 @@
 <div id='container'>
   {# HEADER #}
   <div id="header">
-      <p><span class="paren">(</span><a id="production-link" class="page-link">{{ header_node.field_production_title ? header_node.field_production_title.value : 'Production' }}</a><span id="production-text" class="nav-text">{% if header_node.field_production_blurb %} {{ header_node.field_production_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="production-gap"></span>
-          <a id="pitches-link" class="page-link">{{ header_node.field_pitches_title ? header_node.field_pitches_title.value : 'Pitches' }}</a><span id="pitches-text" class="nav-text">{% if header_node.field_pitches_blurb %} {{ header_node.field_pitches_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="pitches-gap"></span>
-          <a id="service-providers-link" class="page-link">{{ header_node.field_service_providers_title ? header_node.field_service_providers_title.value : 'Service Providers' }}</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="service-providers-gap"></span>
-          <a id="info-link" class="page-link">{{ header_node.field_info_title ? header_node.field_info_title.value : 'Info' }}</a><span id="info-text" class="nav-text">{% if header_node.field_info_blurb %}{{ header_node.field_info_blurb.value }}{% endif %}</span><span id="info-gap"></span><span><span class="paren">)</span></span>
+      <p><span class="paren">(</span><a id="production-link" class="page-link" href="#production">Production</a><span id="production-text" class="nav-text">{% if header_node.field_production_blurb %} {{ header_node.field_production_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="production-gap"></span>
+          <a id="pitches-link" class="page-link" href="#pitches">Pitches</a><span id="pitches-text" class="nav-text">{% if header_node.field_pitches_blurb %} {{ header_node.field_pitches_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="pitches-gap"></span>
+          <a id="service-providers-link" class="page-link" href="#service-providers">Service Providers</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="service-providers-gap"></span>
+          <a id="info-link" class="page-link" href="#info">Info</a><span id="info-text" class="nav-text">{% if header_node.field_info_blurb %}{{ header_node.field_info_blurb.value }}{% endif %}</span><span id="info-gap"></span><span><span class="paren">)</span></span>
       </p>
   </div>
   
   {# HOMEPAGE / INDEX #}
   <div id="index-page" class="page inactive">
-    {% if not is_mobile %}
     <div id='index-cursor'>
       {# Production videos #}
       {% if video_collection.field_production_videos|length %}
@@ -54,12 +53,30 @@
                 {% if thumbnail_media and thumbnail_media.field_media_image|length %}
                   {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
                   {% if thumbnail_file %}
-                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('mobile')) %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
                   {% endif %}
                 {% endif %}
               {% endif %}
-              <div id="production-{{ i }}-video-container" class="video-container production-video-container">
-                <video id="production-{{ i }}-video" class="production-video" loop muted preload="metadata" width="300" poster="{{ thumbnail_url }}">
+              
+              <div 
+                id="production-{{ i }}-video-container" 
+                class="lazy-video-container production-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Production video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="production-{{ i }}-video" 
+                  class="production-video"
+                  loop 
+                  muted 
+                  preload="none"
+                >
                   <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
                 </video>
               </div>
@@ -82,12 +99,30 @@
                 {% if thumbnail_media and thumbnail_media.field_media_image|length %}
                   {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
                   {% if thumbnail_file %}
-                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('mobile')) %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
                   {% endif %}
                 {% endif %}
               {% endif %}
-              <div id="pitches-{{ i }}-video-container" class="video-container pitches-video-container">
-                <video id="pitches-{{ i }}-video" class="pitches-video" loop muted preload="metadata" width="300" poster="{{ thumbnail_url }}">
+              
+              <div 
+                id="pitches-{{ i }}-video-container" 
+                class="lazy-video-container pitches-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Pitches video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="pitches-{{ i }}-video" 
+                  class="pitches-video"
+                  loop 
+                  muted 
+                  preload="none"
+                >
                   <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
                 </video>
               </div>
@@ -110,12 +145,30 @@
                 {% if thumbnail_media and thumbnail_media.field_media_image|length %}
                   {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
                   {% if thumbnail_file %}
-                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('mobile')) %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
                   {% endif %}
                 {% endif %}
               {% endif %}
-              <div id="service-providers-{{ i }}-video-container" class="video-container service-providers-video-container">
-                <video id="service-providers-{{ i }}-video" class="service-providers-video" loop muted preload="metadata" width="300" poster="{{ thumbnail_url }}">
+              
+              <div 
+                id="service-providers-{{ i }}-video-container" 
+                class="lazy-video-container service-providers-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Service providers video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="service-providers-{{ i }}-video" 
+                  class="service-providers-video"
+                  loop 
+                  muted 
+                  preload="none"
+                >
                   <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
                 </video>
               </div>
@@ -138,12 +191,30 @@
                 {% if thumbnail_media and thumbnail_media.field_media_image|length %}
                   {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
                   {% if thumbnail_file %}
-                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('mobile')) %}
+                    {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
                   {% endif %}
                 {% endif %}
               {% endif %}
-              <div id="info-{{ i }}-video-container" class="video-container info-video-container">
-                <video id="info-{{ i }}-video" class="info-video" loop muted preload="metadata" width="300" poster="{{ thumbnail_url }}">
+              
+              <div 
+                id="info-{{ i }}-video-container" 
+                class="lazy-video-container info-video-container"
+              >
+                {% if thumbnail_url %}
+                  <img 
+                    src="{{ thumbnail_url }}" 
+                    class="video-thumbnail"
+                    alt="Info video {{ i }}"
+                  >
+                {% endif %}
+                
+                <video 
+                  id="info-{{ i }}-video" 
+                  class="info-video"
+                  loop 
+                  muted
+                  preload="none"
+                >
                   <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
                 </video>
               </div>
@@ -158,9 +229,7 @@
     <div id="pitches-area" class="link-area"></div>
     <div id="service-providers-area" class="link-area"></div>
     <div id="info-area" class="link-area"></div>
-    {% endif %}
     
-    {% if is_mobile %}
     {# Mobile video #}
     <div id="mobile-area">
       <div id="mobile-disclaimer-area">
@@ -182,25 +251,36 @@
             {% if thumbnail_media and thumbnail_media.field_media_image|length %}
               {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
               {% if thumbnail_file %}
-                {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('mobile')) %}
+                {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('thumbnail_blur')) %}
               {% endif %}
             {% endif %}
           {% endif %}
           <div 
             id="mobile-video-container" 
-            class="video-container"
+            class="lazy-video-container"
             style="aspect-ratio: 720 / 1080"
           >
-            <video id="mobile-video" loop muted playsinline preload="none" {% if thumbnail_url %} poster="{{ thumbnail_url }}" {% endif %}>
-              <source src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+            {% if thumbnail_url %}
+              <img 
+                src="{{ thumbnail_url }}" 
+                class="video-thumbnail"
+              >
+            {% endif %}
+            
+            <video 
+              id="mobile-video" 
+              loop 
+              muted
+              playsinline
+              preload="none"
+            >
+              <source data-src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
             </video>
           </div>
         {% endif %}
       {% endif %}
     </div>
-    {% endif %}
   </div>
-  
 
   {# PRODUCTION PAGE #}
   <div id="production-page" class="page inactive">

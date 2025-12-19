@@ -1,6 +1,8 @@
 (function (Drupal, once) {
     'use strict';
 
+    console.log("lazy-load.js loaded:", document.getElementById("index-cursor"));
+
     Drupal.behaviors.lazyLoad = {
         attach: function (context, settings) {
             const config = {
@@ -35,8 +37,18 @@
                 const fullSrc = img.dataset.src;
                 const fullSrcset = img.dataset.srcset;
                 if (!fullSrc) return;
-                img.src = fullSrc;
-                if (fullSrcset) img.srcset = fullSrcset;
+
+                const tempImg = new Image();
+                tempImg.onload = () => {
+                    img.src = fullSrc;
+                    if (fullSrcset) img.srcset = fullSrcset;
+                    img.decode().finally(() => {
+                        img.classList.remove('lazy-loading');
+                        img.classList.add('lazy-loaded', 'final');
+                    });
+                };
+                tempImg.src = fullSrc;
+                if (fullSrcset) tempImg.srcset = fullSrcset;
             };
 
             const initVideoLazyLoad = () => {
@@ -46,8 +58,7 @@
                 const videoObserver = new IntersectionObserver((entries, observer) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting && entry.target instanceof Element) {
-                            prepareVideo
-                            (entry.target);
+                            prepareVideo(entry.target);
                             observer.unobserve(entry.target);
                         }
                     });
@@ -56,6 +67,15 @@
                 lazyVideos.forEach(container => {
                     if (container instanceof Element) videoObserver.observe(container);
                 });
+            };
+
+            const prepareVideo = (container) => {
+                if (!(container instanceof Element)) return;
+                const video = container.querySelector('video');
+                const thumbnail = container.querySelector('.video-thumbnail');
+                if (!video) return;
+
+                setTimeout(() => loadVideoSources(container, video, thumbnail), 400);
             };
 
             const loadVideoSources = (container, video, thumbnail) => {
@@ -68,6 +88,11 @@
                     }
                 });
                 video.load();
+
+                video.addEventListener('loadeddata', () => {
+                    if (thumbnail) thumbnail.classList.add('fade-out');
+                    if (container) container.classList.add('video-ready');
+                }, { once: true });
 
                 video.addEventListener('error', (e) => {
                     console.error('Video load error:', video.id, e);

@@ -63,11 +63,6 @@ function fullservice_preprocess_page(&$variables)
   // Load singleton nodes for front page
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
-  $mobile_detect = \Drupal::service('mobile_detect');
-
-  // Add a boolean variable 'is_mobile' to the Twig template.
-  $variables['is_mobile'] = $mobile_detect->isMobile() && !$mobile_detect->isTablet();
-
   // Load Header node
   $header_nodes = $node_storage->loadByProperties([
     'type' => 'header_fullservice',
@@ -131,14 +126,6 @@ function fullservice_preprocess_node(&$variables)
   
   // Only process 'production' nodes
   if ($node->bundle() === 'production') {
-    static $seen_production = FALSE;
-
-    if ($variables['node']->bundle() === 'production' && !$seen_production) {
-      $variables['is_first_production'] = TRUE;
-      $seen_production = TRUE;
-    } else {
-      $variables['is_first_production'] = FALSE;
-    }
     $variables['image_ratio'] = null;
 
     // Prioritize video thumbnail
