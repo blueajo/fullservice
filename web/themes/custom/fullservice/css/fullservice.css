@@ -600,6 +600,9 @@ span.gap {
   filter: grayscale(1);
   opacity: 60%;
   will-change: transform, filter, opacity;
+  touch-action: none;
+  pointer-events: none;
+  transition: opacity 0.6s ease, filter 0.6s ease;
 }
 
 .product img:not(.video-poster) {
@@ -615,6 +618,7 @@ span.gap {
   will-change: transform, filter, opacity;
   display: block;
   z-index: 1;
+  transition: opacity 0.6s ease, filter 0.6s ease;
 }
 
 .product video {
@@ -633,6 +637,7 @@ span.gap {
   will-change: transform, filter, opacity;
   display: block;
   z-index: 1;
+  transition: opacity 0.6s ease, filter 0.6s ease;
 }
 
 video {
