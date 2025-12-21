@@ -585,7 +585,7 @@ span.gap {
 
 .product img,
 .product video {
-  object-fit: contain;
+  object-fit: cover;
   pointer-events: auto;
   flex-grow: 1;
   width: 100%;
@@ -596,6 +596,12 @@ span.gap {
   mix-blend-mode: multiply;
   will-change: transform, filter, opacity;
   background-color: black;
+}
+
+video {
+  transform: translateZ(0);
+  will-change: transform;
+
 }
 
 .product img:hover,
@@ -1063,11 +1069,11 @@ input {
 
   #index-page, #index-page.inactive { 
     grid-area: ix;
-    margin-top: 7rem;
+    margin-top: 5rem;
     margin-left: var(--rg-margin);
     margin-right: var(--rg-margin);
     margin-bottom: 1rem;
-    height: 100vh;
+    height: calc(100vh + 10rem);
     display: grid;
     width: calc(100vw - calc(var(--rg-margin)*2));
     grid-template-rows: 1fr;
@@ -1141,16 +1147,16 @@ input {
   #header-spacer {
     touch-action: none;
     pointer-events: none;
-    height: 6rem;
+    height: 5rem;
     width: 100%;
     background: linear-gradient(to bottom,
-              rgba(255, 255, 240, 1) 0%,
-              rgba(255, 255, 240, 0.85) 15%,
-              rgba(255, 255, 240, 0.55) 30%,
-              rgba(255, 255, 240, 0.25) 50%,
-              rgba(255, 255, 240, 0.08) 70%,
-              rgba(255, 255, 240, 0.02) 85%,
-              rgba(255, 255, 240, 0) 100%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+              rgba(250, 255, 228, 1) 0%,
+              rgba(250, 255, 228, 0.85) 15%,
+              rgba(250, 255, 228, 0.55) 30%,
+              rgba(250, 255, 228, 0.25) 50%,
+              rgba(250, 255, 228, 0.08) 70%,
+              rgba(250, 255, 228, 0.02) 85%,
+              rgba(250, 255, 228, 0) 100%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   }
 
   #index-link.active, #index-link.current-page, #footer a.current-page:hover {
@@ -1201,14 +1207,14 @@ input {
     display: flex;
     grid-area: m;
     width: 100%;
-    height: calc(100vh - 14rem);
+    height: calc(100vh - 10rem);
     align-items: center;
     justify-content: center;
   }
 
   #mobile-disclaimer-area {
     width: calc(100vw - 8.5 * var(--rg-margin));
-    height: calc(100vh - 14rem);
+    height: calc(100vh - 10rem);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1248,13 +1254,14 @@ input {
   /* Video element */
   #mobile-video {
     position: absolute;
-    width: auto;
+    width: 100%;
     height: 100%;
     object-fit: cover;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: block;
+    background-color: black;
   }
 
   #left-arrow-area {

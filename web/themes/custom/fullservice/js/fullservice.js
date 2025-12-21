@@ -114,8 +114,6 @@ let infoCursor = null;
 let copyright = null;
 if (!mobile) {
   // Index cursor objects
-  const videoDot = document.getElementById('index-cursor');
-  const allVideos = videoDot.querySelectorAll(".video-container");
   const quadrants = [['production', 'service-providers'],
   ['pitches', 'info']];
   const divisions = [[0, 0], [0, 0]];
@@ -1288,7 +1286,7 @@ function scrollHandler() {
     return;
   }
 
-  const scrollProgress = Math.max((window.scrollY - 10) / window.innerHeight, 0);
+  const scrollProgress = Math.max((window.scrollY - 10) / (window.innerHeight - 25), 0);
   const targetDiv = document.getElementById('index-text');
   if (targetDiv) {
     const blurbOpacity = 1 - scrollProgress
