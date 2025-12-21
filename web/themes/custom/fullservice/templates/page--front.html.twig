@@ -34,6 +34,7 @@
           <a id="service-providers-link" class="page-link">{{ header_node.field_service_providers_title ? header_node.field_service_providers_title.value : 'Service Providers' }}</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="service-providers-gap"></span>
           <a id="info-link" class="page-link">{{ header_node.field_info_title ? header_node.field_info_title.value : 'Info' }}</a><span id="info-text" class="nav-text">{% if header_node.field_info_blurb %}{{ header_node.field_info_blurb.value }}{% endif %}</span><span id="info-gap"></span><span><span class="paren">)</span></span>
       </p>
+      {% if is_mobile %} <div id="header-spacer"></div> {% endif %}
   </div>
   
   {# HOMEPAGE / INDEX #}

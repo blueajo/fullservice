@@ -1023,10 +1023,9 @@ input {
   #container {
     height: auto;
     width: 100%;
-    grid-template-rows: minmax(0, auto) calc(200vh - 100dvh - 30rem) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto);
+    grid-template-rows: minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto);
     grid-auto-columns: minmax(0, auto);
     grid-template-areas:'ix'
-                        '.'
                         'pr'
                         'pi'
                         'sp'
@@ -1063,11 +1062,11 @@ input {
 
   #index-page, #index-page.inactive { 
     grid-area: ix;
-    margin-top: 6rem;
+    margin-top: 7rem;
     margin-left: var(--rg-margin);
     margin-right: var(--rg-margin);
     margin-bottom: 1rem;
-    height: calc(100dvh - 12rem);
+    height: 100vh;
     display: grid;
     width: calc(100vw - calc(var(--rg-margin)*2));
     grid-template-rows: 1fr;
@@ -1120,21 +1119,37 @@ input {
     cursor: var(--dot-cursor);
   }
   #header {
-    padding-top: 0rem;
-    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content min-content;;
+    padding-top: 0;
+    margin-top: 0;
     padding-left: 2rem;
     padding-right: 2rem;
-    padding-bottom: 3.5rem;
-    position: sticky;
+    position: fixed;
     top: 3.5rem;
     z-index: 1001;
     height: min-content;
-    background: linear-gradient(to bottom, 
-                              #FAFFE4FF, 
-                              #FAFFE4FF 73%, 
-                              rgba(250, 255, 228, 0.5) 85%,
-                              rgba(250, 255, 228, 0) 100%
-                            );
+    /* background: #FAFFE4FF */
+  }
+  #header p {
+    background: rgba(250, 255, 228, 1);
+    margin-bottom: 0;
+    padding-bottom: 1.25rem;
+  }
+  #header-spacer {
+    touch-action: none;
+    pointer-events: none;
+    height: 6rem;
+    width: 100%;
+    background: linear-gradient(to bottom,
+              rgba(255, 255, 240, 1) 0%,
+              rgba(255, 255, 240, 0.85) 15%,
+              rgba(255, 255, 240, 0.55) 30%,
+              rgba(255, 255, 240, 0.25) 50%,
+              rgba(255, 255, 240, 0.08) 70%,
+              rgba(255, 255, 240, 0.02) 85%,
+              rgba(255, 255, 240, 0) 100%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   }
 
   #index-link.active, #index-link.current-page, #footer a.current-page:hover {
@@ -1142,12 +1157,7 @@ input {
   }
 
   #footer { 
-    background: linear-gradient(to bottom, 
-                              #FAFFE4FF, 
-                              #FAFFE4FF 73%, 
-                              rgba(250, 255, 228, 0.5) 85%,
-                              rgba(250, 255, 228, 0) 100%
-                            );
+    background: #FAFFE4FF;
     top: 0;
     padding-top: 1rem;
     padding-bottom: 2.5rem;
@@ -1163,6 +1173,10 @@ input {
     isolation: isolate;
     transform: translateZ(0);
     backface-visibility: hidden;
+  }
+
+  #index-text {
+    display: inline-block;
   }
 
   #mobile-footer {
@@ -1186,21 +1200,21 @@ input {
     display: flex;
     grid-area: m;
     width: 100%;
-    height: calc(100dvh - 12rem);
+    height: calc(100vh - 14rem);
     align-items: center;
     justify-content: center;
   }
 
   #mobile-disclaimer-area {
     width: calc(100vw - 8.5 * var(--rg-margin));
-    height: calc(100dvh - 14rem);
+    height: calc(100vh - 14rem);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 4;
     position: absolute;
     pointer-events: none;
-    max-width: calc(50dvh - 1.5 * var(--rg-margin));
+    max-width: calc(50vh - 1.5 * var(--rg-margin));
   }
 
   #mobile-disclaimer {
@@ -1227,7 +1241,7 @@ input {
     align-items: center;
     overflow: hidden;
     pointer-events: all;
-    max-width: 50dvh;
+    max-width: 50vh;
   }
 
   /* Video element */
@@ -1391,14 +1405,6 @@ input {
 
 
 @media only screen and (max-device-width: 392px) {
-  /* #index-page, #index-page.inactive { 
-    height: calc(100dvh - 14rem);
-  } */
-
-  #mobile-area,
-  #mobile-disclaimer-area {
-    height: calc(100dvh - 14rem);
-  }
 
   #mobile-video-container {
     width: 253px;

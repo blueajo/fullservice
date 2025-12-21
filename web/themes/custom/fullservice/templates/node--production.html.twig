@@ -40,31 +40,41 @@
       {% set image_file = media.field_media_image.0.entity %}
       {% set image_uri = image_file.uri.value %}
       {% set image_alt = media.field_media_image.0.alt|default(node.title.value) %}
+      {% set mime = image_file.mime.value %}
+      {% set filename = image_file.filename.value|lower %}
+      {% set is_gif = mime == 'image/gif' or filename ends with '.gif' %}
 
-      {# Full responsive images #}
-      {% set mobile = file_url(image_uri|image_style('mobile')) %}
-      {% set desktop = file_url(image_uri|image_style('desktop')) %}
-      {% set desktop_large = file_url(image_uri|image_style('desktop_large')) %}
+      {% if is_gif %}
+        {# No image styles for GIFs #}
+        <img
+          src="{{ file_url(image_uri) }}"
+          alt="{{ image_alt }}"
+          {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
+        >
+      {% else %}
+        {% set mobile = file_url(image_uri|image_style('mobile')) %}
+        {% set desktop = file_url(image_uri|image_style('desktop')) %}
+        {% set desktop_large = file_url(image_uri|image_style('desktop_large')) %}
 
-      <img
-        src="{{ mobile }}"
-        srcset="
-          {{ mobile }} 600w,
-          {{ desktop }} 1200w,
-          {{ desktop_large }} 1980w
-        "
-        sizes="
-          (min-width: 1600px) 1980px,
-          (min-width: 1200px) 1200px,
-          100vw
-        "
-        alt="{{ image_alt }}"
-        {% if not is_first_production %} loading="lazy" {% endif %}
-        {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
-      >
+        <img
+          src="{{ mobile }}"
+          srcset="
+            {{ mobile }} 600w,
+            {{ desktop }} 1200w,
+            {{ desktop_large }} 1980w
+          "
+          sizes="
+            (min-width: 1600px) 1980px,
+            (min-width: 1200px) 1200px,
+            100vw
+          "
+          alt="{{ image_alt }}"
+          {% if not is_first_production %} loading="lazy" {% endif %}
+          {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %}
+        >
+      {% endif %}
     {% endif %}
   {% endif %}
-
   <p class="caption">
     {{- node.title.value -}},
     {% if node.field_medium.value %}
