@@ -43,13 +43,13 @@ document.addEventListener("DOMContentLoaded", (event) => {
             mobileVideo.play();
           });
         });
+        toggleDisclaimer();
       })
     } else {
       console.warn('Mobile video not found in DOM');
     }
 
     syncCaptionWidth();
-    showDisclaimer();
 
     openPage('index');
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
@@ -112,7 +112,7 @@ let animatedCursor = null;
 let indexCursor = null;
 let infoCursor = null;
 let copyright = null;
-if (screen.width > 768) {
+if (!mobile) {
   // Index cursor objects
   const videoDot = document.getElementById('index-cursor');
   const allVideos = videoDot.querySelectorAll(".video-container");
@@ -283,7 +283,7 @@ if (screen.width > 768) {
       const arrowRight = e.target.closest('#right-arrow-area');
       const pitch = e.target.closest('.checkbox-container');
       const button = e.target.closest('#send-form');
-      const header = e.target.closest('#header');
+      const header = e.target.closest('#header, #footer');
       const section = document.querySelector('.page:not(.inactive)').id.slice(0, -5);
       const editable = e.target.closest('input, #message');
 
@@ -296,16 +296,21 @@ if (screen.width > 768) {
         animatedCursor.setState(action);
       } else if (link || pitch || button) {
         animatedCursor.setState('link');
-      } else if (arrowLeft || arrowRight || editable || section === 'info') {
-        if (section === 'info' && header) {
+      } else if (arrowLeft || arrowRight || editable) {
+        animatedCursor.setState('hidden');
+      } else {
+        animatedCursor.setState('default');
+      }
+      if (section === 'info') {
+        if (header && !link) {
           animatedCursor.setState('default');
+          copyright.classList.remove('visible');
+        } else if (link) {
           copyright.classList.remove('visible');
         } else {
           animatedCursor.setState('hidden');
           copyright.classList.add('visible');
         }
-      } else {
-        animatedCursor.setState('default');
       }
     });
 
@@ -313,13 +318,18 @@ if (screen.width > 768) {
       animatedCursor.dot.classList.add('clicking');
       if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
         animatedCursor.setState('default');
+        copyright.classList.remove('visible');
       }
     });
 
     document.addEventListener('pointerup', (e) => {
       animatedCursor.dot.classList.remove('clicking');
       if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
-        animatedCursor.setState('hidden');
+        const header = e.target.closest('#header, #footer, a');
+        if (!header) {
+          animatedCursor.setState('hidden');
+          copyright.classList.remove('visible');
+        }
       }
     });
 
@@ -557,23 +567,18 @@ function playMobileVideoOnInteraction(videoSelector) {
   document.addEventListener('touchstart', tryPlay, { once: true });
 }
 
-function showDisclaimer() {
-  const disclaimer = document.querySelector('#mobile-disclaimer');
-  if (!disclaimer) return;
-
-  function toggleDisclaimer() {
-
-    if (disclaimer.classList.contains('visible')) {
-      disclaimer.classList.remove('visible');
-      console.log('disclaimer toggle off'); 
-    } else {
-      disclaimer.classList.add('visible');
-      console.log('disclaimer toggle on');
-    }
+function toggleDisclaimer() {
+  const disclaimer = document.getElementById('mobile-disclaimer');
+  if (disclaimer.classList.contains('visible')) {
+    disclaimer.classList.remove('visible');
+    console.log('disclaimer toggle off'); 
+  } else {
+    disclaimer.classList.add('visible');
+    console.log('disclaimer toggle on');
   }
-
-  document.querySelector('#mobile-video').addEventListener('touchstart', toggleDisclaimer);
 }
+
+  
 
 // =====================================================================================================================================
 // PRODUCTION
@@ -1029,11 +1034,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!ProductionCarousel.initialized()) return;
     const section = document.querySelector('.page:not(.inactive)')?.id.slice(0, -5);
     if (section === 'production') {
-      if (event.key === 'ArrowLeft') {
+      if (event.key === 'ArrowLeft' && ProductionCarousel.getCurrentProduct()) {
         event.preventDefault();
         ProductionCarousel.handleArrowPress(-1);
       }
-      else if (event.key === 'ArrowRight') {
+      else if (event.key === 'ArrowRight' && ProductionCarousel.getCurrentProduct()) {
         event.preventDefault();
         ProductionCarousel.handleArrowPress(1);
       }
