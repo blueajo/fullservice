@@ -26,8 +26,9 @@
           {% endif %}
         {% endif %}
       {% endif %}    
-      <div class="video-container" {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %} > 
-        <video loop muted playsinline preload="none" {% if thumbnail_url %} poster="{{ thumbnail_url }}" {% endif %} >
+      <div class="video-container"> 
+        {% if thumbnail_url %} <img class="video-poster" {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %} src="{{ thumbnail_url }}" alt="" loading="lazy"> {% endif %}
+        <video loop muted playsinline preload="none">
           <source src="{{ file_url(video_file.uri.value) ~ '#t=0.001' }}" type="video/mp4">
         </video>
       </div>

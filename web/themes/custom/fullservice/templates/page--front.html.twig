@@ -40,7 +40,7 @@
   {# HOMEPAGE / INDEX #}
   <div id="index-page" class="page inactive">
     {% if not is_mobile %}
-    <div id='index-cursor'>
+      <div id='index-cursor'>
       {# Production videos #}
       {% if video_collection.field_production_videos|length %}
         {% for i in 0..(video_collection.field_production_videos|length - 1) %}
@@ -152,53 +152,51 @@
           {% endif %}
         {% endfor %}
       {% endif %}
-    </div>
-
-    {# Invisible clickable areas #}
-    <div id="production-area" class="link-area"></div>
-    <div id="pitches-area" class="link-area"></div>
-    <div id="service-providers-area" class="link-area"></div>
-    <div id="info-area" class="link-area"></div>
-    {% endif %}
-    
-    {% if is_mobile %}
-    {# Mobile video #}
-    <div id="mobile-area">
-      <div id="mobile-disclaimer-area">
-      {% if video_collection.field_credits_disclaimer.value %}
-        <p id="mobile-disclaimer">
-          {{ video_collection.field_credits_disclaimer.value }}
-        </p>
-      {% endif %}
-        
       </div>
-      {% if video_collection.field_mobile_video.entity %}
-        {% set media = video_collection.field_mobile_video.entity %}
-        {% set video_file = media.field_media_video_file.entity %}
-        {% if video_file %}
-          {# Get thumbnail #}
-          {% set thumbnail_url = null %}
-          {% if media.field_thumbnail|length %}
-            {% set thumbnail_media = media.field_thumbnail.0.entity %}
-            {% if thumbnail_media and thumbnail_media.field_media_image|length %}
-              {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
-              {% if thumbnail_file %}
-                {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('mobile')) %}
+
+      {# Invisible clickable areas #}
+      <div id="production-area" class="link-area"></div>
+      <div id="pitches-area" class="link-area"></div>
+      <div id="service-providers-area" class="link-area"></div>
+      <div id="info-area" class="link-area"></div>
+    {% else %}
+      {# Mobile video #}
+      <div id="mobile-area">
+        <div id="mobile-disclaimer-area">
+        {% if video_collection.field_credits_disclaimer.value %}
+          <p id="mobile-disclaimer">
+            {{ video_collection.field_credits_disclaimer.value }}
+          </p>
+        {% endif %}
+          
+        </div>
+        {% if video_collection.field_mobile_video.entity %}
+          {% set media = video_collection.field_mobile_video.entity %}
+          {% set video_file = media.field_media_video_file.entity %}
+          {% if video_file %}
+            {# Get thumbnail #}
+            {% set thumbnail_url = null %}
+            {% if media.field_thumbnail|length %}
+              {% set thumbnail_media = media.field_thumbnail.0.entity %}
+              {% if thumbnail_media and thumbnail_media.field_media_image|length %}
+                {% set thumbnail_file = thumbnail_media.field_media_image.0.entity %}
+                {% if thumbnail_file %}
+                  {% set thumbnail_url = file_url(thumbnail_file.uri.value|image_style('mobile')) %}
+                {% endif %}
               {% endif %}
             {% endif %}
+            <div 
+              id="mobile-video-container" 
+              class="video-container"
+              style="aspect-ratio: 720 / 1080"
+            >
+              <video id="mobile-video" loop muted playsinline preload="metadata" {% if thumbnail_url %} poster="{{ thumbnail_url }}" {% endif %}>
+                <source src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
+              </video>
+            </div>
           {% endif %}
-          <div 
-            id="mobile-video-container" 
-            class="video-container"
-            style="aspect-ratio: 720 / 1080"
-          >
-            <video id="mobile-video" loop muted playsinline preload="none" {% if thumbnail_url %} poster="{{ thumbnail_url }}" {% endif %}>
-              <source src="{{ file_url(video_file.uri.value) }}" type="video/mp4">
-            </video>
-          </div>
         {% endif %}
-      {% endif %}
-    </div>
+      </div>
     {% endif %}
   </div>
   

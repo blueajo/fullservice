@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
     setTimeout(setupProductionObserver, 500);
   } else {
-    index.addEventListener('mousemove', activateOnMove);
+    window.addEventListener('mousemove', activateOnMove);
     if (location.hash) {
       openPage(pageNames.get(location.hash.substring(1)));
     } else {
@@ -139,7 +139,7 @@ function activateOnMove(e) {
   indexCursor.y = e.clientY;
   document.querySelector('#index-cursor').classList.add('visible');
 
-  index.removeEventListener('mousemove', activateOnMove);
+  window.removeEventListener('mousemove', activateOnMove);
 }
 
 if (!mobile) {
@@ -614,9 +614,11 @@ function toggleDisclaimer() {
 function scaleMedia(media, container) {
   let heightRatio = null;
   let widthRatio = null;
-  let aspectRatio = getComputedStyle(media).aspectRatio;
+  let aspectRatio = null;
   if (container) {
     aspectRatio = getComputedStyle(container).aspectRatio;
+  } else {
+    aspectRatio = getComputedStyle(media).aspectRatio;
   }
   const [w, h] = aspectRatio.split('/').map(n => parseFloat(n));
 
@@ -659,6 +661,11 @@ function safePlayVideo(video, container = null) {
     if (container) {
       container.classList.add('video-playing');
       container.classList.add('video-ready');
+      const videoPoster = container.querySelector('img.video-poster');
+      if (videoPoster) {
+        videoPoster.style.opacity = 0;
+        videoPoster.style.pointerEvents = 'none';
+      }
     }
   };
 
@@ -796,7 +803,7 @@ const ProductionCarousel = (() => {
 
       cellElement.classList.add("open");
 
-      let productMedia = cellElement.querySelector("img, video");
+      let productMedia = cellElement.querySelector("img:not(.video-poster), video");
       let productCaption = cellElement.querySelector("p");
 
       if (productMedia && productMedia.tagName === 'VIDEO') {
@@ -829,7 +836,7 @@ const ProductionCarousel = (() => {
     const product = state.currOpenProduct;
     product.classList.remove("open");
 
-    const productMedia = product.querySelector("img, video");
+    const productMedia = product.querySelector("img:not(.video-poster), video");
     const videoContainer = product.querySelector('.video-container');
 
     if (productMedia && productMedia.tagName === 'VIDEO') {

@@ -66,7 +66,7 @@ function fullservice_preprocess_page(&$variables)
   $mobile_detect = \Drupal::service('mobile_detect');
 
   // Add a boolean variable 'is_mobile' to the Twig template.
-  $variables['is_mobile'] = $mobile_detect->isMobile() && !$mobile_detect->isTablet();
+  $variables['is_mobile'] = $mobile_detect->isMobile();
 
   // Load Header node
   $header_nodes = $node_storage->loadByProperties([
