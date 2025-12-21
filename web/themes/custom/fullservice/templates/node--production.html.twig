@@ -28,7 +28,7 @@
       {% endif %}    
       <div class="video-container" {% if image_ratio %} style="aspect-ratio: {{ image_ratio }};" {% endif %} > 
         <video loop muted playsinline preload="none" {% if thumbnail_url %} poster="{{ thumbnail_url }}" {% endif %} >
-          <source src="{{ file_url(video_file.uri.value) }}" + "mp4#t=0.001" type="video/mp4">
+          <source src="{{ file_url(video_file.uri.value) ~ '#t=0.001' }}" type="video/mp4">
         </video>
       </div>
     {% endif %}
