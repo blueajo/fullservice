@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
     setTimeout(setupProductionObserver, 500);
   } else {
-    window.addEventListener('mousemove', activateOnMove);
+    index.addEventListener('mousemove', activateOnMove);
     if (location.hash) {
       openPage(pageNames.get(location.hash.substring(1)));
     } else {
@@ -125,21 +125,22 @@ let copyright = null;
 let activated = false;
 let last = null;
 function activateOnMove(e) {
+  console.log('activateOnMove called');
   if (!last) {
     last = { x: e.clientX, y: e.clientY };
     return;
   }
 
   if (e.clientX === last.x && e.clientY === last.y) return;
+  indexCursor.x = e.clientX;
+  indexCursor.y = e.clientY;
 
   activated = true;
 
   document.querySelector('#cursor').classList.add('visible');
-  indexCursor.x = e.clientX;
-  indexCursor.y = e.clientY;
   document.querySelector('#index-cursor').classList.add('visible');
 
-  window.removeEventListener('mousemove', activateOnMove);
+  index.removeEventListener('mousemove', activateOnMove);
 }
 
 if (!mobile) {
