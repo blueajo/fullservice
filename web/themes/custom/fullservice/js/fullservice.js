@@ -55,16 +55,26 @@ document.addEventListener("DOMContentLoaded", (event) => {
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
     setTimeout(setupProductionObserver, 500);
   } else {
-    document.addEventListener('mousemove', (event) => {
-      document.querySelector('#cursor').classList.add('visible');
-      document.querySelector('#index-cursor').classList.add('visible');
-    }, { once: true });
+    index.addEventListener('mousemove', activateOnMove);
     if (location.hash) {
       openPage(pageNames.get(location.hash.substring(1)));
     } else {
       openPage('index');
     }
   }
+  const productImages = document.querySelectorAll('.product img, .product video');
+
+  productImages.forEach(img => {
+    // Check if already loaded
+    if (img.complete) {
+      img.style.backgroundColor = 'transparent';
+    } else {
+      // Wait for load
+      img.addEventListener('load', function () {
+        img.style.backgroundColor = 'transparent';
+      });
+    }
+  });
   document.getElementById('container').style.opacity = 1;
 });
 
@@ -112,6 +122,26 @@ let animatedCursor = null;
 let indexCursor = null;
 let infoCursor = null;
 let copyright = null;
+let activated = false;
+let last = null;
+function activateOnMove(e) {
+  if (!last) {
+    last = { x: e.clientX, y: e.clientY };
+    return;
+  }
+
+  if (e.clientX === last.x && e.clientY === last.y) return;
+
+  activated = true;
+
+  document.querySelector('#cursor').classList.add('visible');
+  indexCursor.x = e.clientX;
+  indexCursor.y = e.clientY;
+  document.querySelector('#index-cursor').classList.add('visible');
+
+  index.removeEventListener('mousemove', activateOnMove);
+}
+
 if (!mobile) {
   // Index cursor objects
   const quadrants = [['production', 'service-providers'],
@@ -535,6 +565,7 @@ if (!mobile) {
   });
 
   index.addEventListener('mouseenter', () => {
+    if (!activated) return;
     document.getElementById('index-cursor').classList.add('visible');
   });
 
@@ -569,10 +600,8 @@ function toggleDisclaimer() {
   const disclaimer = document.getElementById('mobile-disclaimer');
   if (disclaimer.classList.contains('visible')) {
     disclaimer.classList.remove('visible');
-    console.log('disclaimer toggle off'); 
   } else {
     disclaimer.classList.add('visible');
-    console.log('disclaimer toggle on');
   }
 }
 
