@@ -645,6 +645,7 @@ video {
     opacity: 100%; 
     filter: grayscale(0);
     transition: opacity 0.6s ease, filter 0.6s ease;
+    mix-blend-mode: normal;
 }
 
 .product p {
@@ -1329,6 +1330,7 @@ input {
     opacity: 100%;
     filter: grayscale(0);
     transition: opacity 0.6s ease, filter 0.6s ease;
+    mix-blend-mode: normal;
   }
 
   .product .container img, .product .video-container video {
