@@ -616,7 +616,7 @@ function scaleMedia(media, container) {
   let widthRatio = null;
   let aspectRatio = null;
   if (container) {
-    aspectRatio = getComputedStyle(container).aspectRatio;
+    aspectRatio = getComputedStyle(container.querySelector('img')).aspectRatio;
   } else {
     aspectRatio = getComputedStyle(media).aspectRatio;
   }
