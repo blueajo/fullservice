@@ -1112,11 +1112,11 @@ input {
 
   #index-page, #index-page.inactive { 
     grid-area: ix;
-    margin-top: 5rem;
+    margin-top: 6rem;
     margin-left: var(--rg-margin);
     margin-right: var(--rg-margin);
     margin-bottom: 1rem;
-    height: calc(100vh + 10rem);
+    height: calc(100vh + 12rem);
     display: grid;
     width: calc(100vw - calc(var(--rg-margin)*2));
     grid-template-rows: 1fr;

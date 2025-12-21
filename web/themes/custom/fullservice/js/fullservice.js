@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     scrollInterval = setInterval(scrollHandler, 1000 / 30);
     setTimeout(setupProductionObserver, 500);
   } else {
-    index.addEventListener('mousemove', activateOnMove);
+    window.addEventListener('mousemove', activateDotCursor);
     if (location.hash) {
       openPage(pageNames.get(location.hash.substring(1)));
     } else {
@@ -124,8 +124,21 @@ let infoCursor = null;
 let copyright = null;
 let activated = false;
 let last = null;
-function activateOnMove(e) {
-  console.log('activateOnMove called');
+
+function activateDotCursor(e) {
+  if (!last) {
+    last = { x: e.clientX, y: e.clientY };
+    return;
+  }
+
+  if (e.clientX === last.x && e.clientY === last.y) return;
+
+  document.querySelector('#cursor').classList.add('visible');
+
+  window.removeEventListener('mousemove', activateDotCursor);
+}
+
+function activateIndexCursor(e) {
   if (!last) {
     last = { x: e.clientX, y: e.clientY };
     return;
@@ -137,10 +150,9 @@ function activateOnMove(e) {
 
   activated = true;
 
-  document.querySelector('#cursor').classList.add('visible');
   document.querySelector('#index-cursor').classList.add('visible');
 
-  index.removeEventListener('mousemove', activateOnMove);
+  index.removeEventListener('mousemove', activateIndexCursor);
 }
 
 if (!mobile) {
@@ -442,6 +454,7 @@ function openPage(section) {
     if (!mobile) {
       cursorInterval = setInterval(indexFollow, 1000 / 60);
       loadHomepage();
+      index.addEventListener('mousemove', activateIndexCursor);
       document.getElementById('index-cursor').classList.add('active');
     } else {
       document.querySelector('#mobile-video').play();
@@ -810,7 +823,7 @@ const ProductionCarousel = (() => {
       if (productMedia && productMedia.tagName === 'VIDEO') {
         const videoContainer = productMedia.closest('.video-container');
         productMedia.currentTime = 0;
-        productMedia.safePlayVideo();
+        safePlayVideo(productMedia, videoContainer);
         productCaption.style.width = scaleMedia(productMedia, videoContainer);
       } else if (productMedia && productMedia.tagName === 'IMG') {
         productCaption.style.width = scaleMedia(productMedia);
