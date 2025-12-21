@@ -596,6 +596,10 @@ span.gap {
   display: block;
   width: 100%;
   height: auto;
+  mix-blend-mode: multiply;
+  filter: grayscale(1);
+  opacity: 60%;
+  will-change: transform, filter, opacity;
 }
 
 .product img:not(.video-poster) {
