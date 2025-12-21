@@ -809,7 +809,7 @@ const ProductionCarousel = (() => {
       if (productMedia && productMedia.tagName === 'VIDEO') {
         const videoContainer = productMedia.closest('.video-container');
         productMedia.currentTime = 0;
-        productMedia.play();
+        productMedia.safePlayVideo();
         productCaption.style.width = scaleMedia(productMedia, videoContainer);
       } else if (productMedia && productMedia.tagName === 'IMG') {
         productCaption.style.width = scaleMedia(productMedia);
