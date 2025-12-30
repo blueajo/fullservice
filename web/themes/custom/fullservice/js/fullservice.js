@@ -99,17 +99,20 @@ function remToPx(remValue) {
 let loadedHomepage = false;
 function loadHomepage() {
   if (loadedHomepage) return;
-
-  const videos = document.getElementById('index-page').querySelectorAll('video');
-
-  videos.forEach(video => {
-    const source = video.querySelector('source');
-    if (source.dataset.src) {
-      source.src = source.dataset.src;
-      }
-    video.load();
-  });
   loadedHomepage = true;
+
+  // Delay video loading just enough for thumbnails to paint
+  setTimeout(() => {
+    const videos = document.getElementById('index-page').querySelectorAll('video');
+
+    videos.forEach(video => {
+      const source = video.querySelector('source');
+      if (source && source.dataset.src) {
+        source.src = source.dataset.src;
+        video.load();
+      }
+    });
+  }, 0); // Even 0ms is enough to let the browser paint first
 }
 
 // =====================================================================================================================================
