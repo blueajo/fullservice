@@ -740,7 +740,7 @@ img.portrait.visible {
 
 #pitch-list {
   height: min-content;
-  cursor: var(--dot-cursor);
+  cursor: none;
   grid-area: pl;
 }
 
@@ -799,7 +799,7 @@ img.portrait.visible {
   position: relative;
   display: grid;
   grid-template-columns: 1rem 1fr;
-  cursor: var(--dot-big-cursor);
+  cursor: none;
 }
 
 /* Create a custom checkbox */
@@ -836,15 +836,19 @@ p.checkbox-label {
 #contact-form label {
   display: grid;
   grid-template-columns: auto 1fr;
-  cursor: var(--dot-cursor);
+  cursor: none;
   margin-bottom: calc(1rem - 2px);
   width: 100%;
   border-bottom: 2px solid black;
 }
 
+[contenteditable], input {
+  cursor: var(--type-cursor) !important;
+}
+
 #actual-contact-form {
   display: flex;
-  flex-direction: column
+  flex-direction: column;
 }
 
 @keyframes autofill {
