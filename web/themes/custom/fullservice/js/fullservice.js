@@ -115,6 +115,8 @@ function loadHomepage() {
   }, 0); // Even 0ms is enough to let the browser paint first
 }
 
+index.addEventListener('mousemove', activateIndexCursor);
+
 // =====================================================================================================================================
 // CUSTOM CURSORS
 // =====================================================================================================================================
@@ -376,9 +378,12 @@ function activateIndexCursor(e) {
     return;
   }
 
-
+  console.log(1);
 
   if (e.clientX === last.x && e.clientY === last.y) return;
+
+  console.log(2);
+
   indexCursor.x = e.clientX;
   indexCursor.y = e.clientY;
 
@@ -458,7 +463,6 @@ function openPage(section) {
     if (!mobile) {
       cursorInterval = setInterval(indexFollow, 1000 / 60);
       loadHomepage();
-      index.addEventListener('mousemove', activateIndexCursor);
       document.getElementById('index-cursor').classList.add('active');
     } else {
       document.querySelector('#mobile-video').play();
