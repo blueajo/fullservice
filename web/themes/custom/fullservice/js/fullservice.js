@@ -378,11 +378,7 @@ function activateIndexCursor(e) {
     return;
   }
 
-  console.log(1);
-
   if (e.clientX === last.x && e.clientY === last.y) return;
-
-  console.log(2);
 
   indexCursor.x = e.clientX;
   indexCursor.y = e.clientY;
