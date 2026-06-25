@@ -28,7 +28,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     // Check if mobile video exists before adding listeners
     const mobileVideo = document.querySelector('#mobile-video');
-    if (mobileVideo) {
+    const videoContainer = document.querySelector('#mobile-video-container');
+    if (mobileVideo && videoContainer) {
       // Play as soon as the lazy loader has loaded the video
       mobileVideo.addEventListener('loadeddata', () => {
         mobileVideo.play().catch(err => {
@@ -37,14 +38,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
           });
         });
       });
-      index.addEventListener('touchstart', () => {
-        mobileVideo.play().catch(err => {
-          mobileVideo.addEventListener("canplay", () => {
-            mobileVideo.play();
-          });
-        });
+      
+      videoContainer.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
         toggleDisclaimer();
-      })
+      });
     } else {
       console.warn('Mobile video not found in DOM');
     }
@@ -113,9 +111,9 @@ function loadHomepage() {
       }
     });
   }, 0); // Even 0ms is enough to let the browser paint first
-}
+  index.addEventListener('mousemove', activateIndexCursor);
+};
 
-index.addEventListener('mousemove', activateIndexCursor);
 
 // =====================================================================================================================================
 // CUSTOM CURSORS
@@ -125,8 +123,8 @@ let cursorInterval = null;
 let activeLink = null;
 let animatedCursor = null;
 let indexCursor = null;
-let infoCursor = null;
-let copyright = null;
+//let infoCursor = null;
+//let copyright = null;
 let activated = false;
 let last = null;
 
@@ -213,31 +211,31 @@ if (!mobile) {
     }
   };
 
-  // Info cursor objects
-  copyright = document.getElementById('info-cursor');
-  const infoLinks = document.querySelectorAll('#info-page a, #footer a');
+  // // Info cursor objects
+  // copyright = document.getElementById('info-cursor');
+  // const infoLinks = document.querySelectorAll('#info-page a, #footer a');
 
-  infoCursor = {
-    el: copyright,
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-    update: function () {
-      const toolbar = document.querySelector('.toolbar-fixed');
-      const toolbarHeight = toolbar ? parseInt(toolbar.style.paddingTop.slice(0, -2), 10) : 0;
+  // infoCursor = {
+  //   el: copyright,
+  //   x: window.innerWidth / 2,
+  //   y: window.innerHeight / 2,
+  //   update: function () {
+  //     const toolbar = document.querySelector('.toolbar-fixed');
+  //     const toolbarHeight = toolbar ? parseInt(toolbar.style.paddingTop.slice(0, -2), 10) : 0;
 
-      this.x = mouseX;
-      this.y = mouseY - toolbarHeight;
-      this.el.style = 'transform: translate3d(' + this.x + 'px,' + this.y + 'px, 0);';
-    }
-  };
+  //     this.x = mouseX;
+  //     this.y = mouseY - toolbarHeight;
+  //     this.el.style = 'transform: translate3d(' + this.x + 'px,' + this.y + 'px, 0);';
+  //   }
+  // };
 
   function indexFollow() {
     indexCursor.update();
   }
 
-  function infoFollow() {
-    infoCursor.update();
-  }
+  // function infoFollow() {
+  //   infoCursor.update();
+  // }
 
   if (!mobile) {
     document.addEventListener('mousemove', (e) => {
@@ -246,23 +244,23 @@ if (!mobile) {
       animatedCursor.update();
     });
 
-    info.addEventListener("mousedown", (e) => {
-      copyright.classList.remove('visible');
-    });
+    // info.addEventListener("mousedown", (e) => {
+    //   copyright.classList.remove('visible');
+    // });
 
-    info.addEventListener("mouseup", (e) => {
-      copyright.classList.add('visible');
-    });
+    // info.addEventListener("mouseup", (e) => {
+    //   copyright.classList.add('visible');
+    // });
 
-    for (let i = 0; i < infoLinks.length; i++) {
-      const link = infoLinks[i];
-      link.addEventListener('mouseenter', () => {
-        copyright.classList.remove('visible');
-      });
-      link.addEventListener('mouseout', () => {
-        copyright.classList.add('visible');
-      });
-    }
+    // for (let i = 0; i < infoLinks.length; i++) {
+    //   const link = infoLinks[i];
+    //   link.addEventListener('mouseenter', () => {
+    //     copyright.classList.remove('visible');
+    //   });
+    //   link.addEventListener('mouseout', () => {
+    //     copyright.classList.add('visible');
+    //   });
+    // }
   }
 
   // ========================
@@ -329,36 +327,36 @@ if (!mobile) {
       } else {
         animatedCursor.setState('default');
       }
-      if (section === 'info') {
-        if (header && !link) {
-          animatedCursor.setState('default');
-          copyright.classList.remove('visible');
-        } else if (link) {
-          copyright.classList.remove('visible');
-        } else {
-          animatedCursor.setState('hidden');
-          copyright.classList.add('visible');
-        }
-      }
+      // if (section === 'info') {
+      //   if (header && !link) {
+      //     animatedCursor.setState('default');
+      //     copyright.classList.remove('visible');
+      //   } else if (link) {
+      //     copyright.classList.remove('visible');
+      //   } else {
+      //     animatedCursor.setState('hidden');
+      //     copyright.classList.add('visible');
+      //   }
+      // }
     });
 
     document.addEventListener('pointerdown', (e) => {
       animatedCursor.dot.classList.add('clicking');
-      if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
-        animatedCursor.setState('default');
-        copyright.classList.remove('visible');
-      }
+      // if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
+      //   animatedCursor.setState('default');
+      //   copyright.classList.remove('visible');
+      // }
     });
 
     document.addEventListener('pointerup', (e) => {
       animatedCursor.dot.classList.remove('clicking');
-      if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
-        const header = e.target.closest('#header, #footer, a');
-        if (!header) {
-          animatedCursor.setState('hidden');
-          copyright.classList.remove('visible');
-        }
-      }
+      // if (document.querySelector('.page:not(.inactive)').id.slice(0, -5) === 'info') {
+      //   const header = e.target.closest('#header, #footer, a');
+      //   if (!header) {
+      //     animatedCursor.setState('hidden');
+      //     copyright.classList.remove('visible');
+      //   }
+      // }
     });
 
     // Initialize cursor
@@ -434,14 +432,16 @@ function closePage() {
       pitches.classList.remove('expanded');
       resetPitches();
     }
-  } else if (section == 'info') {
-    if (!mobile) {
-      copyright.classList.remove('active');
-    }
   }
+  // } else if (section == 'info') {
+  //   if (!mobile) {
+  //     copyright.classList.remove('active');
+  //   }
+  // }
 }
 
 function openPage(section) {
+  console.log('opening ' + section + ' page' );
   var page = document.getElementById(section + '-page') ? document.getElementById(section + '-page') : document.getElementById('index-page');
   page.classList.remove('inactive');
   if (!mobile) {
@@ -465,10 +465,10 @@ function openPage(section) {
       production.classList.remove('flickity-ready');
     }
   }
-  if (section == 'info' && !mobile) {
-    copyright.classList.remove('visible');
-    cursorInterval = setInterval(infoFollow, 1000 / 60);
-  }
+  // if (section == 'info' && !mobile) {
+  //   copyright.classList.remove('visible');
+  //   cursorInterval = setInterval(infoFollow, 1000 / 60);
+  // }
   if (section == 'production' && !mobile) {
       ProductionCarousel.init();
   }
@@ -518,7 +518,12 @@ function expandHeader(section) {
 for (let i = 0; i < pageLinks.length; i++) {
   const pageLink = pageLinks[i];
   pageLink.addEventListener('click', () => {
-    const section = pageLink.id.slice(0, -5);
+    let section = pageLink.id.slice(0, -5);
+    if (pageLink.id == 'mobile-arrow') {
+       section = 'production';
+    } else if (pageLink.id == 'mobile-logo') {
+      return;
+    }
     
     if (mobile) {
       closePage();
@@ -1342,9 +1347,17 @@ function scrollHandler() {
 
   const scrollProgress = Math.max((window.scrollY - 10) / (window.innerHeight - 25), 0);
   const targetDiv = document.getElementById('index-text');
+  const targetDiv2 = document.getElementById('mobile-arrow');
   if (targetDiv) {
     const blurbOpacity = 1 - scrollProgress
     targetDiv.style.opacity = blurbOpacity > 0 ? blurbOpacity : 0;
+  }
+  if (targetDiv2) {
+    const arrowOpacity = 1 - scrollProgress;
+    targetDiv2.style.opacity = arrowOpacity > 0 ? arrowOpacity : 0;
+    if (arrowOpacity <= 0) {
+      targetDiv2.style.pointerEvents = 'none';
+    }
   }
   if (!scrollAnimations) return;
 
@@ -1488,8 +1501,8 @@ document.addEventListener('visibilitychange', () => {
     const section = document.querySelector('.page:not(.inactive)')?.id.slice(0, -5);
     if (section === 'index' && !mobile) {
       cursorInterval = setInterval(indexFollow, 1000 / 60);
-    } else if (section === 'info' && !mobile) {
-      cursorInterval = setInterval(infoFollow, 1000 / 60);
+    // } else if (section === 'info' && !mobile) {
+    //   cursorInterval = setInterval(infoFollow, 1000 / 60);
     } else if (mobile) {
       scrollInterval = setInterval(scrollHandler, 1000 / 30);
       document.querySelector('#mobile-video').play();

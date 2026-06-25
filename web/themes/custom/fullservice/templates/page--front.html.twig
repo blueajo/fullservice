@@ -17,7 +17,6 @@
 {% set service_providers_node = service_providers_node ?? null %}
 
 {{ page_top }}
-
 <div id="cursor">
   <div id="cursor-wrapper">
     <div id="cursor-dot">
@@ -26,7 +25,20 @@
     </div>
   </div>
 </div>
+{% if is_mobile %}
+    <div id="mobile-arrow" class="page-link">
+      <img id="down" src="themes/custom/fullservice/img/down-arrow.svg">
+    </div>
+{% endif %}
 <div id='container'>
+  {% if is_mobile %}
+    <div id="mobile-header">
+      <p>
+        <a id='index-link' class='page-link'>{% if header_node.field_website_title %} {{ header_node.field_website_title.value }}{% else %}Fullservice Office{% endif %}</a>
+        <span id="index-text" class="nav-text">{% if header_node.field_homepage_blurb %} {{ header_node.field_homepage_blurb.value }}{% endif %}</span>
+      </p>
+    </div>
+  {% endif %}
   {# HEADER #}
   <div id="header">
       <p><span class="paren">(</span><a id="production-link" class="page-link">{{ header_node.field_production_title ? header_node.field_production_title.value : 'Production' }}</a><span id="production-text" class="nav-text">{% if header_node.field_production_blurb %} {{ header_node.field_production_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="production-gap"></span>
@@ -34,7 +46,9 @@
           <a id="service-providers-link" class="page-link">{{ header_node.field_service_providers_title ? header_node.field_service_providers_title.value : 'Service Providers' }}</a><span id="service-providers-text" class="nav-text">{% if header_node.field_service_providers_blurb %} {{ header_node.field_service_providers_blurb.value }}{% endif %}</span><span class="comma-span">, </span><span id="service-providers-gap"></span>
           <a id="info-link" class="page-link">{{ header_node.field_info_title ? header_node.field_info_title.value : 'Info' }}</a><span id="info-text" class="nav-text">{% if header_node.field_info_blurb %}{{ header_node.field_info_blurb.value }}{% endif %}</span><span id="info-gap"></span><span><span class="paren">)</span></span>
       </p>
-      {% if is_mobile %} <div id="header-spacer"></div> {% endif %}
+      {% if is_mobile %}
+        <div id="header-spacer"></div>
+      {% endif %}
   </div>
   
   {# HOMEPAGE / INDEX #}
@@ -305,9 +319,9 @@
 
   {# INFO PAGE #}
   <div id="info-page" class="page inactive">
-    <div id="info-cursor">
+    {# <div id="info-cursor">
       <p>FULLSERVICE OFFICE © {{ "now"|date("Y") }}</p>
-    </div>
+    </div> #}
     
     {% if info_node %}
       {# Office description - multiple paragraphs #}
@@ -356,10 +370,17 @@
   {# FOOTER #}
   <div id="footer">
     {# Footer content #}
-    <p>
-      <a id='index-link' class='page-link'>{{ site_name|default('FULLSERVICE OFFICE') }}</a>
-      <span id="index-text" class="nav-text">{% if header_node.field_homepage_blurb %} {{ header_node.field_homepage_blurb.value }}{% endif %}</span>
-    </p>
+    {% if wordmark_node and wordmark_node.field_wordmark_image.0.entity and wordmark_node.field_wordmark_size.value %}
+      {% set wordmark_file = wordmark_node.field_wordmark_image.0.entity %}
+      {% set wordmark_size = wordmark_node.field_wordmark_size.value|default(3) %}
+      {% if wordmark_file and wordmark_size %}
+        {% set index_link_id = 'index-link' %}
+        {% if is_mobile %}
+          {% set index_link_id = 'mobile-logo' %}
+        {% endif %}
+        <img id= {{ index_link_id }} class="page-link" style="height: {{ wordmark_size }}rem; width: auto;" src="{{ file_url(wordmark_file.uri.value) }}" alt="Fullservice Office Wordmark">
+      {% endif %}
+    {% endif %}
     
     {# Video credits from homepage_video_collection node #}
     {% if video_collection %}
@@ -389,11 +410,6 @@
         </div>
       </div>
     {% endif %}
-  </div>
-
-  {# MOBILE FOOTER #}
-  <div id="mobile-footer">
-    <p>FULLSERVICE OFFICE © {{ "now"|date("Y") }}</p>
   </div>
 </div>
 {{ page_bottom }}

@@ -60,6 +60,8 @@ function fullservice_preprocess_page(&$variables)
   // Make site name available
   $variables['site_name'] = \Drupal::config('system.site')->get('name');
 
+  $variables['#cache']['contexts'][] = 'headers:User-Agent';
+
   // Load singleton nodes for front page
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
@@ -74,6 +76,13 @@ function fullservice_preprocess_page(&$variables)
     'status' => 1,
   ]);
   $variables['header_node'] = $header_nodes ? reset($header_nodes) : NULL;
+
+  // Load Footer node
+  $wordmark_nodes = $node_storage->loadByProperties([
+    'type' => 'wordmark',
+    'status' => 1,
+  ]);
+  $variables['wordmark_node'] = $wordmark_nodes ? reset($wordmark_nodes) : NULL;
 
   // Load Homepage Video Collection node
   $video_nodes = $node_storage->loadByProperties([
