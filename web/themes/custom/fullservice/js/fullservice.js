@@ -39,10 +39,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
         });
       });
       
-      videoContainer.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        toggleDisclaimer();
-      });
+      // videoContainer.addEventListener('pointerdown', (e) => {
+      //   e.preventDefault();
+      //   toggleDisclaimer();
+      // });
     } else {
       console.warn('Mobile video not found in DOM');
     }
@@ -619,14 +619,14 @@ function playMobileVideoOnInteraction(videoSelector) {
   document.addEventListener('touchstart', tryPlay, { once: true });
 }
 
-function toggleDisclaimer() {
-  const disclaimer = document.getElementById('mobile-disclaimer');
-  if (disclaimer.classList.contains('visible')) {
-    disclaimer.classList.remove('visible');
-  } else {
-    disclaimer.classList.add('visible');
-  }
-}
+// function toggleDisclaimer() {
+//   const disclaimer = document.getElementById('mobile-disclaimer');
+//   if (disclaimer.classList.contains('visible')) {
+//     disclaimer.classList.remove('visible');
+//   } else {
+//     disclaimer.classList.add('visible');
+//   }
+// }
 
   
 

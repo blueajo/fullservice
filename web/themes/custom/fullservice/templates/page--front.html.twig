@@ -181,14 +181,14 @@
     {% else %}
       {# Mobile video #}
       <div id="mobile-area">
-        <div id="mobile-disclaimer-area">
+        {# <div id="mobile-disclaimer-area">
         {% if video_collection.field_credits_disclaimer.value %}
           <p id="mobile-disclaimer">
             {{ video_collection.field_credits_disclaimer.value }}
           </p>
         {% endif %}
           
-        </div>
+        </div> #}
         {% if video_collection.field_mobile_video.entity %}
           {% set media = video_collection.field_mobile_video.entity %}
           {% set video_file = media.field_media_video_file.entity %}
