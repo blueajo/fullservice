@@ -519,6 +519,7 @@ for (let i = 0; i < pageLinks.length; i++) {
   const pageLink = pageLinks[i];
   pageLink.addEventListener('click', () => {
     let section = pageLink.id.slice(0, -5);
+    console.log('clicked ' + section + ' link');
     if (pageLink.id == 'mobile-arrow') {
        section = 'production';
     } else if (pageLink.id == 'mobile-logo') {
@@ -1357,6 +1358,8 @@ function scrollHandler() {
     targetDiv2.style.opacity = arrowOpacity > 0 ? arrowOpacity : 0;
     if (arrowOpacity <= 0) {
       targetDiv2.style.pointerEvents = 'none';
+    } else {
+      targetDiv2.style.pointerEvents = 'auto';
     }
   }
   if (!scrollAnimations) return;
